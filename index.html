@@ -146,7 +146,7 @@
             <!-- 横屏适配核心：加上 landscape:sm:items-center 让左右两排居中对齐 -->
             <div id="interaction-area" class="flex flex-col landscape:sm:flex-row gap-7 w-full landscape:sm:items-center">
                 
-                <!-- 左列/上部分：控制操作区 (修复了竖屏下 flex-[1] 导致的怪异拉伸) -->
+                <!-- 左列/上部分：控制操作区 -->
                 <div class="flex flex-col gap-6 landscape:sm:flex-[1]">
                     
                     <div class="flex flex-col gap-2">
@@ -198,10 +198,15 @@
                                 <input type="file" accept="image/*" id="albumInput" class="hidden">
                             </label>
                         </div>
+                        <!-- 新增：手动录入选项 -->
+                        <button type="button" id="btn-open-manual" class="w-full py-3 bg-white border border-gray-200 hover:bg-gray-50 text-[#86868b] hover:text-[#1d1d1f] rounded-2xl text-[13px] font-medium transition-colors flex items-center justify-center gap-1.5 shadow-sm mt-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            备选项：手动输入全部测试角度
+                        </button>
                     </div>
                 </div>
 
-                <!-- 右列/下部分：画布与结果区 (修复竖屏怪异拉伸) -->
+                <!-- 右列/下部分：画布与结果区 -->
                 <div class="flex flex-col gap-6 landscape:sm:flex-[1.2] w-full min-w-0">
                     <div class="relative w-full bg-[#1d1d1f] rounded-[24px] overflow-hidden shadow-inner flex items-center justify-center min-h-[240px] landscape:sm:min-h-[320px] hidden" id="canvas-container">
                         <canvas id="imageCanvas" class="w-full h-auto max-h-[60vh] landscape:sm:max-h-[70vh] object-contain cursor-crosshair"></canvas>
@@ -244,7 +249,6 @@
                             <div id="threshold-feedback" class="mt-1 w-full py-2 px-3 rounded-xl text-center font-medium text-[12px] bg-[#f5f5f7] text-[#86868b]"></div>
                         </div>
 
-                        <!-- 这里的按钮保持水平排列，无需调整竖屏/横屏的 flex -->
                         <div class="flex gap-3 w-full mt-2">
                             <button type="button" id="retake-btn" class="flex-[1] py-3.5 bg-[#f5f5f7] hover:bg-gray-200 text-[#1d1d1f] rounded-2xl font-medium transition-transform active:scale-[0.98] flex items-center justify-center text-[14px] border border-gray-200/60">
                                 重拍
@@ -268,7 +272,6 @@
                     <div id="final-result-title" class="text-[24px] font-bold text-[#1d1d1f] tracking-tight leading-snug">获取中...</div>
                 </div>
 
-                <!-- 横屏适配：利用网格系统 -->
                 <div class="grid grid-cols-1 landscape:sm:grid-cols-2 gap-5 w-full items-start relative z-10">
                     <div class="w-full apple-glass p-5 rounded-[24px] shadow-sm border border-[#0071e3]/10 h-full">
                         <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200/50">
@@ -309,7 +312,7 @@
                         <span class="text-[10px] text-[#86868b] font-medium" id="report-time-stamp">生成时间：--</span>
                         <span class="text-[10px] text-gray-400 mt-0.5" id="report-client-name"></span>
                     </div>
-                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">PelvicScan Pro v1.0.4</span>
+                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">PelvicScan Pro v1.0.6</span>
                 </div>
 
                 <div class="flex flex-col gap-3 mt-6 z-10 w-full">
@@ -339,6 +342,75 @@
             <div id="history-list" class="flex-1 overflow-y-auto p-5 space-y-4 no-scrollbar bg-white"></div>
             <div class="p-5 bg-white border-t border-gray-100">
                 <button type="button" id="btn-clear-history" class="w-full py-3.5 text-[14px] font-semibold text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-[16px] transition-colors">清空所有云端记录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：手动输入数据 Modal -->
+    <div id="manual-modal" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm hidden flex items-end sm:items-center justify-center fade-in">
+        <div class="bg-white w-full sm:w-[400px] rounded-t-[32px] sm:rounded-[32px] shadow-2xl flex flex-col overflow-hidden max-h-[90vh] transform transition-transform">
+            <div class="px-6 py-5 bg-[#f5f5f7] border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-[16px] font-bold text-[#1d1d1f] flex items-center gap-2">
+                    <svg class="w-5 h-5 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    手动录入测试数据
+                </h2>
+                <button type="button" id="btn-close-manual" class="text-[#86868b] hover:text-[#1d1d1f] p-1 bg-white rounded-full shadow-sm border border-gray-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-5 bg-white">
+                <div>
+                    <label class="block text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center justify-between">
+                        <span>直腿抬高 (SLR)</span>
+                        <span class="text-[#86868b] font-normal text-[11px]">正常: 70°-90°</span>
+                    </label>
+                    <div class="flex gap-3">
+                        <div class="flex-1 relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">左</span>
+                            <input type="number" id="manual-slr-l" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
+                        </div>
+                        <div class="flex-1 relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">右</span>
+                            <input type="number" id="manual-slr-r" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center justify-between">
+                        <span>主动髋屈</span>
+                        <span class="text-[#86868b] font-normal text-[11px]">正常: ~110°</span>
+                    </label>
+                    <div class="flex gap-3">
+                        <div class="flex-1 relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">左</span>
+                            <input type="number" id="manual-hip-l" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
+                        </div>
+                        <div class="flex-1 relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">右</span>
+                            <input type="number" id="manual-hip-r" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center justify-between">
+                        <span>主动肩屈</span>
+                        <span class="text-[#86868b] font-normal text-[11px]">正常: 160°-180°</span>
+                    </label>
+                    <div class="flex gap-3">
+                        <div class="flex-1 relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">左</span>
+                            <input type="number" id="manual-sh-l" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
+                        </div>
+                        <div class="flex-1 relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">右</span>
+                            <input type="number" id="manual-sh-r" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 bg-white border-t border-gray-100">
+                <button type="button" id="btn-submit-manual" class="w-full py-4 text-[14px] font-bold text-white bg-[#1d1d1f] hover:bg-black rounded-2xl shadow-lg transition-transform active:scale-[0.98] flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    确认录入并生成报告
+                </button>
             </div>
         </div>
     </div>
@@ -385,6 +457,12 @@
         
         const cloudSyncIndicator = document.getElementById('cloud-sync-indicator');
         const cloudStatusText = document.getElementById('cloud-status-text');
+
+        // 手动输入相关 DOM
+        const btnOpenManual = document.getElementById('btn-open-manual');
+        const btnCloseManual = document.getElementById('btn-close-manual');
+        const manualModal = document.getElementById('manual-modal');
+        const btnSubmitManual = document.getElementById('btn-submit-manual');
 
         let testRecords = { slr: { L: null, R: null, final: null }, hip: { L: null, R: null, final: null }, shoulder: { L: null, R: null, final: null } };
         let detector;
@@ -440,7 +518,7 @@
             }
         }
 
-        // 初始化 Firebase (加入重试机制避免网络阻断报错)
+        // 初始化 Firebase
         const initFirebase = async () => {
             try {
                 const firebaseConfig = typeof __firebase_config !== 'undefined' && __firebase_config ? JSON.parse(__firebase_config) : null;
@@ -456,7 +534,6 @@
 
                 const initAuth = async () => {
                     let lastError;
-                    // 指数退避重试 (1s, 2s, 4s, 8s, 16s)
                     for (let i = 0; i < 5; i++) {
                         try {
                             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -504,7 +581,6 @@
                     }
                 });
             } catch (e) {
-                // 不使用 console.error 避免触发系统报错拦截，保证用户可以静默进入离线模式
                 console.warn("Firebase network or init failed, degrading to offline mode.", e.message);
                 cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-rose-400";
                 cloudStatusText.innerText = "云端连接失败 (离线)";
@@ -610,6 +686,53 @@
 
         btnShowHistory.addEventListener('click', () => historyModal.classList.remove('hidden'));
         btnCloseHistory.addEventListener('click', () => historyModal.classList.add('hidden'));
+
+        // 手动输入相关的弹窗逻辑
+        btnOpenManual.addEventListener('click', () => {
+            manualModal.classList.remove('hidden');
+        });
+        
+        btnCloseManual.addEventListener('click', () => {
+            manualModal.classList.add('hidden');
+        });
+
+        btnSubmitManual.addEventListener('click', () => {
+            const slrL = parseFloat(document.getElementById('manual-slr-l').value);
+            const slrR = parseFloat(document.getElementById('manual-slr-r').value);
+            const hipL = parseFloat(document.getElementById('manual-hip-l').value);
+            const hipR = parseFloat(document.getElementById('manual-hip-r').value);
+            const shL = parseFloat(document.getElementById('manual-sh-l').value);
+            const shR = parseFloat(document.getElementById('manual-sh-r').value);
+
+            if (isNaN(slrL) || isNaN(slrR) || isNaN(hipL) || isNaN(hipR) || isNaN(shL) || isNaN(shR)) {
+                alert("请将所有的角度数据填写完整后再生成报告！");
+                return;
+            }
+
+            if(!clientNameInput.value.trim()) {
+                manualModal.classList.add('hidden');
+                clientNameInput.focus();
+                clientNameInput.classList.add('ring-2', 'ring-rose-400');
+                setTimeout(() => clientNameInput.classList.remove('ring-2', 'ring-rose-400'), 1500);
+                speak("请先输入客户姓名");
+                return; 
+            }
+
+            testRecords.slr.L = slrL;
+            testRecords.slr.R = slrR;
+            testRecords.hip.L = hipL;
+            testRecords.hip.R = hipR;
+            testRecords.shoulder.L = shL;
+            testRecords.shoulder.R = shR;
+
+            updateTrackerUI();
+            saveStateLocally();
+            manualModal.classList.add('hidden');
+            
+            // 数据完备后，直接生成最终报告
+            generateFinalReport();
+        });
+
 
         async function initAI() {
             try {
@@ -1114,8 +1237,11 @@
             const spineAnalysis = document.getElementById('spine-analysis'); 
             const aestheticAnalysis = document.getElementById('aesthetic-analysis');
             
+            let diagnosisName = "";
+
             if (diagnosis === "LeftAIC") {
-                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统诊断：${tensionStatus}</span>骨盆基线偏位 (Left AIC)`; 
+                diagnosisName = "骨盆基线偏位 (Left AIC)";
+                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统诊断：${tensionStatus}</span>${diagnosisName}`; 
                 
                 orientationEl.innerHTML = `
                     <p><b class="text-[#1d1d1f]">⚙️ 骨盆倾斜与旋转：</b> 骨盆整体呈 <b>左高右低、左前右后</b>。左侧骨盆处于外翻、前倾的开放状态，右侧骨盆被死死卡在内旋、后倾的承重闭合状态。</p>
@@ -1135,7 +1261,8 @@
                 `;
 
             } else if (diagnosis === "Lateral") {
-                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统诊断：${tensionStatus}</span>横向倾斜代偿 (Lateral)`;  
+                diagnosisName = "横向倾斜代偿 (Lateral)";
+                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统诊断：${tensionStatus}</span>${diagnosisName}`;  
                 
                 orientationEl.innerHTML = `
                     <p><b class="text-[#1d1d1f]">⚙️ 骨盆倾斜与旋转：</b> 典型的 <b>严重高低胯</b>。左侧骨盆被从下方暴力推高，完全丧失了自然下沉（吸气扩张）的能力，整个底盘被卡在了一个横向扭曲的切面上。</p>
@@ -1155,7 +1282,8 @@
                 `;
 
             } else if (diagnosis === "Oblique") {
-                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统诊断：${tensionStatus}</span>斜轴深度扭转 (Oblique)`; 
+                diagnosisName = "斜轴深度扭转 (Oblique)";
+                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统诊断：${tensionStatus}</span>${diagnosisName}`; 
                 
                 orientationEl.innerHTML = `
                     <p><b class="text-[#1d1d1f]">⚙️ 骨盆倾斜与旋转：</b> 这是最严重的力学灾难。左侧骨盆不仅被抬高，还被狠狠推向了物理极限的最前方。整个底盘处于<b>对角线式的极度“拧麻花”扭转状态</b>。</p>
@@ -1175,7 +1303,8 @@
                 `;
 
             } else {
-                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统诊断：${tensionStatus}</span>双侧前侧压缩 (Bilateral)`; 
+                diagnosisName = "双侧前侧压缩 (Bilateral)";
+                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统诊断：${tensionStatus}</span>${diagnosisName}`; 
                 
                 orientationEl.innerHTML = `
                     <p><b class="text-[#1d1d1f]">⚙️ 骨盆倾斜与旋转：</b> 没有明显左右歪斜，但骨盆整体像一个往前倾倒的水盆，发生<b>重度双侧骨盆前倾 (Bilateral APT)</b>，骶骨向前点头卡死。</p>
@@ -1194,7 +1323,7 @@
                     <p><b class="text-danger">🦴 腿型预测 (膝盖反弓与O型腿)：</b> 典型的双侧膝关节超伸（骨头向后锁死成“反弓”形态）。这迫使小腿后侧肌肉长期代偿发力维持站立，导致<b>小腿肚子变得极其粗壮外翻，形成复合型 O 型腿</b>。</p>
                 `;
             }
-
+            
             // [PRI假胯宽处方整合]
             let fakeHipHtml = "";
             let minSlr = testRecords.slr.final;
@@ -1233,14 +1362,16 @@
             
             aestheticAnalysis.innerHTML += fakeHipHtml;
             
+            // 修复 Bug：先解除隐藏状态再执行其他操作，防止因元素不可见导致读取不到数据
+            document.getElementById('final-report-section').classList.remove('hidden');
+
             saveToCloud({
                 type: 'full', 
                 date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
                 slrL: slrL.toFixed(1), slrR: slrR.toFixed(1), hipL: hipL.toFixed(1), hipR: hipR.toFixed(1), shL: shL.toFixed(1), shR: shR.toFixed(1),
-                result: titleEl.innerText.split('系统诊断：')[1] ? titleEl.innerText.split('系统诊断：')[1].trim() : titleEl.innerText
+                result: `${tensionStatus} · ${diagnosisName}`
             });
 
-            document.getElementById('final-report-section').classList.remove('hidden');
             setTimeout(() => document.getElementById('final-report-section').scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
             
             speak("报告已生成，包含极度精准的外观形变溯源，您可以点击底部按钮保存长图。");
