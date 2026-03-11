@@ -312,7 +312,7 @@
                         <span class="text-[10px] text-[#86868b] font-medium" id="report-time-stamp">生成时间：--</span>
                         <span class="text-[10px] text-gray-400 mt-0.5" id="report-client-name"></span>
                     </div>
-                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">PelvicScan Pro v1.0.6</span>
+                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">PelvicScan Pro v1.0.7</span>
                 </div>
 
                 <div class="flex flex-col gap-3 mt-6 z-10 w-full">
@@ -346,7 +346,7 @@
         </div>
     </div>
 
-    <!-- 新增：手动输入数据 Modal -->
+    <!-- 手动输入数据 Modal (修复逻辑优化体验) -->
     <div id="manual-modal" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm hidden flex items-end sm:items-center justify-center fade-in">
         <div class="bg-white w-full sm:w-[400px] rounded-t-[32px] sm:rounded-[32px] shadow-2xl flex flex-col overflow-hidden max-h-[90vh] transform transition-transform">
             <div class="px-6 py-5 bg-[#f5f5f7] border-b border-gray-200 flex justify-between items-center">
@@ -486,7 +486,7 @@
         let historyData = [];
         let unsubscribeHistory = null;
 
-        // --- 防浏览器缓存重刷新的状态保持系统 (Session Storage) ---
+        // --- 防浏览器缓存重刷新的状态保持系统 (Session Storage 更新为 v107) ---
         function saveStateLocally() {
             const state = {
                 testRecords,
@@ -494,11 +494,11 @@
                 testType: document.querySelector('input[name="testType"]:checked')?.value || 'slr',
                 testSide: document.querySelector('input[name="testSide"]:checked')?.value || 'L'
             };
-            sessionStorage.setItem('pelvicScanState_v103', JSON.stringify(state));
+            sessionStorage.setItem('pelvicScanState_v107', JSON.stringify(state));
         }
 
         function restoreStateLocally() {
-            const saved = sessionStorage.getItem('pelvicScanState_v103');
+            const saved = sessionStorage.getItem('pelvicScanState_v107');
             if (saved) {
                 try {
                     const state = JSON.parse(saved);
@@ -651,8 +651,10 @@
         }
 
         function updateSaveButtonText() {
-            const side = document.querySelector('input[name="testSide"]:checked').value;
-            btnSaveText.innerText = side === 'L' ? '上传并准备右侧' : '上传并进入下一项';
+            const sideEl = document.querySelector('input[name="testSide"]:checked');
+            if(sideEl) {
+                btnSaveText.innerText = sideEl.value === 'L' ? '上传并准备右侧' : '上传并进入下一项';
+            }
         }
 
         function updateLegend(testType) {
@@ -687,8 +689,26 @@
         btnShowHistory.addEventListener('click', () => historyModal.classList.remove('hidden'));
         btnCloseHistory.addEventListener('click', () => historyModal.classList.add('hidden'));
 
-        // 手动输入相关的弹窗逻辑
+        // 【UX 修复：手动输入相关的弹窗逻辑优化】
         btnOpenManual.addEventListener('click', () => {
+            // 修复逻辑 1：将客户姓名验证放在打开弹窗前，而不是提交时，防止填了数据突然被强制关闭
+            if(!clientNameInput.value.trim()) {
+                clientNameInput.focus();
+                clientNameInput.classList.add('ring-2', 'ring-rose-400');
+                setTimeout(() => clientNameInput.classList.remove('ring-2', 'ring-rose-400'), 1500);
+                speak("请先在主界面输入客户姓名");
+                alert("请先在上方输入客户档案（姓名），再进行手动数据录入！");
+                return; 
+            }
+            
+            // 修复逻辑 2：用户可能通过视觉捕捉测了几个动作，此时应将已有的数据自动带入弹窗
+            if (testRecords.slr.L !== null) document.getElementById('manual-slr-l').value = testRecords.slr.L.toFixed(1);
+            if (testRecords.slr.R !== null) document.getElementById('manual-slr-r').value = testRecords.slr.R.toFixed(1);
+            if (testRecords.hip.L !== null) document.getElementById('manual-hip-l').value = testRecords.hip.L.toFixed(1);
+            if (testRecords.hip.R !== null) document.getElementById('manual-hip-r').value = testRecords.hip.R.toFixed(1);
+            if (testRecords.shoulder.L !== null) document.getElementById('manual-sh-l').value = testRecords.shoulder.L.toFixed(1);
+            if (testRecords.shoulder.R !== null) document.getElementById('manual-sh-r').value = testRecords.shoulder.R.toFixed(1);
+
             manualModal.classList.remove('hidden');
         });
         
@@ -704,18 +724,10 @@
             const shL = parseFloat(document.getElementById('manual-sh-l').value);
             const shR = parseFloat(document.getElementById('manual-sh-r').value);
 
+            // 修复逻辑 3：如果有漏填项，只给警告，绝不强制隐藏弹窗
             if (isNaN(slrL) || isNaN(slrR) || isNaN(hipL) || isNaN(hipR) || isNaN(shL) || isNaN(shR)) {
-                alert("请将所有的角度数据填写完整后再生成报告！");
-                return;
-            }
-
-            if(!clientNameInput.value.trim()) {
-                manualModal.classList.add('hidden');
-                clientNameInput.focus();
-                clientNameInput.classList.add('ring-2', 'ring-rose-400');
-                setTimeout(() => clientNameInput.classList.remove('ring-2', 'ring-rose-400'), 1500);
-                speak("请先输入客户姓名");
-                return; 
+                alert("⚠️ 请将所有的 6 个角度数据都填写完整后再生成报告！");
+                return; // 直接 return，保留用户的输入，不关闭弹窗
             }
 
             testRecords.slr.L = slrL;
@@ -729,7 +741,12 @@
             saveStateLocally();
             manualModal.classList.add('hidden');
             
-            // 数据完备后，直接生成最终报告
+            // 修复逻辑 4：如果是开着相机时点开的手动输入，一定要停掉相机进程
+            stopLiveTracking();
+            document.getElementById('canvas-container').classList.add('hidden');
+            document.getElementById('drag-instruction').classList.add('hidden');
+            document.getElementById('result-board').classList.add('hidden');
+            
             generateFinalReport();
         });
 
@@ -1159,7 +1176,7 @@
         });
 
         document.getElementById('btn-restart-app').addEventListener('click', () => {
-            sessionStorage.removeItem('pelvicScanState_v103'); 
+            sessionStorage.removeItem('pelvicScanState_v107'); 
 
             document.getElementById('final-report-section').classList.add('hidden');
             document.getElementById('tracker-panel').classList.remove('hidden');
@@ -1170,7 +1187,10 @@
             document.getElementById('display-angle').innerText = '0.0°';
             document.getElementById('threshold-feedback').innerText = '';
             
+            // 清理可能残留在弹窗里的数据
             ['slr', 'hip', 'shoulder'].forEach(t => {
+                document.getElementById(`manual-${t}-l`).value = '';
+                document.getElementById(`manual-${t}-r`).value = '';
                 const trBox = document.getElementById(`tracker-${t}`);
                 const fText = document.getElementById(`score-${t}-final`);
                 
@@ -1362,7 +1382,6 @@
             
             aestheticAnalysis.innerHTML += fakeHipHtml;
             
-            // 修复 Bug：先解除隐藏状态再执行其他操作，防止因元素不可见导致读取不到数据
             document.getElementById('final-report-section').classList.remove('hidden');
 
             saveToCloud({
