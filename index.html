@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AeroMove Pro v1.6.0 - 专业级体态评估系统</title>
+    <title>AeroMove Pro v1.9.0 - 专业级体态评估系统</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 TensorFlow.js 和 MoveNet 高精度姿态识别模型 -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@3.21.0/dist/tf-core.min.js"></script>
@@ -94,7 +94,7 @@
                 <div class="flex justify-center items-center gap-2 mb-1">
                     <h1 class="text-[28px] font-bold tracking-tight text-[#1d1d1f]">AeroMove</h1>
                     <span class="bg-[#1d1d1f] text-white text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">Pro</span>
-                    <span class="bg-[#0071e3]/10 text-[#0071e3] border border-[#0071e3]/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm ml-1">v1.6.0</span>
+                    <span class="bg-[#0071e3]/10 text-[#0071e3] border border-[#0071e3]/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm ml-1">v1.9.0</span>
                 </div>
                 <h2 class="text-[12px] font-medium text-[#86868b] tracking-widest mt-2">Designed by 宋教头</h2>
                 <div class="text-[10px] text-gray-400 mt-1.5 flex items-center justify-center gap-1">
@@ -305,6 +305,19 @@
                         <div id="aesthetic-analysis" class="flex flex-col gap-3.5 text-[13px] text-[#515154] leading-relaxed">
                         </div>
                     </div>
+                    
+                    <!-- v1.7.0 新增：专属力学重构训练方案 -->
+                    <div class="w-full bg-[#f0fdf4] p-6 rounded-[24px] border border-emerald-100/60 apple-shadow landscape:sm:col-span-2 mt-1">
+                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-emerald-200/50">
+                            <div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                            </div>
+                            <span class="text-[15px] font-black text-[#059669] tracking-wide">专属力学重构训练方案</span>
+                        </div>
+                        <div id="training-plan-analysis" class="flex flex-col gap-4 text-[13px] text-[#3f6212] leading-relaxed">
+                        </div>
+                    </div>
+
                 </div>
 
                 <div id="watermark-footer" class="w-full mt-4 pt-6 border-t border-gray-200 flex justify-between items-center">
@@ -312,7 +325,7 @@
                         <span class="text-[10px] text-[#86868b] font-medium" id="report-time-stamp">生成时间：--</span>
                         <span class="text-[10px] text-gray-400 mt-0.5" id="report-client-name"></span>
                     </div>
-                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">AeroMove Pro v1.6.0</span>
+                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">AeroMove Pro v1.9.0</span>
                 </div>
 
                 <div class="flex flex-col gap-3 mt-6 z-10 w-full">
@@ -865,6 +878,14 @@
                             <div class="bg-[#fdf2f2] border border-rose-100/60 p-4 rounded-2xl mb-2 shadow-sm">
                                 <div class="text-[14px] font-bold text-[#e11d48] mb-3 pb-2 border-b border-rose-200/50 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>外观代偿与腿型重构分析</div>
                                 <div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3.5">${item.reportAesthetic}</div>
+                            </div>
+                        `;
+                    }
+                    if (item.reportTraining) {
+                        html += `
+                            <div class="bg-[#f0fdf4] border border-emerald-100/60 p-4 rounded-2xl mb-2 shadow-sm mt-3">
+                                <div class="text-[14px] font-black text-[#059669] mb-3 pb-2 border-b border-emerald-200/50 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg></div>专属力学重构训练方案</div>
+                                <div class="text-[13px] text-[#3f6212] leading-relaxed flex flex-col gap-3.5">${item.reportTraining}</div>
                             </div>
                         `;
                     }
@@ -1454,109 +1475,123 @@
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                         try { await navigator.share({ files: [file], title: '保存系统评估报告' }); } catch (err) {}
                     } else {
-                        const link = document.createElement('a'); link.download = filename; link.href = URL.createObjectURL(blob); link.click();
-                    }
-                }, 'image/jpeg', 0.95);
-            } catch (err) { showDialog({ title: '生成失败', message: '生成报告图片失败，请稍后重试。' }); } 
-            finally { 
-                downloadBtn.style.display = 'flex'; 
-                restartBtn.style.display = 'block'; 
-            }
-        });
-
-        document.getElementById('btn-restart-app').addEventListener('click', () => {
-            sessionStorage.removeItem('aeroMoveState_v160'); 
-
-            document.getElementById('final-report-section').classList.add('hidden');
-            document.getElementById('tracker-panel').classList.remove('hidden');
-            document.getElementById('interaction-area').classList.remove('hidden');
-            
-            testRecords = { slr: { L: null, R: null, final: null }, hip: { L: null, R: null, final: null }, shoulder: { L: null, R: null, final: null } };
-            clientNameInput.value = '';
-            document.getElementById('display-angle').innerText = '0.0°';
-            document.getElementById('threshold-feedback').innerText = '';
-            
-            // 清理可能残留在弹窗里的数据
-            ['slr', 'hip', 'shoulder'].forEach(t => {
-                document.getElementById(`manual-${t}-l`).value = '';
-                document.getElementById(`manual-${t}-r`).value = '';
-                const trBox = document.getElementById(`tracker-${t}`);
-                const fText = document.getElementById(`score-${t}-final`);
-                
-                document.getElementById(`score-${t}-L`).innerText = '--';
-                document.getElementById(`score-${t}-R`).innerText = '--';
-                
-                if (trBox.classList.contains('bg-[#f5f5f7]')) {
-                    trBox.classList.replace('bg-[#f5f5f7]', 'bg-white'); 
-                    trBox.classList.remove('border-gray-200');
-                    trBox.querySelector('span:first-child').classList.replace('text-[#1d1d1f]', 'text-[#86868b]');
-                    fText.classList.replace('text-[#0071e3]', 'text-gray-300'); 
-                }
-                fText.innerText = `待测试`;
-            });
-
-            document.querySelector(`input[name="testType"][value="slr"]`).checked = true;
-            document.querySelector(`input[name="testSide"][value="L"]`).checked = true;
-            updateSaveButtonText();
-            resetCanvasForNewUpload();
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // --- 核心引擎：临床级体态与外观溯源分析 ---
+        // --- 核心引擎：专业级体态与外观溯源分析 (v1.9.0 升级：3D动态视觉与紧张文案) ---
         function generateFinalReport() {
             document.getElementById('tracker-panel').classList.add('hidden');
             document.getElementById('interaction-area').classList.add('hidden');
             document.getElementById('btn-restart-app').classList.remove('hidden');
-            
+
             const slrL = testRecords.slr.L, slrR = testRecords.slr.R;
             const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
             const shL = testRecords.shoulder.L, shR = testRecords.shoulder.R;
-            
+
+            // 1. 判断外层代偿：压缩类型 -> 紧张类型 (根据整体角度限制)
+            // 后侧紧张倾向: 直腿抬高<50°，髋屈曲>100°，肩屈曲<100°
+            // 前侧紧张倾向: 直腿抬高>50°，髋屈曲<100°，肩屈曲>100°
             let posteriorScore = 0;
-            if (testRecords.slr.final <= 50) posteriorScore++; 
-            if (testRecords.hip.final >= 100) posteriorScore++; 
-            if (testRecords.shoulder.final <= 100) posteriorScore++;
-            
+            if (Math.min(slrL, slrR) <= 50) posteriorScore++;
+            if (Math.min(hipL, hipR) >= 100) posteriorScore++;
+            if (Math.min(shL, shR) <= 100) posteriorScore++;
+
             const isPosterior = posteriorScore >= 2;
-            const tensionStatus = isPosterior ? "后侧死锁压缩 (Posterior Comp.)" : "前侧重度拉断 (Anterior Comp.)";
-            
-            // 用通俗语言解释张力状态
-            const tensionExplanation = isPosterior 
-                ? "【数据解析】：您的直腿抬高 (SLR) 小于50°或存在严重肩屈受限。这在力学上说明，您的身体为了防止重心过度前移而摔倒，下臀部和深层外旋肌群必须像紧急刹车一样处于『向心死锁』状态，导致骨盆后侧气缸空间被彻底压扁。"
-                : "【数据解析】：您的直腿抬高 (SLR) 角度极大，这说明骨盆像倒水的碗一样发生了极度前倾。身体前侧被死死挤压，而坐骨结节被向上、向后翻转，导致下臀大肌和腘绳肌处于『极度离心拉长』的松弛无力状态，像被拉断的橡皮筋，气压全漏在了前侧。";
+            const tensionStatus = isPosterior ? "后侧紧张" : "前侧紧张";
 
-            const diffHip = hipL - hipR; 
-            const diffSLR = slrL - slrR; 
-            const diffSh = shL - shR;    
-
+            // 2. 判断底层代偿：旋转类型 (根据左右角度差异)
+            const diffHip = hipL - hipR;
+            const diffSLR = slrL - slrR;
+            const diffSh = shL - shR;
             const threshold = 5;
-            let diagnosis = "Oblique"; 
 
-            if (diffHip > threshold && diffSLR < -threshold && diffSh < -threshold) { diagnosis = "LeftAIC"; }
-            else if (diffHip > threshold && diffSLR < -threshold && diffSh > threshold) { diagnosis = "Lateral"; }
-            else if (diffHip < -threshold && diffSLR > threshold && diffSh < -threshold) { diagnosis = "Oblique"; }
-            else if (Math.abs(diffHip) <= 8 && Math.abs(diffSLR) <= 8 && Math.abs(diffSh) <= 8) { diagnosis = "Anterior"; }
-            else {
-                let scoreLeftAIC = (diffHip > 0 ? 1 : 0) + (diffSLR < 0 ? 1 : 0) + (diffSh < 0 ? 1 : 0);
-                let scoreLateral = (diffHip > 0 ? 1 : 0) + (diffSLR < 0 ? 1 : 0) + (diffSh > 0 ? 1 : 0);
-                let scoreOblique = (diffHip < 0 ? 1 : 0) + (diffSLR > 0 ? 1 : 0) + (diffSh < 0 ? 1 : 0);
-                if (scoreLeftAIC >= 2 && scoreLeftAIC >= scoreLateral && scoreLeftAIC >= scoreOblique) diagnosis = "LeftAIC";
-                else if (scoreLateral >= 2 && scoreLateral >= scoreOblique) diagnosis = "Lateral";
-                else diagnosis = "Oblique";
+            let diagnosis = "";
+            let diagnosisName = "";
+            let comboDescription = "";
+            let trainingSequence = "";
+
+            if (diffHip < -threshold && diffSLR > threshold && diffSh < -threshold) {
+                diagnosis = "Oblique";
+                diagnosisName = "#2 倾斜方向，斜轴";
+                comboDescription = isPosterior
+                    ? "骨盆整体被后侧肌肉推向前方，且左侧极度靠前、靠上，形成对角线轴的卡死。"
+                    : "骨盆整体被前侧肌肉拉向前方，同时左侧极度靠前且偏高。";
+                trainingSequence = isPosterior ? "先练后侧紧张方案，再练斜轴方案" : "先练前侧紧张方案，再练斜轴方案";
+            } else if (diffHip > threshold && diffSLR < -threshold && Math.abs(diffSh) <= threshold) {
+                diagnosis = "Lateral";
+                diagnosisName = "#3 倾斜方向，横向";
+                comboDescription = isPosterior
+                    ? "骨盆整体被后侧肌肉推向前方，且骨盆从左下侧被向右上方横向推起。"
+                    : "骨盆整体被前侧肌肉拉向前方，同时底层承受着从左向右的横向推力。";
+                trainingSequence = isPosterior ? "先练后侧紧张方案，再练横向方案" : "先练前侧紧张方案，再练横向方案";
+            } else {
+                // 默认基线 Left AIC
+                diagnosis = "LeftAIC";
+                diagnosisName = "#1 基线 (Left AIC)";
+                comboDescription = isPosterior
+                    ? "骨盆整体被后侧肌肉推向前方，但在被推向前的同时，左侧骨盆比右侧更加靠前。"
+                    : "骨盆整体被前侧肌肉拉向前方，同时底层保留着左侧更靠前的基础不对称。";
+                trainingSequence = isPosterior ? "先练后侧紧张方案，再练基线方案" : "先练前侧紧张方案，再练基线方案";
             }
 
             const titleEl = document.getElementById('final-result-title');
             const orientationEl = document.getElementById('final-pelvic-orientation');
-            const spineAnalysis = document.getElementById('spine-analysis'); 
+            const spineAnalysis = document.getElementById('spine-analysis');
             const aestheticAnalysis = document.getElementById('aesthetic-analysis');
-            
-            let diagnosisName = "";
+            const trainingPlanAnalysis = document.getElementById('training-plan-analysis');
 
-            // 动态注入测试数据看板
+            titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">专业体态评估：组合 ${isPosterior ? '1/2/3' : '4/5/6'}</span>${tensionStatus} · ${diagnosisName}`;
+
+            // v1.9.0 核心新增：基于 CSS 3D Transforms 动态演算的 3D 骨盆素描透视图
+            let rotateX = isPosterior ? -10 : 30; // 后侧紧张（平移后倾）角度平缓，前侧紧张倾角大
+            let rotateY = 0;
+            let rotateZ = 0;
+            let translateZLeft = 0;
+            let translateZRight = 0;
+
+            if (diagnosis === "LeftAIC") {
+                rotateY = -25; // 整体骨盆向右朝向
+                translateZLeft = 25; // 左侧靠前 (放大)
+                translateZRight = -15; // 右侧靠后 (缩小)
+            } else if (diagnosis === "Lateral") {
+                rotateZ = -20; // 明显的高低胯侧倾
+                rotateY = -15;
+                translateZLeft = 15;
+            } else if (diagnosis === "Oblique") {
+                rotateY = -35; // 极度的对角线扭转
+                rotateZ = -25;
+                translateZLeft = 35;
+            }
+
+            const pelvic3DVisual = `
+                <div class="mt-4 mb-3 bg-[#1d1d1f] p-5 rounded-[16px] shadow-lg flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="absolute top-3 left-4 flex items-center gap-1.5 z-10">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-[10px] font-bold text-gray-300 tracking-widest uppercase">3D Pelvic Scanner</span>
+                    </div>
+                    
+                    <div class="w-[180px] h-[120px] flex items-center justify-center mt-3" style="perspective: 800px;">
+                        <div class="relative w-[100px] h-[60px] transition-transform duration-1000 ease-out" style="transform-style: preserve-3d; transform: rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg);">
+                            <!-- 左侧髂骨 (蓝色线框) -->
+                            <div class="absolute left-[-15px] w-[50px] h-[70px] border-[3px] border-[#0071e3] rounded-[40%] opacity-90 shadow-[0_0_15px_rgba(0,113,227,0.4)]" style="transform: translateZ(${translateZLeft}px) rotateY(-20deg);"></div>
+                            <!-- 右侧髂骨 (红色线框) -->
+                            <div class="absolute right-[-15px] w-[50px] h-[70px] border-[3px] border-rose-500 rounded-[40%] opacity-90 shadow-[0_0_15px_rgba(225,29,72,0.4)]" style="transform: translateZ(${translateZRight}px) rotateY(20deg);"></div>
+                            <!-- 骶骨与腰椎底座 (中心) -->
+                            <div class="absolute left-[30px] top-[10px] w-[40px] h-[40px] border-[2px] border-gray-400 border-dashed rounded-full opacity-60" style="transform: translateZ(0px);"></div>
+                            <!-- X/Y 轴辅助线 -->
+                            <div class="absolute left-[50px] top-[-30px] w-[1px] h-[120px] bg-white/20"></div>
+                            <div class="absolute top-[30px] left-[-30px] w-[160px] h-[1px] bg-white/20"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4 z-10 w-full flex flex-col items-center">
+                        <p class="text-[11px] text-gray-300 font-medium mb-1">系统生成的骨盆空间形变三维图</p>
+                        <div class="text-[10px] text-gray-500 max-w-[80%]"></div>
+                    </div>
+                </div>
+            `;
+
+            // 动态注入测试数据对比看板
             const dataSummary = `
                 <div class="bg-blue-50/40 border border-blue-100/60 p-4 rounded-xl mb-4">
-                    <span class="text-[12px] font-bold text-[#0071e3] block mb-2 flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 您的专属测试数据提取：</span>
+                    <span class="text-[12px] font-bold text-[#0071e3] block mb-2 flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 测试数据左右侧精细对比：</span>
                     <div class="grid grid-cols-3 gap-2 text-[11px] text-[#1d1d1f] font-mono font-semibold text-center">
                         <div class="bg-white px-2 py-2 rounded-lg shadow-sm border border-gray-50 flex flex-col">
                             <span class="text-[9px] text-[#86868b] font-normal mb-0.5">直腿抬高 SLR</span>
@@ -1574,169 +1609,54 @@
                 </div>
             `;
 
-            // 动态注入预警声明
-            const aestheticCaveat = `
-                <div class="mb-4 p-3.5 bg-[#fdf2f2] rounded-xl border border-rose-100">
-                    <p class="text-[11.5px] text-[#e11d48] leading-relaxed"><b class="font-black tracking-wide">⚠️ 临床声明：</b> 并非每位处于此力学模式的会员都会立刻表现出明显的“假胯宽”或“臀凹陷”（这取决于个人的代偿习惯和基因分布）。但如果您正受此困扰，以下是引发该视觉形变的必然物理根源：</p>
+            orientationEl.innerHTML = dataSummary + pelvic3DVisual + `
+                <div class="mb-3 text-[12px] bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <b class="text-[#1d1d1f] block mb-1">🔍 综合代偿模型解析：</b>
+                    <p class="text-[#515154] mb-2"><b class="text-[#0071e3]">外层代偿 (紧张类型)：</b>由于您的整体角度限制特征，系统判定您处于<b>${tensionStatus}</b>模式。${isPosterior ? '身体重心为防前移而诱发后侧肌群紧急刹车，形成向心死锁。' : '骨盆整体呈前倾状态，导致前侧挤压过后，后侧肌群处于极度离心拉长的无力状态。'}</p>
+                    <p class="text-[#515154]"><b class="text-[#0071e3]">底层代偿 (旋转类型)：</b>结合左右侧角度的不对称差异，系统提取出您的旋转类型为<b>${diagnosisName}</b>。</p>
                 </div>
             `;
 
-            if (diagnosis === "LeftAIC") {
-                diagnosisName = "骨盆基线偏位 (Left AIC)";
-                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统评估：${tensionStatus}</span>${diagnosisName}`; 
-                
-                orientationEl.innerHTML = dataSummary + `
-                    <p class="mb-3 text-[12px] bg-gray-50 p-2.5 rounded-lg text-[#1d1d1f] border border-gray-100">${tensionExplanation}</p>
-                    <p><b class="text-[#1d1d1f]">⚙️ 为什么是 Left AIC？</b> 从数据看，您的左侧主动髋屈（${hipL.toFixed(1)}°）明显大于右侧（${hipR.toFixed(1)}°）。这在生物力学上意味着您的骨盆整体呈 <b>左前右后</b>。左侧骨盆处于外翻、前倾的开放状态，右侧骨盆被死死卡在内旋、后倾的承重闭合状态。</p>
-                    <p><b class="text-[#1d1d1f]">⚖️ 步态与体态特征：</b> 站立时习惯性“稍息”，全身大部分体重像推土机一样全压在右腿上。躯干为了看正前方，胸椎被迫产生代偿性向左扭转。</p>
-                `;
-
-                spineAnalysis.innerHTML = `
-                    <p><b class="text-highlight">⚡ 为什么会单侧腰痛？</b> 骨盆底部向右扭转，迫使腰椎向左逆向扭回。这导致 <b>右侧腰方肌和竖脊肌</b> 长期处于“向心缩短”的抽筋状态。您极易感到右后腰酸痛、僵硬，尤其在久站后。</p>
-                    <p><b class="text-highlight">💥 腰间盘突出的力学根源：</b> 这种底层旋转使得 L4-L5 和 L5-S1 节段的右侧关节突长期受压，而左后侧纤维环被持续拉扯。如果负重深蹲或搬重物，<b>椎间盘向左后方突出（压迫左侧坐骨神经）的风险极高</b>。</p>
-                `;
-                
-                aestheticAnalysis.innerHTML = aestheticCaveat + `
-                    <p><b class="text-danger">👖 单侧假胯宽的真相：</b> 右腿作为常年“承重柱”，大腿骨为了在歪斜的骨盆下站稳，被大脑强制进入<b>深度内旋（Deep IR）锁死位</b>。大转子被硬生生向外顶出，导致<b>右侧假胯宽极其明显</b>。</p>
-                    <p><b class="text-danger">🍑 左臀严重凹陷：</b> 右臀常年紧绷，而左侧骨盆前翻导致左侧臀大肌和臀中肌前束被过度拉长。肌肉像拉断的橡皮筋一样“失忆断电”，导致<b>左侧臀部出现严重的扁平与肌肉干瘪凹坑</b>。</p>
-                    <p><b class="text-danger">🦴 腿型预测 (单侧X型倾向)：</b> 为了代偿右侧骨盆的低位，较长的左腿在走路时往往膝盖微屈并伴随“膝内扣”，呈现<b>单侧 X 型腿</b>；而右侧小腿为了抓地，容易外翻粗壮。</p>
-                `;
-
-            } else if (diagnosis === "Lateral") {
-                diagnosisName = "横向倾斜代偿 (Lateral)";
-                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统评估：${tensionStatus}</span>${diagnosisName}`;  
-                
-                orientationEl.innerHTML = dataSummary + `
-                    <p class="mb-3 text-[12px] bg-gray-50 p-2.5 rounded-lg text-[#1d1d1f] border border-gray-100">${tensionExplanation}</p>
-                    <p><b class="text-[#1d1d1f]">⚙️ 为什么是 横向倾斜 (Lateral)？</b> 数据显示您的左右侧活动度出现了极端反差（如直腿抬高左侧极大，右侧极小）。这代表典型的 <b>严重高低胯</b>。您的左侧骨盆不仅旋转，更被从下方暴力推高，完全丧失了自然下沉缓冲的能力，整个底盘被卡在了一个横向扭曲的切面上。</p>
-                    <p><b class="text-[#1d1d1f]">⚖️ 步态与体态特征：</b> 重心不仅偏向一侧，而且在走路上楼梯时，骨盆无法交替下落缓冲，表现为走路“一深一浅”的轻微跛行感。</p>
-                `;
-
-                spineAnalysis.innerHTML = `
-                    <p><b class="text-highlight">⚡ 一侧腰部卡顿与剧痛：</b> 严重的高低胯直接导致脊柱被迫发生 C型或S型代偿侧弯。这使得 <b>一侧腰椎间隙被彻底挤压死锁</b>，弯腰或转身时极易出现突然被“卡住”的断裂感。</p>
-                    <p><b class="text-highlight">💥 横向腰椎滑脱与椎间盘危机：</b> 脊柱侧弯导致椎间盘受到极度不均匀的横向剪切力。这种力学环境下，极易引发<b>急性腰扭伤（闪到腰）</b>，以及椎间盘髓核的横向挤压膨出。</p>
-                `;
-
-                aestheticAnalysis.innerHTML = aestheticCaveat + `
-                    <p><b class="text-danger">👖 不对称的真假胯宽：</b> 骨盆整体的横向平移，直接导致单侧（通常是低位侧）大腿骨大转子异常凸出。穿紧身裤时，裤缝经常是歪的，呈现<b>左右极度不对称的假胯宽</b>。</p>
-                    <p><b class="text-danger">🍑 结构性侧臀凹陷：</b> 抬高侧的骨盆被长期向上拉提，导致该侧臀中肌/臀小肌处于一个物理上“完全无法发力”的死锁位置（被严重挤压）。无论怎么练臀桥，<b>侧面依然会有重度的结构性凹坑</b>。</p>
-                    <p><b class="text-danger">🦴 腿型预测 (代偿性长短腿/OX型)：</b> 为了平衡视觉上的假性长短腿，较长的腿膝盖会常年微屈以降低高度，而较短的腿为了够到地面，则会<b>极度向后超伸（膝盖反弓死锁）</b>，极易磨损单侧半月板。</p>
-                `;
-
-            } else if (diagnosis === "Oblique") {
-                diagnosisName = "斜轴深度扭转 (Oblique)";
-                titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统评估：${tensionStatus}</span>${diagnosisName}`; 
-                
-                orientationEl.innerHTML = dataSummary + `
-                    <p class="mb-3 text-[12px] bg-gray-50 p-2.5 rounded-lg text-[#1d1d1f] border border-gray-100">${tensionExplanation}</p>
-                    <p><b class="text-[#1d1d1f]">⚙️ 为什么是 斜轴扭转 (Oblique)？</b> 您的数据呈现复杂的交叉受限（如极端的左直腿与右髋屈差异）。这是最严重的力学灾难。左侧骨盆不仅被抬高，还被狠狠推向了物理极限的最前方。整个底盘处于<b>对角线式的极度“拧麻花”扭转状态</b>。</p>
-                    <p><b class="text-[#1d1d1f]">⚖️ 步态与体态特征：</b> 为了对抗下半身这种即将把人“绊倒”的极度扭曲，上半身胸背部产生剧烈代偿，导致严重含胸驼背，头部被迫极度前倾来维持平衡。</p>
-                `;
-
-                spineAnalysis.innerHTML = `
-                    <p><b class="text-highlight">⚡ 腰骶深层“撕裂”痛：</b> 骨盆与脊柱连接处的骶髂关节（SI Joint）承受了毁灭性的交叉剪切力。这种力线会引发<b>后腰最下方骨缝处的深层钝痛或刺痛</b>，久坐起身后感觉腰部像要断掉一样无法直立。</p>
-                    <p><b class="text-highlight">💥 复杂型腰间盘突出绝对元凶：</b> 骨盆在三维空间斜向扭转，使得腰椎底部如同被“拧毛巾”般反复挤压。这是导致<b>腰椎间盘纤维环破裂、髓核突出压迫坐骨神经（引起单侧腿麻/痛）</b>的最核心力学根源。</p>
-                `;
-
-                aestheticAnalysis.innerHTML = aestheticCaveat + `
-                    <p><b class="text-danger">👖 极重度单侧假胯宽：</b> 左侧骨盆极度靠前，左腿骨为了让脚尖能勉强朝前走路，被迫发生“极度深层内旋代偿”。大转子被硬生生向外顶到最大化，形成<b>极重度的单侧假胯宽</b>。</p>
-                    <p><b class="text-danger">🍑 臀大肌物理断电 (双侧塌陷)：</b> 深层对角线旋转导致双侧臀部力学彻底崩盘。臀大肌被强行拉拽到撕裂边缘，失去收缩能力，出现<b>极不对称的重度扁平与下垂</b>。</p>
-                    <p><b class="text-danger">🦴 腿型预测 (重度单侧X型+扁平足)：</b> 极度的股骨内旋直接碾压了膝关节内侧韧带，表现为<b>明显的单侧 X 型腿（膝内扣）</b>，同时该侧足弓会被重力彻底压垮塌陷（功能性扁平足，鞋底内侧严重磨损）。</p>
-                `;
-
-            } else {
-                // v1.6.0 Bug 修复：区分双侧对称情况下的“前倾压缩”与“后侧死锁”
-                if (isPosterior) {
-                    diagnosisName = "双侧后侧死锁 (Bilateral Posterior)";
-                    titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统评估：${tensionStatus}</span>${diagnosisName}`; 
-                    
-                    orientationEl.innerHTML = dataSummary + `
-                        <p class="mb-3 text-[12px] bg-gray-50 p-2.5 rounded-lg text-[#1d1d1f] border border-gray-100">${tensionExplanation}</p>
-                        <p><b class="text-[#1d1d1f]">⚙️ 为什么是 双侧后侧死锁 (Bilateral Posterior)？</b> 数据显示您的左右两侧基本对称，但整体存在严重的后侧死锁。骨盆像被平移推向了前方 (Swayback)，腰椎曲度往往变平或消失，后下侧骨盆空间被彻底压扁。</p>
-                        <p><b class="text-[#1d1d1f]">⚖️ 步态与体态特征：</b> 站立时骨盆严重前移，为了防止身体前倾摔倒，下臀部和深层外旋肌群像紧急刹车一样常年紧绷。重心偏向脚后跟，表现为平背和臀部干瘪。</p>
-                    `;
-
-                    spineAnalysis.innerHTML = `
-                        <p><b class="text-highlight">⚡ 下腰部僵硬与骶髂关节压迫：</b> 骨盆整体前移导致腰椎下段和骶髂关节承受了极大的垂直压迫力。由于缺乏缓冲空间，久站或走路时间过长后，腰骶部会出现酸痛和极度的僵硬感。</p>
-                        <p><b class="text-highlight">💥 椎间盘压力异常：</b> 这种姿态使得椎间盘后侧受力极大，容易引发腰椎间盘的退行性病变和慢性的钝痛感。</p>
-                    `;
-
-                    aestheticAnalysis.innerHTML = aestheticCaveat + `
-                        <p><b class="text-danger">👖 双侧假胯宽：</b> 骨盆整体向外翻开（外旋偏好），但脚又要朝前走，所以股骨在髋臼里产生“相对内旋”假象，导致大转子被卡在外面，形成视觉上的双侧假胯宽。</p>
-                        <p><b class="text-danger">🍑 臀部严重干瘪下垂：</b> 骨盆的这种姿态让臀大肌失去正常的收缩发力空间，变成单纯的“刹车”肌肉，导致臀部肌肉缺乏饱满度，出现下垂和扁平。</p>
-                        <p><b class="text-danger">🦴 腿型预测 (膝盖超伸)：</b> 为了代偿骨盆的前移，双腿膝盖往往会极度向后锁死（膝盖超伸），小腿后侧肌肉被迫代偿发力，导致小腿肚子粗壮。</p>
-                    `;
-                } else {
-                    diagnosisName = "双侧前倾压缩 (Bilateral Anterior)";
-                    titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">系统评估：${tensionStatus}</span>${diagnosisName}`; 
-                    
-                    orientationEl.innerHTML = dataSummary + `
-                        <p class="mb-3 text-[12px] bg-gray-50 p-2.5 rounded-lg text-[#1d1d1f] border border-gray-100">${tensionExplanation}</p>
-                        <p><b class="text-[#1d1d1f]">⚙️ 为什么是 双侧前倾 (Bilateral APT)？</b> 数据显示您的左右两侧基本对称，但整体像一个往前倾倒的水盆，发生<b>重度双侧骨盆前倾</b>，骶骨向前点头卡死。</p>
-                        <p><b class="text-[#1d1d1f]">⚖️ 步态与体态特征：</b> 重心全部砸在前脚掌。小腹内脏重量前移，导致肚子容易不自觉地往前顶出（瘦人也会有小肚子）。上半身为拉回重心，形成典型驼背和头前倾。</p>
-                    `;
-
-                    spineAnalysis.innerHTML = `
-                        <p><b class="text-highlight">⚡ 整个后腰酸胀与僵死：</b> 骨盆前倾导致腰椎生理曲度被严重过度挤压折叠。<b>双侧竖脊肌</b>被死死卡在极度缩短的发力位置。站久了或平躺在硬床上时，腰部严重悬空，产生无法忍受的酸胀疲劳。</p>
-                        <p><b class="text-highlight">💥 腰椎滑脱与向后突出风险：</b> 腰椎后侧的椎间隙被严重压缩变窄，前侧被拉开。这种力学环境极易导致<b>腰椎向前滑脱 (Spondylolisthesis)、椎管狭窄，以及腰间盘向正后方突出</b>。</p>
-                    `;
-
-                    aestheticAnalysis.innerHTML = aestheticCaveat + `
-                        <p><b class="text-danger">👖 双侧假胯宽与大腿粗壮：</b> 重心前倾失衡，为了不往前扑倒，双侧大腿骨（股骨）产生极度代偿性的深层内旋（把脚“刹”在地上）。这会引发<b>极其明显的双侧假胯宽</b>，大腿前外侧显得粗壮无比。</p>
-                        <p><b class="text-danger">🍑 双侧臀肌彻底失忆 (扁平臀)：</b> 骨盆前倾使得双侧下臀大肌和腘绳肌长期处于离心拉长的松弛被动状态。神经学上严重抑制臀部发力，导致<b>臀部整体扁平、重度下垂（双侧大面积臀凹陷）</b>。练深蹲只会大腿酸，臀部无感。</p>
-                        <p><b class="text-danger">🦴 腿型预测 (膝盖反弓与O型腿)：</b> 典型的双侧膝关节超伸（骨头向后锁死成“反弓”形态）。这迫使小腿后侧肌肉长期代偿发力维持站立，导致<b>小腿肚子变得极其粗壮外翻，形成复合型 O 型腿</b>。</p>
-                    `;
-                }
-            }
-            
-            // [PRI假胯宽处方整合 - 动态判断原理]
-            let minSlr = testRecords.slr.final;
-            let slrDiff = Math.abs(slrL - slrR);
-
-            let fakeHipHtml = `
-                <div class="mt-6 bg-[#f5f5f7] p-5 rounded-2xl border border-gray-200 shadow-sm">
-                    <p class="text-[14px] font-bold text-[#1d1d1f] mb-3 flex items-center gap-1.5"><span class="bg-[#1d1d1f] text-white px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider">PRI & Hartman 模型</span> 假胯宽与臀凹陷的 3D 物理真相</p>
-                    <p class="text-[12px] text-[#515154] leading-relaxed mb-4 pb-4 border-b border-gray-200">
-                        我们现在把话彻底说透。“假胯宽”（大转子外突）根本不是一个病因，它只是一个<b>“视觉背锅侠”</b>。从3D上帝视角来看，大转子之所以会在侧面突兀地顶出来，底层物理真相只有一个：大腿骨（股骨）在骨盆的髋臼里，被迫进入了<b>“代偿性内旋（Compensatory FAIR）”</b>或者失去了活动的冗余空间，硬生生卡在关节囊边缘被挤出来了。<br><br>
-                        但把股骨逼上绝路的原因，截然不同！根据 Bill Hartman 模型和 PRI 气压理论，假胯宽可以被精准拆解为 3 种完全不同的底层力学灾难。如果你不先评估就瞎练，你一定是在给其中两种人服毒。根据您的数据，您的硬核分类为：
-                    </p>
+            spineAnalysis.innerHTML = `
+                <p><b class="text-highlight">⚡ 代偿性发力与僵硬受限：</b> 在当前的压缩与旋转叠加模式下，身体无法平均分配负荷。对角线和横向支撑肌群（如腰方肌、竖脊肌）由于长时间处于代偿发力位置，导致局部的酸痛、卡顿和僵硬感。</p>
+                <p><b class="text-highlight">💥 结构性压迫机制：</b> 失去自然呼吸气压平衡的胸腔与骨盆，将所有垂直和旋转剪切力压在局部腰椎间隙与骨盆关节上，限制了您流畅完成复合动作的能力。</p>
             `;
 
-            if (minSlr > 50 && slrDiff <= 10) {
-                fakeHipHtml += `
-                    <p class="text-[14px] font-bold text-[#e11d48] mb-3 flex items-center gap-1.5">🚨 第一类：前侧压缩型 (Anterior Compression / 骨盆重度前倾)</p>
-                    <p class="text-[12px] text-[#86868b] mb-3">原理：这是最常见的类型，也是数据中直腿抬高表现松弛的人群。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">🌀 3D 力学灾难：</b>骨盆像一个倒水的碗，发生极度前倾（骶骨重度点头 Nutation）。身体前侧（腹股沟、髋前侧关节囊）被死死挤压，气压全漏在了前侧。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">🍑 后侧发生了什么：</b>坐骨结节被向上、向后翻转。下臀大肌和腘绳肌处于<b>极度离心拉长（Eccentric）</b>的无力状态。就像被拉断的橡皮筋，根本托不住底盘。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">🦴 大转子为何外突：</b>因为骨盆严重前翻，股骨为了不让你往前倒，被迫在关节内发生了一个向内的扭矩（被动内旋）。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">📏 您的专属评估：</b>您的直腿抬高 (SLR) 为 ${minSlr.toFixed(1)}°（> 50度甚至更高），后侧像面条一样松。</p>
-                    <p class="mt-3 pt-3 border-t border-rose-100 text-[#1d1d1f] leading-relaxed"><b class="text-rose-600">💊 终极解药：</b>重建后侧锚点。必须先用腘绳肌把骨盆向后、向下拉（恢复轻微后倾），找回腹内斜肌（ZOA），然后再去练真实的股骨外旋（FAER）。</p>
-                `;
-            } else if (minSlr <= 50) {
-                fakeHipHtml += `
-                    <p class="text-[14px] font-bold text-[#e11d48] mb-3 flex items-center gap-1.5">🚨 第二类：后侧死锁压缩型 (Posterior Compression / 骨盆平移 Swayback)</p>
-                    <p class="text-[12px] text-[#86868b] mb-3">原理：通常出现在窄肋骨角（Narrow ISA）和严重扁平臀人群中。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">🌀 3D 力学灾难：</b>骨盆并没有真正前倾，而是整个底盘像被推土机平移推向了前方（Anterior Orientation）。腰椎曲度往往是消失的（平背）。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">🍑 后侧发生了什么：</b>为了防止身体继续往前平移摔倒，下臀部和深层外旋肌群必须像紧急刹车一样<b>向心死锁（Concentric Orientation）</b>。后下侧骨盆空间被彻底压扁，变成一堵石墙。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">🦴 大转子为何外突：</b>因为后侧死锁，骨盆其实是向外翻开的（外旋偏好）。但你的脚又要踩在地上朝前走，所以股骨硬生生在髋臼里产生了一个“相对内旋”的假象，大转子被卡在外面收不回来。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">📏 您的专属评估：</b>您的直腿抬高 (SLR) 极差，仅为 ${minSlr.toFixed(1)}°（≤ 50度），后侧死锁，像焊死了一样。</p>
-                    <p class="mt-3 pt-3 border-t border-rose-100 text-[#1d1d1f] leading-relaxed"><b class="text-rose-600">💊 终极解药：</b>撑开后侧气缸。<b>绝对不能练外旋（会夹得更死）</b>。必须把重心往后拉，让死锁的下臀部离心退让（Eccentric Yielding）。建议：脚跟垫高的深蹲，配合深吸气，把空气打入后背和下臀部。</p>
-                `;
-            } else {
-                fakeHipHtml += `
-                    <p class="text-[14px] font-bold text-[#e11d48] mb-3 flex items-center gap-1.5">🚨 第三类：真实内旋/内收主导型假胯宽 (True IR Dominance / X型腿)</p>
-                    <p class="text-[12px] text-[#86868b] mb-3">原理：这类人是真正在肌肉层面上发力向内夹的。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">🌀 3D 力学灾难：</b>这类人通常伴随严重的足弓塌陷（过度旋前 Pronation）和膝盖内扣（Knee Valgus）。他们的阔筋膜张肌（TFL）和内收肌常年处于向心收缩的高压状态。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">🍑 后侧发生了什么：</b>臀中肌后束和臀大肌彻底掉线，失去了把大腿骨拉回中立位的能力。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">🦴 大转子为何外突：</b>股骨被肌肉主动拉向了内旋（FAIR）和内收（Adduction），大转子在力学杠杆的远端被翘了出去。</p>
-                    <p class="mb-2"><b class="text-[#1d1d1f]">📏 您的专属评估：</b>您的左右侧直腿抬高存在极大代偿差异（当前最终取值 ${minSlr.toFixed(1)}°），走路时骨盆易疯狂左右横移（Trendelenburg gait），无法在单腿支撑时维持骨架稳定。</p>
-                    <p class="mt-3 pt-3 border-t border-rose-100 text-[#1d1d1f] leading-relaxed"><b class="text-rose-600">💊 终极解药：</b>重构额状面与横断面的肌肉刹车。这类人是真的需要练臀！但不是盲目做，而是要学习如何在脚踩实地面时，利用真实的骨盆相对股骨内旋（AFIR）来承重，然后再推向真实的股骨外旋（FAER）。</p>
-                `;
-            }
-            
-            fakeHipHtml += `</div>`;
-            
-            aestheticAnalysis.innerHTML += fakeHipHtml;
+            let fakeHipHtml = `
+                <div class="bg-[#f5f5f7] p-5 rounded-2xl border border-gray-200 shadow-sm">
+                    <p class="text-[14px] font-bold text-[#1d1d1f] mb-3 flex items-center gap-1.5"><span class="bg-[#1d1d1f] text-white px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider">核心底层逻辑</span> 假胯宽与大转子外突的 3D 物理真相</p>
+                    <p class="text-[12px] text-[#515154] leading-relaxed mb-4 pb-4 border-b border-gray-200">
+                        我们现在把话彻底说透。“假胯宽”（大转子外突）根本不是一个病因，它只是一个<b>“视觉背锅侠”</b>。从3D上帝视角来看，大转子之所以会在侧面突兀地顶出来，底层物理真相只有一个：大腿骨（股骨）在骨盆的髋臼里，被迫进入了<b>“代偿性内旋（Compensatory FAIR）”</b>或者失去了活动的冗余空间，硬生生卡在关节囊边缘被挤出来了。<br><br>
+                        但把股骨逼上绝路的原因，截然不同！根据 Bill Hartman 模型和 PRI 气压理论，假胯宽可以被精准拆解为外层压缩与底层旋转的不同组合。如果您不先评估就瞎练，一定是在给自己的身体服毒。根据您的数据，您的真实身体状态描绘如下：
+                    </p>
+
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-rose-50">
+                        <p class="font-black text-[#1d1d1f] text-[15px] mb-2 flex items-center gap-1.5"><span class="text-rose-500">🚨</span> 您的专属测评结论：</p>
+                        <p class="text-[13px] text-[#e11d48] font-bold mb-3">🌀 3D 核心灾难：${comboDescription}</p>
+                        <p class="text-[12px] text-[#515154] mb-3">在您的 <b class="text-[#1d1d1f]">${tensionStatus} + ${diagnosisName}</b> 组合模式下，关节与软组织被迫长期在极端的力学角度下承重，直接诱发了下肢外观改变与活动受限。</p>
+                        
+                        <div class="bg-rose-50/60 p-3 rounded-lg border border-rose-100">
+                            <p class="text-[12px] font-bold text-rose-600 mb-1">🔑 破局方案执行顺序：</p>
+                            <p class="text-[14px] font-black text-[#1d1d1f]">${trainingSequence}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            aestheticAnalysis.innerHTML = fakeHipHtml;
+
+            // [v1.8.0 预留对应方案块] - 准备接收针对 6 大组合的具体解决方案
+            let trainingHtml = `
+                <p class="font-bold mb-2">基于您的生物力学组合（${tensionStatus} + ${diagnosisName}），我们需要按照严格的先后顺序为您重构空间。请参考以下专属行动指南：</p>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-emerald-100 border-dashed text-center">
+                    <svg class="w-8 h-8 text-emerald-400 mx-auto mb-3 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                    <p class="text-[15px] font-black text-[#059669] mb-1">系统已锁定您的策略顺序：</p>
+                    <p class="text-[16px] font-bold text-[#1d1d1f] mt-1 mb-2">${trainingSequence}</p>
+                    <p class="text-[12px] text-[#86868b] mt-3">（教练：请在此输入针对此组合的具体训练动作与讲解）</p>
+                </div>
+            `;
+
+            trainingPlanAnalysis.innerHTML = trainingHtml;
             
             document.getElementById('final-report-section').classList.remove('hidden');
 
@@ -1745,15 +1665,15 @@
                 date: new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
                 slrL: slrL.toFixed(1), slrR: slrR.toFixed(1), hipL: hipL.toFixed(1), hipR: hipR.toFixed(1), shL: shL.toFixed(1), shR: shR.toFixed(1),
                 result: `${tensionStatus} · ${diagnosisName}`,
-                // v1.5.0 核心升级：存入生成的富文本细节以便在历史记录中调取回溯
                 reportPelvic: orientationEl.innerHTML,
                 reportSpine: spineAnalysis.innerHTML,
-                reportAesthetic: aestheticAnalysis.innerHTML
+                reportAesthetic: aestheticAnalysis.innerHTML,
+                reportTraining: trainingPlanAnalysis.innerHTML
             });
 
             setTimeout(() => document.getElementById('final-report-section').scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
             
-            speak("报告已生成，包含极度精准的外观形变溯源，您可以点击底部按钮保存长图。");
+            speak("评估完成。假胯宽只是视觉背锅侠，您的专属代偿组合与训练先后顺序已生成，请在最底部查看方案。");
         }
 
     </script>
