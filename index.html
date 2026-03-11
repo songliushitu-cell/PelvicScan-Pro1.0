@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AeroMove Pro v1.9.0 - 专业级体态评估系统</title>
+    <title>AeroMove Pro v2.2.2 - 专业级体态评估系统</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 TensorFlow.js 和 MoveNet 高精度姿态识别模型 -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@3.21.0/dist/tf-core.min.js"></script>
@@ -11,6 +11,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@3.21.0/dist/tf-backend-webgl.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.0.0/dist/pose-detection.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- 引入 Chart.js 数据可视化引擎 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* 苹果级极简设计系统 (Apple UI Aesthetic) */
         :root {
@@ -27,14 +29,12 @@
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
         }
-        /* 高级卡片阴影 */
         .apple-shadow {
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 12px rgba(0, 0, 0, 0.02);
         }
         .apple-inner-shadow {
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
         }
-        /* 苹果毛玻璃质感 */
         .apple-glass {
             background: rgba(255, 255, 255, 0.65);
             backdrop-filter: saturate(180%) blur(20px);
@@ -55,7 +55,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 自定义单选框精美样式 */
         input[type="radio"]:checked + div {
             background-color: var(--apple-blue);
             color: white;
@@ -63,20 +62,25 @@
             box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
             font-weight: 600;
         }
-        
-        /* 文本高亮强化 */
         .text-highlight { color: #1d1d1f; font-weight: 700; }
         .text-danger { color: #e11d48; font-weight: 700; }
+        
+        /* 围度测量动画扫描线 */
+        @keyframes scanline {
+            0%, 100% { opacity: 0.4; transform: scaleX(0.85); }
+            50% { opacity: 1; transform: scaleX(1.15); }
+        }
+        .animate-scan {
+            animation: scanline 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
     </style>
 </head>
 <body class="flex flex-col items-center min-h-screen p-4 pb-28 landscape:sm:p-6 landscape:sm:pb-12 selection:bg-blue-200">
 
-    <!-- 主容器 -->
     <div class="w-full max-w-[480px] landscape:sm:max-w-[860px] bg-white rounded-[32px] apple-shadow overflow-hidden flex flex-col my-auto pb-8" id="app-container">
         
         <!-- 极简科技感头部 -->
         <div class="px-8 pt-10 pb-6 text-center relative overflow-hidden" id="report-header">
-            <!-- 极简光晕 -->
             <div class="absolute -top-20 -right-20 w-64 h-64 bg-[#0071e3] opacity-[0.05] rounded-full blur-3xl pointer-events-none"></div>
             
             <button type="button" id="voice-toggle" class="absolute top-5 left-5 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-[#f5f5f7] text-[#86868b] hover:text-[#1d1d1f] hover:bg-gray-200 transition-colors" title="开启/关闭语音助手">
@@ -84,7 +88,6 @@
                 <svg id="icon-voice-on" class="w-4 h-4 hidden text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.898a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
             </button>
 
-            <!-- 云端档案按钮 -->
             <button type="button" id="btn-show-history" class="absolute top-5 right-5 z-20 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-[#f5f5f7] text-[#86868b] hover:text-[#0071e3] hover:bg-blue-50 transition-colors" title="云端历史档案">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
                 <span class="text-[10px] font-bold">云档案</span>
@@ -94,7 +97,7 @@
                 <div class="flex justify-center items-center gap-2 mb-1">
                     <h1 class="text-[28px] font-bold tracking-tight text-[#1d1d1f]">AeroMove</h1>
                     <span class="bg-[#1d1d1f] text-white text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">Pro</span>
-                    <span class="bg-[#0071e3]/10 text-[#0071e3] border border-[#0071e3]/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm ml-1">v1.9.0</span>
+                    <span class="bg-[#0071e3]/10 text-[#0071e3] border border-[#0071e3]/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm ml-1">v2.2.2</span>
                 </div>
                 <h2 class="text-[12px] font-medium text-[#86868b] tracking-widest mt-2">Designed by 宋教头</h2>
                 <div class="text-[10px] text-gray-400 mt-1.5 flex items-center justify-center gap-1">
@@ -119,7 +122,6 @@
 
         <div id="main-content" class="px-6 flex flex-col gap-7 hidden">
             
-            <!-- 苹果风进度面板 -->
             <div class="bg-[#f5f5f7] p-2 rounded-[20px] flex justify-between gap-2 apple-inner-shadow w-full" id="tracker-panel">
                 <div id="tracker-slr" class="flex-1 flex flex-col items-center justify-center py-3 bg-white rounded-2xl shadow-sm transition-all border border-transparent">
                     <span class="text-[11px] font-semibold text-[#86868b] mb-1">直腿抬高</span>
@@ -146,7 +148,6 @@
 
             <div id="interaction-area" class="flex flex-col landscape:sm:flex-row gap-7 w-full landscape:sm:items-center">
                 
-                <!-- 左列/上部分：控制操作区 -->
                 <div class="flex flex-col gap-6 landscape:sm:flex-[1]">
                     
                     <div class="flex flex-col gap-2">
@@ -183,11 +184,12 @@
                     </div>
 
                     <div class="flex flex-col gap-3">
-                        <label class="block text-[14px] font-bold text-[#1d1d1f]">2. 录入体态姿势</label>
+                        <label class="block text-[14px] font-bold text-[#1d1d1f]">2. 录入数据与追踪</label>
                         <button type="button" id="btn-start-camera" class="w-full py-4 bg-[#1d1d1f] hover:bg-black text-white rounded-2xl font-semibold text-[15px] shadow-lg transition-transform active:scale-[0.98] flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                            进入动态捕捉
+                            进入动态角度捕捉
                         </button>
+                        
                         <div class="flex gap-3">
                             <label class="flex-1 cursor-pointer bg-[#f5f5f7] hover:bg-gray-200 text-[#1d1d1f] text-center py-3.5 rounded-2xl text-[13px] font-medium transition-colors flex items-center justify-center gap-1.5 border border-gray-200/60 shadow-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg> 拍照
@@ -198,14 +200,20 @@
                                 <input type="file" accept="image/*" id="albumInput" class="hidden">
                             </label>
                         </div>
-                        <button type="button" id="btn-open-manual" class="w-full py-3 bg-white border border-gray-200 hover:bg-gray-50 text-[#86868b] hover:text-[#1d1d1f] rounded-2xl text-[13px] font-medium transition-colors flex items-center justify-center gap-1.5 shadow-sm mt-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            备选项：手动输入全部测试角度
-                        </button>
+
+                        <div class="grid grid-cols-2 gap-3 mt-1">
+                            <button type="button" id="btn-open-circumference" class="w-full py-3 bg-[#f0fdf4] border border-emerald-200 text-[#059669] hover:bg-[#dcfce7] rounded-2xl text-[13px] font-bold transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2-2m2 2l-2 2m-2-2l-2-2m2 2l-2 2m4-8a3 3 0 01-3 3H5a3 3 0 01-3-3V5a3 3 0 013-3h6a3 3 0 013 3v6z"></path></svg>
+                                身体围度录入
+                            </button>
+                            <button type="button" id="btn-open-manual" class="w-full py-3 bg-white border border-gray-200 hover:bg-gray-50 text-[#86868b] hover:text-[#1d1d1f] rounded-2xl text-[13px] font-medium transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                手动输入角度
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 右列/下部分：画布与结果区 -->
                 <div class="flex flex-col gap-6 landscape:sm:flex-[1.2] w-full min-w-0">
                     <div class="relative w-full bg-[#1d1d1f] rounded-[24px] overflow-hidden shadow-inner flex items-center justify-center min-h-[240px] landscape:sm:min-h-[320px] hidden" id="canvas-container">
                         <canvas id="imageCanvas" class="w-full h-auto max-h-[60vh] landscape:sm:max-h-[70vh] object-contain cursor-crosshair"></canvas>
@@ -262,7 +270,7 @@
                 </div>
             </div>
 
-            <!-- 终极核心：临床级外观与体态深度诊断报告 -->
+            <!-- 终极核心：报告展示区 -->
             <div id="final-report-section" class="hidden fade-in flex flex-col gap-6 pt-2 pb-4">
                 
                 <div class="text-center mt-4 mb-2 relative z-10 w-full">
@@ -273,6 +281,18 @@
                 </div>
 
                 <div class="grid grid-cols-1 landscape:sm:grid-cols-2 gap-5 w-full items-start relative z-10">
+                    
+                    <div id="report-circumference-card" class="hidden w-full bg-[#f0fdf4]/50 border border-emerald-100/60 p-5 rounded-[24px] apple-shadow landscape:sm:col-span-2">
+                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-emerald-100">
+                            <div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2-2m2 2l-2 2m-2-2l-2-2m2 2l-2 2m4-8a3 3 0 01-3 3H5a3 3 0 01-3-3V5a3 3 0 013-3h6a3 3 0 013 3v6z"></path></svg>
+                            </div>
+                            <span class="text-[14px] font-bold text-[#059669]">身体围度与形态基准数据</span>
+                        </div>
+                        <div id="report-circumference-content" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[13px] font-medium text-[#1d1d1f]">
+                        </div>
+                    </div>
+
                     <div class="w-full apple-glass p-5 rounded-[24px] shadow-sm border border-[#0071e3]/10 h-full">
                         <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200/50">
                             <div class="w-6 h-6 rounded-full bg-[#0071e3]/10 flex items-center justify-center">
@@ -306,7 +326,6 @@
                         </div>
                     </div>
                     
-                    <!-- v1.7.0 新增：专属力学重构训练方案 -->
                     <div class="w-full bg-[#f0fdf4] p-6 rounded-[24px] border border-emerald-100/60 apple-shadow landscape:sm:col-span-2 mt-1">
                         <div class="flex items-center gap-2 mb-4 pb-3 border-b border-emerald-200/50">
                             <div class="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center">
@@ -325,13 +344,13 @@
                         <span class="text-[10px] text-[#86868b] font-medium" id="report-time-stamp">生成时间：--</span>
                         <span class="text-[10px] text-gray-400 mt-0.5" id="report-client-name"></span>
                     </div>
-                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">AeroMove Pro v1.9.0</span>
+                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">AeroMove Pro v2.2.2</span>
                 </div>
 
                 <div class="flex flex-col gap-3 mt-6 z-10 w-full">
                     <button type="button" id="btn-download-report" class="w-full py-4 bg-[#1d1d1f] hover:bg-black text-white rounded-full font-bold shadow-lg transition-transform active:scale-[0.98] flex items-center justify-center gap-2 text-[14px]">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        保存专业级体态报告图 (相册)
+                        保存专业级评估报告 (相册)
                     </button>
                     <button type="button" id="btn-restart-app" class="w-full py-4 bg-transparent text-[#86868b] hover:text-[#1d1d1f] hover:bg-gray-100 rounded-full font-medium transition-colors text-[14px]">
                         返回主页并清空当前进度
@@ -342,13 +361,23 @@
         </div>
     </div>
 
-    <!-- 历史档案 Modal (优化交互布局与多选删除) -->
+    <!-- 提示弹窗 Modal (补充的核心 HTML) -->
+    <div id="dialog-modal" class="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 fade-in">
+        <div class="bg-white w-full max-w-[320px] rounded-[24px] shadow-2xl flex flex-col items-center overflow-hidden p-6 pt-8">
+            <div id="dialog-icon-container"></div>
+            <h3 id="dialog-title" class="text-[17px] font-bold text-[#1d1d1f] mb-2 text-center"></h3>
+            <p id="dialog-message" class="text-[13px] text-[#515154] mb-6 leading-relaxed text-center w-full whitespace-pre-line"></p>
+            <div id="dialog-buttons" class="flex w-full gap-3"></div>
+        </div>
+    </div>
+
+    <!-- 历史档案 Modal -->
     <div id="history-modal" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm hidden flex items-end sm:items-center justify-center fade-in">
         <div class="bg-white w-full sm:w-[450px] h-[85vh] sm:h-[650px] rounded-t-[32px] sm:rounded-[32px] shadow-2xl flex flex-col overflow-hidden transform transition-transform">
             <div class="px-6 py-5 bg-[#f5f5f7] border-b border-gray-200 flex justify-between items-center">
                 <h2 class="text-[16px] font-bold text-[#1d1d1f] flex items-center gap-2">
                     <svg class="w-5 h-5 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
-                    AeroMove 全局客户档案
+                    AeroMove 客户档案库
                 </h2>
                 <button type="button" id="btn-close-history" class="text-[#86868b] hover:text-[#1d1d1f] p-1 bg-white rounded-full shadow-sm border border-gray-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
@@ -362,19 +391,23 @@
             
             <div id="history-list" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar bg-gray-50/50"></div>
             
-            <!-- 底部操作栏 -->
-            <div class="p-4 bg-white border-t border-gray-100 flex justify-between gap-3">
-                <button type="button" id="btn-delete-selected" class="flex-[1.5] py-3 text-[13px] font-bold text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-colors shadow-sm hidden">
-                    删除选中 (0)
+            <div class="p-4 bg-white border-t border-gray-100 flex flex-col gap-2">
+                <button type="button" id="btn-compare-selected" class="w-full py-3.5 text-[14px] font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl transition-all shadow-md hidden animate-[pulse_2s_ease-in-out_infinite]">
+                    📈 生成选定档案的【全景对比报告】
                 </button>
-                <button type="button" id="btn-clear-history" class="flex-1 py-3 text-[13px] font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
-                    清空所有记录
-                </button>
+                <div class="flex gap-2 w-full">
+                    <button type="button" id="btn-delete-selected" class="flex-[1.5] py-3 text-[13px] font-bold text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-colors shadow-sm hidden">
+                        删除选中 (0)
+                    </button>
+                    <button type="button" id="btn-clear-history" class="flex-1 py-3 text-[13px] font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
+                        清空所有记录
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 历史报告详情弹窗 (v1.4.0 新增) -->
+    <!-- 历史报告详情弹窗 -->
     <div id="report-detail-modal" class="fixed inset-0 z-[110] bg-black/50 backdrop-blur-sm hidden flex items-center justify-center fade-in p-4">
         <div class="bg-white w-full max-w-[420px] rounded-[28px] shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
             <div class="px-6 py-5 bg-[#f5f5f7] border-b border-gray-200 flex justify-between items-center sticky top-0 z-10">
@@ -385,108 +418,172 @@
                 <button type="button" id="btn-close-report-detail" class="text-[#86868b] hover:text-[#1d1d1f] p-1 bg-white rounded-full shadow-sm border border-gray-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
             <div id="report-detail-content" class="flex-1 overflow-y-auto p-6 bg-white flex flex-col gap-4">
-                <!-- 内容由JS动态填充 -->
             </div>
         </div>
     </div>
 
-    <!-- 手动输入数据 Modal -->
-    <div id="manual-modal" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm hidden flex items-end sm:items-center justify-center fade-in">
+    <!-- 进步对比报告弹窗 -->
+    <div id="comparison-modal" class="fixed inset-0 z-[110] bg-black/60 backdrop-blur-md hidden flex items-center justify-center fade-in p-4">
+        <div class="bg-[#f5f5f7] w-full max-w-[480px] rounded-[32px] shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
+            <div class="px-6 py-5 bg-white border-b border-gray-200 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+                <h2 class="text-[17px] font-black text-[#1d1d1f] flex items-center gap-2">
+                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    全景数据追踪报告
+                </h2>
+                <button type="button" id="btn-close-comparison" class="text-[#86868b] hover:text-[#1d1d1f] p-1.5 bg-[#f5f5f7] rounded-full shadow-sm border border-gray-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div id="comparison-content" class="flex-1 overflow-y-auto p-6 bg-[#f5f5f7] flex flex-col gap-5">
+            </div>
+        </div>
+    </div>
+
+    <!-- 身体围度录入 Modal -->
+    <div id="circumference-modal" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm hidden flex items-end sm:items-center justify-center fade-in">
         <div class="bg-white w-full sm:w-[400px] rounded-t-[32px] sm:rounded-[32px] shadow-2xl flex flex-col overflow-hidden max-h-[90vh] transform transition-transform">
             <div class="px-6 py-5 bg-[#f5f5f7] border-b border-gray-200 flex justify-between items-center">
                 <h2 class="text-[16px] font-bold text-[#1d1d1f] flex items-center gap-2">
-                    <svg class="w-5 h-5 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                    手动录入测试数据
+                    <svg class="w-5 h-5 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2-2m2 2l-2 2m-2-2l-2-2m2 2l-2 2m4-8a3 3 0 01-3 3H5a3 3 0 01-3-3V5a3 3 0 013-3h6a3 3 0 013 3v6z"></path></svg>
+                    基础数据与身体围度
                 </h2>
-                <button type="button" id="btn-close-manual" class="text-[#86868b] hover:text-[#1d1d1f] p-1 bg-white rounded-full shadow-sm border border-gray-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                <button type="button" id="btn-close-circumference" class="text-[#86868b] hover:text-[#1d1d1f] p-1 bg-white rounded-full shadow-sm border border-gray-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            <div class="flex-1 overflow-y-auto p-6 space-y-5 bg-white">
-                <div>
-                    <label class="block text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center justify-between">
-                        <span>直腿抬高 (SLR)</span>
-                        <span class="text-[#86868b] font-normal text-[11px]">正常: 70°-90°</span>
+            <div class="flex-1 overflow-y-auto px-6 py-10 space-y-4 bg-white relative">
+                <div class="grid grid-cols-2 gap-x-3 gap-y-6">
+                    <div>
+                        <label class="block text-[12px] font-bold text-[#86868b] mb-1">体重 (kg)</label>
+                        <input type="number" id="circ-weight" class="w-full bg-[#f5f5f7] border border-gray-200 px-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="w-max flex items-center gap-1 text-[12px] font-bold text-[#86868b] mb-1 relative group cursor-help">
+                            <span>肩宽 (cm)</span>
+                            <svg class="w-3.5 h-3.5 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </label>
+                        <input type="number" id="circ-shoulder" class="w-full bg-[#f5f5f7] border border-gray-200 px-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="w-max flex items-center gap-1 text-[12px] font-bold text-[#86868b] mb-1 relative group cursor-help">
+                            <span>胸围 (cm)</span>
+                            <svg class="w-3.5 h-3.5 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </label>
+                        <input type="number" id="circ-chest" class="w-full bg-[#f5f5f7] border border-gray-200 px-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="w-max flex items-center gap-1 text-[12px] font-bold text-[#86868b] mb-1 relative group cursor-help">
+                            <span>腰围 (cm)</span>
+                            <svg class="w-3.5 h-3.5 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </label>
+                        <input type="number" id="circ-waist" class="w-full bg-[#f5f5f7] border border-gray-200 px-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
+                    
+                    <div>
+                        <label class="w-max flex items-center gap-1 text-[12px] font-bold text-[#86868b] mb-1 relative group cursor-help">
+                            <span>上臀围度 (cm)</span>
+                            <svg class="w-3.5 h-3.5 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </label>
+                        <input type="number" id="circ-hip-upper" class="w-full bg-[#f5f5f7] border border-gray-200 px-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="w-max flex items-center gap-1 text-[12px] font-bold text-[#86868b] mb-1 relative group cursor-help">
+                            <span>下臀围度 (cm)</span>
+                            <svg class="w-3.5 h-3.5 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </label>
+                        <input type="number" id="circ-hip-lower" class="w-full bg-[#f5f5f7] border border-gray-200 px-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                    </div>
+                </div>
+                <div class="border-t border-gray-100 pt-5 mt-2">
+                    <label class="w-max flex items-center gap-1 text-[13px] font-bold text-[#1d1d1f] mb-3 relative group cursor-help">
+                        <span>大腿围度 (cm)</span>
+                        <svg class="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </label>
                     <div class="flex gap-3">
-                        <div class="flex-1 relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">左</span>
-                            <input type="number" id="manual-slr-l" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
-                        </div>
-                        <div class="flex-1 relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">右</span>
-                            <input type="number" id="manual-slr-r" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
-                        </div>
+                        <div class="flex-1 relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]">左</span><input type="number" id="circ-thigh-l" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20"></div>
+                        <div class="flex-1 relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]">右</span><input type="number" id="circ-thigh-r" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20"></div>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center justify-between">
-                        <span>主动髋屈</span>
-                        <span class="text-[#86868b] font-normal text-[11px]">正常: ~110°</span>
+                    <label class="w-max flex items-center gap-1 text-[13px] font-bold text-[#1d1d1f] mb-3 relative group cursor-help">
+                        <span>小腿围度 (cm)</span>
+                        <svg class="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </label>
                     <div class="flex gap-3">
-                        <div class="flex-1 relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">左</span>
-                            <input type="number" id="manual-hip-l" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
-                        </div>
-                        <div class="flex-1 relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">右</span>
-                            <input type="number" id="manual-hip-r" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center justify-between">
-                        <span>主动肩屈</span>
-                        <span class="text-[#86868b] font-normal text-[11px]">正常: 160°-180°</span>
-                    </label>
-                    <div class="flex gap-3">
-                        <div class="flex-1 relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">左</span>
-                            <input type="number" id="manual-sh-l" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
-                        </div>
-                        <div class="flex-1 relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] font-bold">右</span>
-                            <input type="number" id="manual-sh-r" step="0.1" placeholder="度数" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-3 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20 focus:border-[#0071e3] transition-all">
-                        </div>
+                        <div class="flex-1 relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]">左</span><input type="number" id="circ-calf-l" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20"></div>
+                        <div class="flex-1 relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]">右</span><input type="number" id="circ-calf-r" class="w-full bg-[#f5f5f7] border border-gray-200 pl-8 pr-3 py-2.5 rounded-xl text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20"></div>
                     </div>
                 </div>
             </div>
             <div class="p-5 bg-white border-t border-gray-100">
-                <button type="button" id="btn-submit-manual" class="w-full py-4 text-[14px] font-bold text-white bg-[#1d1d1f] hover:bg-black rounded-2xl shadow-lg transition-transform active:scale-[0.98] flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    确认录入并生成报告
+                <button type="button" id="btn-save-circumference" class="w-full py-4 text-[14px] font-bold text-white bg-[#059669] hover:bg-[#047857] rounded-2xl shadow-lg transition-transform active:scale-[0.98] flex items-center justify-center gap-2">
+                    保存围度数据
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- 自定义提示/确认弹窗 Modal (v1.5.0 新增，解决沙盒环境拦截原生弹窗问题) -->
-    <div id="dialog-modal" class="fixed inset-0 z-[200] bg-black/40 backdrop-blur-sm hidden flex items-center justify-center fade-in p-4">
-        <div class="bg-white w-full max-w-[320px] rounded-[24px] shadow-2xl flex flex-col overflow-hidden transform transition-transform scale-100">
-            <div class="p-6 text-center">
-                <div id="dialog-icon-container" class="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center">
-                </div>
-                <h3 class="text-[17px] font-bold text-[#1d1d1f] mb-2" id="dialog-title">提示</h3>
-                <p class="text-[13px] text-[#86868b] leading-relaxed whitespace-pre-wrap" id="dialog-message">内容</p>
+    <!-- 手动输入弹窗 (代码原有的精简结构) -->
+    <div id="manual-modal" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4 fade-in">
+        <div class="bg-white w-full max-w-[320px] rounded-[24px] shadow-2xl flex flex-col overflow-hidden">
+            <div class="p-4 bg-[#f5f5f7] border-b border-gray-200 flex justify-between items-center">
+                <span class="font-bold text-[#1d1d1f]">手动输入角度</span>
+                <button id="btn-close-manual" class="text-gray-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            <div class="flex border-t border-gray-100 bg-gray-50/50" id="dialog-buttons">
+            <div class="p-4 space-y-3">
+                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">直腿 L</span><input type="number" id="manual-slr-l" class="border p-2 rounded w-full"></div>
+                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">直腿 R</span><input type="number" id="manual-slr-r" class="border p-2 rounded w-full"></div>
+                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">髋屈 L</span><input type="number" id="manual-hip-l" class="border p-2 rounded w-full"></div>
+                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">髋屈 R</span><input type="number" id="manual-hip-r" class="border p-2 rounded w-full"></div>
+                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">肩屈 L</span><input type="number" id="manual-sh-l" class="border p-2 rounded w-full"></div>
+                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">肩屈 R</span><input type="number" id="manual-sh-r" class="border p-2 rounded w-full"></div>
+                <button id="btn-submit-manual" class="w-full mt-2 bg-[#1d1d1f] text-white p-3 rounded-xl font-bold">提交数据生成报告</button>
             </div>
         </div>
     </div>
-
-    <img id="sourceImage" class="hidden">
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // === 缺失的核心变量补充 ===
+        const staticImageBuffer = document.createElement('canvas'); // 离屏Canvas，用于保存截帧图像
+
+        const btnCompareSelected = document.getElementById('btn-compare-selected');
+        const btnDeleteSelected = document.getElementById('btn-delete-selected');
+        const btnClearHistory = document.getElementById('btn-clear-history');
+        const btnShowHistory = document.getElementById('btn-show-history');
+        const btnCloseHistory = document.getElementById('btn-close-history');
+        const historyModal = document.getElementById('history-modal');
+        const searchHistoryInput = document.getElementById('search-history-input');
+        const historyList = document.getElementById('history-list');
+
+        const comparisonModal = document.getElementById('comparison-modal');
+        const btnCloseComparison = document.getElementById('btn-close-comparison');
+        const comparisonContent = document.getElementById('comparison-content');
+        
+        const btnOpenCircumference = document.getElementById('btn-open-circumference');
+        const btnCloseCircumference = document.getElementById('btn-close-circumference');
+        const btnSaveCircumference = document.getElementById('btn-save-circumference');
+        const circumferenceModal = document.getElementById('circumference-modal');
+
+        const btnOpenManual = document.getElementById('btn-open-manual');
+        const btnCloseManual = document.getElementById('btn-close-manual');
+        const btnSubmitManual = document.getElementById('btn-submit-manual');
+        const manualModal = document.getElementById('manual-modal');
+
+        const btnVoiceToggle = document.getElementById('voice-toggle');
+        const btnStartCamera = document.getElementById('btn-start-camera'); 
+        const btnLockFrame = document.getElementById('btn-lock-frame');
+        const btnReset = document.getElementById('reset-btn');
+        const btnSaveScore = document.getElementById('save-score-btn');
+        const btnRetake = document.getElementById('retake-btn');
+        const btnSaveText = document.getElementById('btn-save-text'); 
+        
+        const clientNameInput = document.getElementById('client-name');
+        const radioInputs = document.querySelectorAll('input[name="testType"]');
+        const sideInputs = document.querySelectorAll('input[name="testSide"]');
         const cameraInput = document.getElementById('photoInput'); 
         const albumInput = document.getElementById('albumInput');
-        const btnStartCamera = document.getElementById('btn-start-camera'); 
         const videoElement = document.getElementById('videoElement');
         const liveOverlay = document.getElementById('live-overlay');
-        const btnLockFrame = document.getElementById('btn-lock-frame');
-
         const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d');
         const canvasContainer = document.getElementById('canvas-container');
@@ -495,41 +592,18 @@
         const resultBoard = document.getElementById('result-board');
         const displayAngle = document.getElementById('display-angle');
         const thresholdFeedback = document.getElementById('threshold-feedback');
-        const radioInputs = document.querySelectorAll('input[name="testType"]');
-        const sideInputs = document.querySelectorAll('input[name="testSide"]');
-        const btnReset = document.getElementById('reset-btn');
-        const btnSaveScore = document.getElementById('save-score-btn');
-        const btnSaveText = document.getElementById('btn-save-text'); 
-        const btnRetake = document.getElementById('retake-btn');
         const currentBoardTitle = document.getElementById('current-board-title');
-
-        const btnVoiceToggle = document.getElementById('voice-toggle');
-        const btnShowHistory = document.getElementById('btn-show-history');
-        const btnCloseHistory = document.getElementById('btn-close-history');
-        const historyModal = document.getElementById('history-modal');
-        const searchHistoryInput = document.getElementById('search-history-input');
-        const historyList = document.getElementById('history-list');
-        const btnClearHistory = document.getElementById('btn-clear-history');
-        const btnDownloadReport = document.getElementById('btn-download-report');
-        const btnRestartApp = document.getElementById('btn-restart-app');
-        const clientNameInput = document.getElementById('client-name');
         
         const cloudSyncIndicator = document.getElementById('cloud-sync-indicator');
         const cloudStatusText = document.getElementById('cloud-status-text');
 
-        // 手动输入相关 DOM
-        const btnOpenManual = document.getElementById('btn-open-manual');
-        const btnCloseManual = document.getElementById('btn-close-manual');
-        const manualModal = document.getElementById('manual-modal');
-        const btnSubmitManual = document.getElementById('btn-submit-manual');
-
-        // 新增功能 DOM
-        const btnDeleteSelected = document.getElementById('btn-delete-selected');
         const reportDetailModal = document.getElementById('report-detail-modal');
         const btnCloseReportDetail = document.getElementById('btn-close-report-detail');
         const reportDetailContent = document.getElementById('report-detail-content');
 
         let testRecords = { slr: { L: null, R: null, final: null }, hip: { L: null, R: null, final: null }, shoulder: { L: null, R: null, final: null } };
+        let circumferenceData = { weight: '', shoulder: '', chest: '', waist: '', hipUpper: '', hipLower: '', thighL: '', thighR: '', calfL: '', calfR: '' };
+        
         let detector;
         let activePoints = []; 
         let originalAiPoints = []; 
@@ -550,13 +624,72 @@
         let db, auth, currentUser = null;
         let historyData = [];
         let unsubscribeHistory = null;
+        let appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        let angleChartInstance = null;
+        let circChartInstance = null;
 
-        // 全局自定义弹窗控制器
+        // ==========================================
+        // 缺失的核心业务函数补充
+        // ==========================================
+        
+        // 1. 更新保存按钮文案
+        function updateSaveButtonText() {
+            const tSideNode = document.querySelector('input[name="testSide"]:checked');
+            if (tSideNode) {
+                btnSaveText.innerText = tSideNode.value === 'L' ? '上传并准备右侧' : '上传并进入下一项';
+            }
+        }
+
+        // 2. 将视频帧保存到离屏Canvas
+        function saveFrameToBuffer() {
+            staticImageBuffer.width = canvas.width;
+            staticImageBuffer.height = canvas.height;
+            staticImageBuffer.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        }
+
+        // 3. 更新拖拽提示图例
+        function updateLegend(type) {
+            const legend = document.getElementById('point-legend');
+            if(type === 'slr' || type === 'hip') {
+                legend.innerHTML = `
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> <span class="text-gray-600">水平基准起端 (床面)</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> <span class="text-gray-600">股骨大转子 (测角顶点)</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> <span class="text-gray-600">${type === 'slr' ? '外踝' : '膝盖外侧'}</span></div>`;
+            } else {
+                legend.innerHTML = `
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> <span class="text-gray-600">股骨大转子</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> <span class="text-gray-600">肩峰 (测角顶点)</span></div>
+                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> <span class="text-gray-600">肱骨外上髁 (手肘外侧)</span></div>`;
+            }
+        }
+
+        // 4. 保存数据到云端 (适配平台环境规范)
+        async function saveToCloud(data) {
+            if (!currentUser || !db) return;
+            try {
+                // 使用环境强制要求的 users/{userId}/collectionName 结构
+                const collectionRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'aero_assessments');
+                const docRef = doc(collectionRef);
+                await setDoc(docRef, {
+                    ...data,
+                    clientName: clientNameInput.value.trim() || '未命名',
+                    timestamp: Date.now(),
+                    userId: currentUser.uid,
+                    circumference: Object.values(circumferenceData).some(v => v !== '') ? circumferenceData : null
+                });
+            } catch (e) {
+                console.error("云端存档失败", e);
+            }
+        }
+
+        // ==========================================
+
+        // Custom Dialog System
         function showDialog({ title, message, type = 'alert', onConfirm = null }) {
             const modal = document.getElementById('dialog-modal');
             document.getElementById('dialog-title').innerText = title;
             document.getElementById('dialog-message').innerText = message;
-            
             const iconContainer = document.getElementById('dialog-icon-container');
             const buttonsContainer = document.getElementById('dialog-buttons');
             
@@ -564,8 +697,8 @@
                 iconContainer.className = 'w-12 h-12 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center mx-auto mb-4';
                 iconContainer.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>';
                 buttonsContainer.innerHTML = `
-                    <button type="button" id="btn-dialog-cancel" class="flex-1 py-3.5 text-[15px] font-medium text-[#86868b] hover:bg-gray-100 transition-colors border-r border-gray-100">取消</button>
-                    <button type="button" id="btn-dialog-ok" class="flex-1 py-3.5 text-[15px] font-bold text-rose-500 hover:bg-rose-100 transition-colors">确定</button>
+                    <button type="button" id="btn-dialog-cancel" class="flex-1 py-3.5 text-[15px] font-medium text-[#86868b] bg-[#f5f5f7] rounded-xl hover:bg-gray-200 transition-colors">取消</button>
+                    <button type="button" id="btn-dialog-ok" class="flex-1 py-3.5 text-[15px] font-bold text-white bg-rose-500 rounded-xl hover:bg-rose-600 transition-colors">确定</button>
                 `;
                 document.getElementById('btn-dialog-cancel').onclick = () => modal.classList.add('hidden');
                 document.getElementById('btn-dialog-ok').onclick = async () => {
@@ -578,30 +711,92 @@
                 iconContainer.className = 'w-12 h-12 rounded-full bg-blue-50 text-[#0071e3] flex items-center justify-center mx-auto mb-4';
                 iconContainer.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
                 buttonsContainer.innerHTML = `
-                    <button type="button" id="btn-dialog-ok" class="flex-1 py-3.5 text-[15px] font-bold text-[#0071e3] hover:bg-blue-50 transition-colors">知道了</button>
+                    <button type="button" id="btn-dialog-ok" class="w-full py-3.5 text-[15px] font-bold text-white bg-[#0071e3] rounded-xl hover:bg-[#0077ed] transition-colors">知道了</button>
                 `;
                 document.getElementById('btn-dialog-ok').onclick = () => modal.classList.add('hidden');
             }
             modal.classList.remove('hidden');
         }
 
-        // --- 防浏览器缓存重刷新的状态保持系统 (Session Storage 更新为 v160) ---
+        // Firebase Initialization (已适配预览环境的规范)
+        const initFirebase = async () => {
+            try {
+                // 使用环境注入的配置
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+                    // Fallback to the user's provided config if run outside
+                    apiKey: "AIzaSyDzWPkCw2eMs7rHKcBQfA3bkxThOkWUbLU",
+                    authDomain: "aeromove-pro.firebaseapp.com",
+                    projectId: "aeromove-pro",
+                    storageBucket: "aeromove-pro.firebasestorage.app",
+                    messagingSenderId: "297680347174",
+                    appId: "1:297680347174:web:65ecbb37bdf794485006e7"
+                };
+
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // 根据规范，强制调用一次 Auth 初始化
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                };
+                await initAuth();
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUser = user;
+                        cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-emerald-400";
+                        cloudStatusText.innerText = "全局数据库已连接";
+
+                        if (unsubscribeHistory) unsubscribeHistory();
+
+                        // 使用强制规定的私有数据路径
+                        const globalHistoryRef = collection(db, 'artifacts', appId, 'users', user.uid, 'aero_assessments');
+                        unsubscribeHistory = onSnapshot(globalHistoryRef, (snapshot) => {
+                            historyData = [];
+                            snapshot.forEach(doc => { historyData.push({ id: doc.id, ...doc.data() }); });
+                            historyData.sort((a, b) => b.timestamp - a.timestamp);
+                            renderHistory(searchHistoryInput.value.trim().toLowerCase());
+                            updateHistoryActionButtons(); 
+                        }, (error) => {
+                            cloudStatusText.innerText = "数据读取被拒或失败";
+                            cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-amber-500";
+                            console.error(error);
+                        });
+                    } else {
+                        cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-rose-400";
+                        cloudStatusText.innerText = "云端连接失败 (离线)";
+                    }
+                });
+            } catch (e) {
+                cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-rose-400";
+                cloudStatusText.innerText = "云端连接失败 (离线)";
+            }
+        };
+
+        initFirebase();
+
+        // Save State
         function saveStateLocally() {
             const state = {
-                testRecords,
-                clientName: clientNameInput.value.trim(),
+                testRecords, circumferenceData, clientName: clientNameInput.value.trim(),
                 testType: document.querySelector('input[name="testType"]:checked')?.value || 'slr',
                 testSide: document.querySelector('input[name="testSide"]:checked')?.value || 'L'
             };
-            sessionStorage.setItem('aeroMoveState_v160', JSON.stringify(state));
+            sessionStorage.setItem('aeroMoveState_v221', JSON.stringify(state));
         }
 
         function restoreStateLocally() {
-            const saved = sessionStorage.getItem('aeroMoveState_v160');
+            const saved = sessionStorage.getItem('aeroMoveState_v221');
             if (saved) {
                 try {
                     const state = JSON.parse(saved);
                     if (state.testRecords) testRecords = state.testRecords;
+                    if (state.circumferenceData) circumferenceData = state.circumferenceData;
                     if (state.clientName) clientNameInput.value = state.clientName;
                     if (state.testType) {
                         const tNode = document.querySelector(`input[name="testType"][value="${state.testType}"]`);
@@ -617,89 +812,14 @@
             }
         }
 
-        const initFirebase = async () => {
-            try {
-                const firebaseConfig = {
-                  apiKey: "AIzaSyDzWPkCw2eMs7rHKcBQfA3bkxThOkWUbLU",
-                  authDomain: "aeromove-pro.firebaseapp.com",
-                  projectId: "aeromove-pro",
-                  storageBucket: "aeromove-pro.firebasestorage.app",
-                  messagingSenderId: "297680347174",
-                  appId: "1:297680347174:web:65ecbb37bdf794485006e7"
-                };
-
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        currentUser = user;
-                        cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-emerald-400";
-                        cloudStatusText.innerText = "全局数据库已连接";
-
-                        if (unsubscribeHistory) unsubscribeHistory();
-
-                        const globalHistoryRef = collection(db, 'aero_assessments');
-                        
-                        unsubscribeHistory = onSnapshot(globalHistoryRef, (snapshot) => {
-                            historyData = [];
-                            snapshot.forEach(doc => {
-                                historyData.push({ id: doc.id, ...doc.data() });
-                            });
-                            historyData.sort((a, b) => b.timestamp - a.timestamp);
-                            renderHistory(searchHistoryInput.value.trim().toLowerCase());
-                            updateDeleteSelectedBtn(); // 更新批量删除按钮状态
-                        }, (error) => {
-                            console.warn("全局数据库读取失败，请检查 Firestore Rules:", error.message);
-                            cloudStatusText.innerText = "数据读取被拒，请修改Rules";
-                            cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-amber-500";
-                        });
-                    } else {
-                        let lastError;
-                        for (let i = 0; i < 5; i++) {
-                            try {
-                                await signInAnonymously(auth);
-                                return; 
-                            } catch (error) {
-                                lastError = error;
-                                await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
-                            }
-                        }
-                        cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-rose-400";
-                        cloudStatusText.innerText = "云端连接失败 (离线)";
-                    }
-                });
-            } catch (e) {
-                cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-rose-400";
-                cloudStatusText.innerText = "云端连接失败 (离线)";
-            }
-        };
-
-        initFirebase();
-
-        async function saveToCloud(record) {
-            if (!currentUser || !db) return;
-            const docId = Date.now().toString() + Math.floor(Math.random()*1000);
-            const docRef = doc(db, 'aero_assessments', docId);
-            try {
-                await setDoc(docRef, {
-                    ...record,
-                    clientName: clientNameInput.value.trim() || '未命名客户',
-                    timestamp: Date.now()
-                });
-            } catch(e) { console.warn("Save to cloud failed gracefully", e.message); }
-        }
-
-        // --- 搜索功能与列表渲染 ---
+        // History Management
         searchHistoryInput.addEventListener('input', (e) => {
             renderHistory(e.target.value.trim().toLowerCase());
-            updateDeleteSelectedBtn();
+            updateHistoryActionButtons();
         });
 
         function renderHistory(filterText = '') {
             historyList.innerHTML = '';
-            
             const filteredData = historyData.filter(item => {
                 if (!filterText) return true;
                 const name = item.clientName ? item.clientName.toLowerCase() : '未命名客户';
@@ -717,68 +837,46 @@
                 card.dataset.id = item.id;
                 
                 const strip = `<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#0071e3] rounded-l-2xl"></div>`;
-                
-                // 多选复选框
-                const checkboxHTML = `
-                    <div class="flex-shrink-0 pl-1 z-10 relative">
-                        <input type="checkbox" class="history-checkbox w-[18px] h-[18px] text-[#0071e3] rounded-md border-gray-300 focus:ring-[#0071e3]/50 cursor-pointer transition-all" data-id="${item.id}">
-                    </div>
-                `;
-
+                const checkboxHTML = `<div class="flex-shrink-0 pl-1 z-10 relative"><input type="checkbox" class="history-checkbox w-[18px] h-[18px] text-[#0071e3] rounded-md border-gray-300 focus:ring-[#0071e3]/50 cursor-pointer transition-all" data-id="${item.id}"></div>`;
                 const nameTag = `<span class="text-[14px] font-black text-[#1d1d1f] flex items-center gap-1.5"><svg class="w-4 h-4 text-[#0071e3]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>${item.clientName || '未命名'}</span>`;
 
                 let contentHTML = `<div class="flex-1 min-w-0 pr-1">`;
                 if (item.type === 'single') {
                     contentHTML += `<div class="flex justify-between items-center mb-3"><div class="flex flex-col">${nameTag}<span class="text-[10px] font-semibold text-[#86868b] mt-0.5">${item.date}</span></div><span class="text-[9px] font-bold text-[#86868b] bg-[#f5f5f7] px-2 py-0.5 rounded-full shrink-0">单侧打卡</span></div><div class="flex justify-between items-center text-[13px]"><span class="font-bold text-[#1d1d1f] truncate">${item.name}</span><div class="flex items-center gap-2"><span class="font-mono font-bold text-[#0071e3] text-[16px]">${item.angle}°</span></div></div>`;
                 } else {
-                    contentHTML += `<div class="flex justify-between items-start mb-3"><div class="flex flex-col">${nameTag}<span class="text-[10px] font-semibold text-[#86868b] mt-0.5">${item.date}</span></div><span class="text-[9px] font-black text-white bg-[#0071e3] px-2 py-1 rounded-full shadow-sm shrink-0">综合诊断</span></div><div class="text-[13px] font-bold text-[#1d1d1f] mb-3 leading-relaxed bg-blue-50/50 p-2 rounded-lg border border-blue-100/50 line-clamp-2">${item.result}</div><div class="grid grid-cols-3 gap-1.5 text-center"><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">SLR直抬腿</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.slrL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.slrR}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动髋屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.hipL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.hipR}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动肩屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.shL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.shR}°</span></div></div>`;
+                    contentHTML += `<div class="flex justify-between items-start mb-3"><div class="flex flex-col">${nameTag}<span class="text-[10px] font-semibold text-[#86868b] mt-0.5">${item.date}</span></div><span class="text-[9px] font-black text-white bg-[#0071e3] px-2 py-1 rounded-full shadow-sm shrink-0">专业评估</span></div><div class="text-[13px] font-bold text-[#1d1d1f] mb-3 leading-relaxed bg-blue-50/50 p-2 rounded-lg border border-blue-100/50 line-clamp-2">${item.result}</div><div class="grid grid-cols-3 gap-1.5 text-center"><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">SLR直抬腿</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.slrL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.slrR}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动髋屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.hipL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.hipR}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动肩屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.shL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.shR}°</span></div></div>`;
                 }
                 contentHTML += `</div>`;
 
-                // 单个删除图标
-                const deleteBtnHTML = `
-                    <button type="button" class="delete-single-btn flex-shrink-0 p-2 text-gray-300 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors z-10 relative" title="删除记录">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
-                `;
-
+                const deleteBtnHTML = `<button type="button" class="delete-single-btn flex-shrink-0 p-2 text-gray-300 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors z-10 relative" title="删除记录"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
                 card.innerHTML = strip + checkboxHTML + contentHTML + deleteBtnHTML;
                 historyList.appendChild(card);
             });
         }
 
-        // --- 历史记录交互逻辑 (点击详情 / 删除选中 / 单条删除) ---
         historyList.addEventListener('click', async (e) => {
             const card = e.target.closest('.history-card');
             if (!card) return;
             const id = card.dataset.id;
 
-            // 1. 如果点击的是复选框
             if (e.target.closest('.history-checkbox') || e.target.classList.contains('history-checkbox')) {
-                // DOM的 checked 状态已自动改变，这里只需更新批量按钮
-                setTimeout(updateDeleteSelectedBtn, 10); 
+                setTimeout(updateHistoryActionButtons, 10); 
                 return; 
             }
 
-            // 2. 如果点击的是单条删除按钮
             if (e.target.closest('.delete-single-btn')) {
                 showDialog({
-                    title: '删除档案',
-                    message: '确定要删除这条客户档案吗？此操作不可逆。',
-                    type: 'confirm',
-                    onConfirm: async () => {
-                        try { await deleteDoc(doc(db, 'aero_assessments', id)); } catch(err) { console.warn(err); }
-                    }
+                    title: '删除档案', message: '确定要删除这条客户档案吗？此操作不可逆。', type: 'confirm',
+                    onConfirm: async () => { try { await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'aero_assessments', id)); } catch(err) { console.warn(err); } }
                 });
                 return;
             }
 
-            // 3. 点击卡片主体：弹出报告详情
             const itemData = historyData.find(d => d.id === id);
             if(itemData) showReportDetails(itemData);
         });
 
-        function updateDeleteSelectedBtn() {
+        function updateHistoryActionButtons() {
             const checkedBoxes = document.querySelectorAll('.history-checkbox:checked');
             if (checkedBoxes.length > 0) {
                 btnDeleteSelected.innerText = `删除选中 (${checkedBoxes.length})`;
@@ -788,184 +886,121 @@
                 btnDeleteSelected.classList.add('hidden');
                 btnDeleteSelected.classList.remove('flex');
             }
+            if (checkedBoxes.length >= 2) {
+                btnCompareSelected.classList.remove('hidden');
+                btnCompareSelected.innerText = `📈 生成选定档案的【全景追踪报告】(${checkedBoxes.length}次)`;
+            } else {
+                btnCompareSelected.classList.add('hidden');
+            }
         }
+
+        btnShowHistory.addEventListener('click', () => {
+            historyModal.classList.remove('hidden');
+            searchHistoryInput.value = ''; 
+            renderHistory();
+            updateHistoryActionButtons();
+            setTimeout(() => searchHistoryInput.focus(), 100);
+        });
+        
+        btnCloseHistory.addEventListener('click', () => {
+            historyModal.classList.add('hidden');
+            document.querySelectorAll('.history-checkbox').forEach(cb => cb.checked = false);
+            updateHistoryActionButtons();
+        });
 
         btnDeleteSelected.addEventListener('click', async () => {
             const checkedBoxes = document.querySelectorAll('.history-checkbox:checked');
             if (checkedBoxes.length === 0) return;
             
             showDialog({
-                title: '批量删除',
-                message: `警告：此操作不可逆！\n确定要删除选中的 ${checkedBoxes.length} 条客户档案吗？`,
-                type: 'confirm',
+                title: '批量删除', message: `警告：此操作不可逆！\n确定要删除选中的 ${checkedBoxes.length} 条客户档案吗？`, type: 'confirm',
                 onConfirm: async () => {
-                    btnDeleteSelected.innerText = "删除中...";
-                    btnDeleteSelected.disabled = true;
-                    try {
-                        for (const box of checkedBoxes) {
-                            await deleteDoc(doc(db, 'aero_assessments', box.dataset.id));
-                        }
-                    } catch(err) { console.warn("批量删除出错", err); }
-                    btnDeleteSelected.disabled = false;
-                    updateDeleteSelectedBtn();
+                    btnDeleteSelected.innerText = "删除中..."; btnDeleteSelected.disabled = true;
+                    try { for (const box of checkedBoxes) { await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'aero_assessments', box.dataset.id)); } } catch(err) {}
+                    btnDeleteSelected.disabled = false; updateHistoryActionButtons();
                 }
             });
         });
 
         btnClearHistory.addEventListener('click', async () => {
             if(historyData.length === 0) return;
-            
             showDialog({
-                title: '危险警告',
-                message: '此操作不可逆！\n您确定要清空全局数据库中【所有】的客户档案吗？',
-                type: 'confirm',
+                title: '危险警告', message: '此操作不可逆！\n您确定要清空全局数据库中【所有】的客户档案吗？', type: 'confirm',
                 onConfirm: async () => {
                     if (!currentUser || !db) return;
                     btnClearHistory.innerText = "清空中...";
-                    try {
-                        for (const item of historyData) {
-                            const docRef = doc(db, 'aero_assessments', item.id);
-                            await deleteDoc(docRef);
-                        }
-                    } catch(e) { console.warn("Cloud delete failed gracefully", e.message); }
+                    try { for (const item of historyData) { await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'aero_assessments', item.id)); } } catch(e) {}
                     btnClearHistory.innerText = "清空所有记录";
                 }
             });
         });
 
-        // --- 报告详情弹窗渲染逻辑 (v1.6.0 数据对比细化) ---
-        function showReportDetails(item) {
-            let html = `
-                <div class="mb-5 pb-5 border-b border-gray-100 flex flex-col gap-1.5">
-                    <div class="flex justify-between items-start">
-                        <span class="font-black text-[#1d1d1f] text-[18px] tracking-tight">${item.clientName || '未命名客户'}</span>
-                        <span class="inline-block ${item.type === 'full' ? 'bg-[#1d1d1f] text-white' : 'bg-gray-100 text-gray-500'} px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm">${item.type === 'full' ? '综合体态评估' : '单项测试'}</span>
-                    </div>
-                    <span class="text-[12px] text-[#86868b] font-medium flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 测试时间：${item.date}</span>
-                </div>
-            `;
-
-            if (item.type === 'full') {
-                html += `
-                    <p class="text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center gap-1.5"><svg class="w-4 h-4 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>客观提取数据：</p>
-                    <div class="grid grid-cols-3 gap-2 text-center mb-6">
-                        <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">直腿抬高 (SLR)</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.slrL}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.slrR}°</div></div>
-                        <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">主动髋屈</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.hipL}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.hipR}°</div></div>
-                        <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">主动肩屈</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.shL}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.shR}°</div></div>
-                    </div>
-                `;
-
-                // 优先展示最新版包含的所有富文本报告细节
-                if(item.reportPelvic || item.reportSpine || item.reportAesthetic) {
-                    if (item.reportPelvic) {
-                        html += `
-                            <div class="bg-white border border-[#0071e3]/20 p-4 rounded-2xl mb-4 shadow-sm">
-                                <div class="text-[14px] font-bold text-[#1d1d1f] mb-3 pb-2 border-b border-gray-100 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-[#0071e3]/10 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg></div>骨盆 3D 空间与张力定位</div>
-                                <div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3">${item.reportPelvic}</div>
-                            </div>
-                        `;
-                    }
-                    if (item.reportSpine) {
-                        html += `
-                            <div class="bg-white border border-amber-100 p-4 rounded-2xl mb-4 shadow-sm">
-                                <div class="text-[14px] font-bold text-[#1d1d1f] mb-3 pb-2 border-b border-gray-100 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>腰椎危机与病理性疼痛溯源</div>
-                                <div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3.5">${item.reportSpine}</div>
-                            </div>
-                        `;
-                    }
-                    if (item.reportAesthetic) {
-                        html += `
-                            <div class="bg-[#fdf2f2] border border-rose-100/60 p-4 rounded-2xl mb-2 shadow-sm">
-                                <div class="text-[14px] font-bold text-[#e11d48] mb-3 pb-2 border-b border-rose-200/50 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>外观代偿与腿型重构分析</div>
-                                <div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3.5">${item.reportAesthetic}</div>
-                            </div>
-                        `;
-                    }
-                    if (item.reportTraining) {
-                        html += `
-                            <div class="bg-[#f0fdf4] border border-emerald-100/60 p-4 rounded-2xl mb-2 shadow-sm mt-3">
-                                <div class="text-[14px] font-black text-[#059669] mb-3 pb-2 border-b border-emerald-200/50 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg></div>专属力学重构训练方案</div>
-                                <div class="text-[13px] text-[#3f6212] leading-relaxed flex flex-col gap-3.5">${item.reportTraining}</div>
-                            </div>
-                        `;
-                    }
-                } else {
-                    // 旧版本数据兼容降级显示，加入详细对比分析
-                    const slrDiff = (parseFloat(item.slrL) - parseFloat(item.slrR)).toFixed(1);
-                    const hipDiff = (parseFloat(item.hipL) - parseFloat(item.hipR)).toFixed(1);
-                    const shDiff = (parseFloat(item.shL) - parseFloat(item.shR)).toFixed(1);
-
-                    html += `
-                        <p class="text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center gap-1.5"><svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>系统形变溯源详细结论：</p>
-                        <div class="bg-[#fdf2f2] border border-rose-100 p-4 rounded-2xl text-[13.5px] text-[#1d1d1f] leading-loose font-medium shadow-inner flex flex-col gap-3">
-                            <p class="font-bold text-[#e11d48] border-b border-rose-200/50 pb-2">${item.result}</p>
-                            <div>
-                                <p class="font-semibold text-[#1d1d1f] text-[12px] mb-2">📐 测试数据左右侧对比分析：</p>
-                                <ul class="list-disc pl-5 space-y-2 text-[12px] text-[#515154]">
-                                    <li><b>直腿抬高 (骨盆后下侧)：</b> 左侧 ${item.slrL}° / 右侧 ${item.slrR}° 
-                                        <br><span class="text-[#86868b]">${Math.abs(slrDiff) > 5 ? `(相差 ${Math.abs(slrDiff)}°，说明存在明显的骨盆扭转或单侧后侧受限)` : '(左右基本对称)'}</span>
-                                    </li>
-                                    <li><b>主动髋屈 (骨盆后上侧)：</b> 左侧 ${item.hipL}° / 右侧 ${item.hipR}° 
-                                        <br><span class="text-[#86868b]">${Math.abs(hipDiff) > 5 ? `(相差 ${Math.abs(hipDiff)}°，指示骨盆的一侧可能更向前方倾倒)` : '(左右基本对称)'}</span>
-                                    </li>
-                                    <li><b>主动肩屈 (胸廓前侧)：</b> 左侧 ${item.shL}° / 右侧 ${item.shR}° 
-                                        <br><span class="text-[#86868b]">${Math.abs(shDiff) > 5 ? `(相差 ${Math.abs(shDiff)}°，表明胸廓伴随骨盆发生了代偿性扭转)` : '(左右基本对称)'}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <p class="text-[11px] text-[#86868b] bg-white p-2 rounded-lg mt-1 border border-gray-100">基于以上数据差值，系统判定您的身体张力分布失衡，并呈现 <b>${item.result.split('·')[1] || item.result}</b> 的代偿模式。</p>
-                        </div>
-                    `;
-                }
-
-            } else {
-                html += `
-                    <div class="flex flex-col gap-4 mt-2">
-                        <div class="flex justify-between items-center bg-[#f5f5f7] p-5 rounded-2xl border border-gray-100 shadow-sm">
-                            <span class="text-[15px] font-bold text-[#86868b] tracking-wide">${item.name}</span>
-                            <span class="text-[32px] font-mono font-black text-[#0071e3] tracking-tighter">${item.angle}°</span>
-                        </div>
-                    </div>
-                `;
-            }
-
-            reportDetailContent.innerHTML = html;
-            historyModal.classList.add('hidden'); // 隐藏主列表
-            reportDetailModal.classList.remove('hidden'); // 显示详情
-        }
-
+        // Event Listeners for report and modal closures
         btnCloseReportDetail.addEventListener('click', () => {
             reportDetailModal.classList.add('hidden');
-            historyModal.classList.remove('hidden'); // 退回到列表
+            historyModal.classList.remove('hidden'); 
         });
 
+        btnCompareSelected.addEventListener('click', () => {
+            const checkedBoxes = document.querySelectorAll('.history-checkbox:checked');
+            const selectedIds = Array.from(checkedBoxes).map(cb => cb.dataset.id);
+            const selectedRecords = historyData.filter(item => selectedIds.includes(item.id)).sort((a,b) => a.timestamp - b.timestamp);
 
-        const staticImageBuffer = document.createElement('canvas');
+            const clientNames = new Set(selectedRecords.map(item => item.clientName));
+            if (clientNames.size > 1) { showDialog({ title: '无法对比', message: '⚠️ 您勾选了不同客户的档案，只能追踪同一位客户的进步曲线！' }); return; }
+            
+            const types = new Set(selectedRecords.map(item => item.type));
+            if (types.has('single')) { showDialog({ title: '无法对比', message: '⚠️ 追踪报告需要全面的数据支持，请确保勾选的都是【专业级评估】报告。' }); return; }
 
-        function saveFrameToBuffer() {
-            staticImageBuffer.width = canvas.width;
-            staticImageBuffer.height = canvas.height;
-            staticImageBuffer.getContext('2d').drawImage(videoElement, 0, 0);
-            liveMaxPoints = activePoints.map(p => ({...p}));
-        }
+            generateComparisonReport(selectedRecords);
+        });
 
-        function updateSaveButtonText() {
-            const sideEl = document.querySelector('input[name="testSide"]:checked');
-            if(sideEl) {
-                btnSaveText.innerText = sideEl.value === 'L' ? '上传并准备右侧' : '上传并进入下一项';
+        btnCloseComparison.addEventListener('click', () => {
+            comparisonModal.classList.add('hidden');
+            historyModal.classList.remove('hidden');
+            if(angleChartInstance) angleChartInstance.destroy();
+            if(circChartInstance) circChartInstance.destroy();
+        });
+
+        btnOpenCircumference.addEventListener('click', () => {
+            if(!clientNameInput.value.trim()) {
+                clientNameInput.focus(); clientNameInput.classList.add('ring-2', 'ring-rose-400');
+                setTimeout(() => clientNameInput.classList.remove('ring-2', 'ring-rose-400'), 1500);
+                speak("请先在主界面输入客户姓名");
+                showDialog({ title: '操作提示', message: '请先在上方输入客户档案（姓名），再进行身体围度录入！' });
+                return; 
             }
-        }
+            document.getElementById('circ-weight').value = circumferenceData.weight;
+            document.getElementById('circ-shoulder').value = circumferenceData.shoulder;
+            document.getElementById('circ-chest').value = circumferenceData.chest;
+            document.getElementById('circ-waist').value = circumferenceData.waist;
+            document.getElementById('circ-hip-upper').value = circumferenceData.hipUpper || '';
+            document.getElementById('circ-hip-lower').value = circumferenceData.hipLower || '';
+            document.getElementById('circ-thigh-l').value = circumferenceData.thighL;
+            document.getElementById('circ-thigh-r').value = circumferenceData.thighR;
+            document.getElementById('circ-calf-l').value = circumferenceData.calfL;
+            document.getElementById('circ-calf-r').value = circumferenceData.calfR;
+            circumferenceModal.classList.remove('hidden');
+        });
 
-        function updateLegend(testType) {
-            const legend = document.getElementById('point-legend');
-            if (testType === 'slr') {
-                legend.innerHTML = `<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span> 🔴 床面抗倾斜基准</div><div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 🟡 臀部物理转轴</div><div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#0071e3]"></span> 🔵 抬起腿脚踝</div>`;
-            } else if (testType === 'hip') {
-                legend.innerHTML = `<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span> 🔴 床面抗倾斜基准</div><div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 🟡 臀部物理转轴</div><div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#0071e3]"></span> 🔵 抬起腿膝盖</div>`;
-            } else {
-                legend.innerHTML = `<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#ef4444]"></span> 🔴 躯干平躺基准线</div><div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> 🟡 肩背物理转轴</div><div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#0071e3]"></span> 🔵 举起手肘部</div>`;
-            }
-        }
+        btnCloseCircumference.addEventListener('click', () => { circumferenceModal.classList.add('hidden'); });
+
+        btnSaveCircumference.addEventListener('click', () => {
+            circumferenceData.weight = document.getElementById('circ-weight').value;
+            circumferenceData.shoulder = document.getElementById('circ-shoulder').value;
+            circumferenceData.chest = document.getElementById('circ-chest').value;
+            circumferenceData.waist = document.getElementById('circ-waist').value;
+            circumferenceData.hipUpper = document.getElementById('circ-hip-upper').value;
+            circumferenceData.hipLower = document.getElementById('circ-hip-lower').value;
+            circumferenceData.thighL = document.getElementById('circ-thigh-l').value;
+            circumferenceData.thighR = document.getElementById('circ-thigh-r').value;
+            circumferenceData.calfL = document.getElementById('circ-calf-l').value;
+            circumferenceData.calfR = document.getElementById('circ-calf-r').value;
+            
+            saveStateLocally();
+            circumferenceModal.classList.add('hidden');
+            showDialog({ title: '保存成功', message: '身体围度数据已记录，将在生成最终体态报告时一并展示和上传！' });
+        });
 
         btnVoiceToggle.addEventListener('click', () => {
             voiceEnabled = !voiceEnabled;
@@ -985,45 +1020,24 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        btnShowHistory.addEventListener('click', () => {
-            historyModal.classList.remove('hidden');
-            searchHistoryInput.value = ''; 
-            renderHistory();
-            updateDeleteSelectedBtn();
-            setTimeout(() => searchHistoryInput.focus(), 100);
-        });
-        
-        btnCloseHistory.addEventListener('click', () => {
-            historyModal.classList.add('hidden');
-            // 关闭时也清空一下选中的状态
-            document.querySelectorAll('.history-checkbox').forEach(cb => cb.checked = false);
-            updateDeleteSelectedBtn();
-        });
-
-        // 【手动输入相关的弹窗逻辑】
         btnOpenManual.addEventListener('click', () => {
             if(!clientNameInput.value.trim()) {
-                clientNameInput.focus();
-                clientNameInput.classList.add('ring-2', 'ring-rose-400');
+                clientNameInput.focus(); clientNameInput.classList.add('ring-2', 'ring-rose-400');
                 setTimeout(() => clientNameInput.classList.remove('ring-2', 'ring-rose-400'), 1500);
                 speak("请先在主界面输入客户姓名");
                 showDialog({ title: '操作提示', message: '请先在上方输入客户档案（姓名），再进行手动数据录入！' });
                 return; 
             }
-            
             if (testRecords.slr.L !== null) document.getElementById('manual-slr-l').value = testRecords.slr.L.toFixed(1);
             if (testRecords.slr.R !== null) document.getElementById('manual-slr-r').value = testRecords.slr.R.toFixed(1);
             if (testRecords.hip.L !== null) document.getElementById('manual-hip-l').value = testRecords.hip.L.toFixed(1);
             if (testRecords.hip.R !== null) document.getElementById('manual-hip-r').value = testRecords.hip.R.toFixed(1);
             if (testRecords.shoulder.L !== null) document.getElementById('manual-sh-l').value = testRecords.shoulder.L.toFixed(1);
             if (testRecords.shoulder.R !== null) document.getElementById('manual-sh-r').value = testRecords.shoulder.R.toFixed(1);
-
             manualModal.classList.remove('hidden');
         });
         
-        btnCloseManual.addEventListener('click', () => {
-            manualModal.classList.add('hidden');
-        });
+        btnCloseManual.addEventListener('click', () => { manualModal.classList.add('hidden'); });
 
         btnSubmitManual.addEventListener('click', () => {
             const slrL = parseFloat(document.getElementById('manual-slr-l').value);
@@ -1038,26 +1052,19 @@
                 return; 
             }
 
-            testRecords.slr.L = slrL;
-            testRecords.slr.R = slrR;
-            testRecords.hip.L = hipL;
-            testRecords.hip.R = hipR;
-            testRecords.shoulder.L = shL;
-            testRecords.shoulder.R = shR;
+            testRecords.slr.L = slrL; testRecords.slr.R = slrR;
+            testRecords.hip.L = hipL; testRecords.hip.R = hipR;
+            testRecords.shoulder.L = shL; testRecords.shoulder.R = shR;
 
-            updateTrackerUI();
-            saveStateLocally();
-            manualModal.classList.add('hidden');
-            
+            updateTrackerUI(); saveStateLocally(); manualModal.classList.add('hidden');
             stopLiveTracking();
             document.getElementById('canvas-container').classList.add('hidden');
             document.getElementById('drag-instruction').classList.add('hidden');
             document.getElementById('result-board').classList.add('hidden');
-            
             generateFinalReport();
         });
 
-
+        // System Initialization
         async function initAI() {
             try {
                 await tf.setBackend('webgl'); await tf.ready();
@@ -1065,11 +1072,9 @@
                 detector = window.detector;
                 document.getElementById('ai-loading').classList.add('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
-                
                 restoreStateLocally();
             } catch (error) { document.getElementById('ai-loading').innerHTML = `<p class="text-rose-500 font-bold">AI 模型加载失败，请刷新重试。</p>`; }
         }
-        
         initAI();
 
         clientNameInput.addEventListener('change', saveStateLocally);
@@ -1083,16 +1088,13 @@
 
         btnStartCamera.addEventListener('click', async () => {
             if(!clientNameInput.value.trim()) {
-                clientNameInput.focus();
-                clientNameInput.classList.add('ring-2', 'ring-rose-400');
+                clientNameInput.focus(); clientNameInput.classList.add('ring-2', 'ring-rose-400');
                 setTimeout(() => clientNameInput.classList.remove('ring-2', 'ring-rose-400'), 1500);
                 speak("请先输入客户姓名");
                 showDialog({ title: '操作提示', message: '请先在上方输入客户档案（姓名），再进行捕捉！' });
                 return; 
             }
-
-            saveStateLocally();
-            resetCanvasForNewUpload(); lastCaptureMethod = 'live';
+            saveStateLocally(); resetCanvasForNewUpload(); lastCaptureMethod = 'live';
             liveMaxAngle = 0; liveMaxPoints = []; angleHistory = []; isHolding = false; holdStartTime = 0;
             document.getElementById('live-angle-display').innerText = '0.0°';
             document.getElementById('live-status-text').innerHTML = `<span class="w-2 h-2 rounded-full bg-[#0071e3] animate-pulse"></span> 自动追踪最高点...`;
@@ -1114,21 +1116,17 @@
                 else if (tType === 'hip') speech = `即将进行${tSideName}主动髋屈曲测试。将膝盖向胸口拉起。出现骨盆卷起或大腿向外打开时，请立即停止并保持1.5秒。`;
                 else speech = `即将进行${tSideName}主动肩屈测试。手臂向后上方抬起。如果发现手臂旋转或挺胸代偿，请立即停止并保持1.5秒。`;
                 speak(speech);
-                
                 livePoseLoop();
             } catch (e) { showDialog({ title: '权限拒绝', message: '无法调用摄像头，请在浏览器设置中允许访问权限。' }); }
         });
 
         async function livePoseLoop() {
             if (!isLiveTracking) return;
-            
             if (videoElement.videoWidth && videoElement.videoHeight) {
                 if (canvas.width !== videoElement.videoWidth || canvas.height !== videoElement.videoHeight) {
-                    canvas.width = videoElement.videoWidth;
-                    canvas.height = videoElement.videoHeight;
+                    canvas.width = videoElement.videoWidth; canvas.height = videoElement.videoHeight;
                 }
             }
-
             try {
                 const poses = await detector.estimatePoses(videoElement);
                 if (!isLiveTracking) return;
@@ -1144,35 +1142,21 @@
         function stopLiveTracking() {
             isLiveTracking = false;
             if (liveRequestID) cancelAnimationFrame(liveRequestID);
-            if (liveStream) { 
-                liveStream.getTracks().forEach(t => t.stop()); 
-                liveStream = null; 
-                videoElement.srcObject = null; 
-            }
+            if (liveStream) { liveStream.getTracks().forEach(t => t.stop()); liveStream = null; videoElement.srcObject = null; }
             liveOverlay.classList.add('hidden');
         }
 
         function triggerAutoLock() {
             if (!isLiveTracking) return;
             stopLiveTracking();
-            
-            if (liveMaxPoints.length === 0) { 
-                saveFrameToBuffer(); 
-                liveMaxAngle = currentFinalAngle || 0; 
-            }
-            
+            if (liveMaxPoints.length === 0) { saveFrameToBuffer(); liveMaxAngle = currentFinalAngle || 0; }
             activePoints = liveMaxPoints.map(p => ({...p})); 
             originalAiPoints = activePoints.map(p => ({...p}));
             currentFinalAngle = liveMaxAngle; 
-            
-            const tType = document.querySelector('input[name="testType"]:checked').value;
-            updateLegend(tType); 
-            dragInstruction.classList.remove('hidden'); 
-            resultBoard.classList.remove('hidden');
-            
+            updateLegend(document.querySelector('input[name="testType"]:checked').value); 
+            dragInstruction.classList.remove('hidden'); resultBoard.classList.remove('hidden');
             renderCanvasAndResult(staticImageBuffer); 
             setTimeout(() => resultBoard.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
-            
             speak(`拍摄完整，角度是${liveMaxAngle.toFixed(1)}度。若基准线不准，请手动拖动图中圆点微调。`);
         }
 
@@ -1180,18 +1164,12 @@
 
         function handleImageUpload(e) {
             const file = e.target.files[0]; if (!file) return;
-            
             if(!clientNameInput.value.trim()) {
-                clientNameInput.focus();
-                clientNameInput.classList.add('ring-2', 'ring-rose-400');
+                clientNameInput.focus(); clientNameInput.classList.add('ring-2', 'ring-rose-400');
                 setTimeout(() => clientNameInput.classList.remove('ring-2', 'ring-rose-400'), 1500);
-                speak("请先输入客户姓名");
-                e.target.value = ''; 
-                return; 
+                speak("请先输入客户姓名"); e.target.value = ''; return; 
             }
-
-            saveStateLocally();
-            resetCanvasForNewUpload(); lastCaptureMethod = 'static';
+            saveStateLocally(); resetCanvasForNewUpload(); lastCaptureMethod = 'static';
             const reader = new FileReader();
             reader.onload = function(event) {
                 const tempImg = new Image();
@@ -1224,14 +1202,13 @@
                         renderCanvasAndResult(imageSource); 
                         resultBoard.scrollIntoView({ behavior: 'smooth', block: 'end' });
                         speak("拍摄完整。若AI识别的基准线或关节偏离，请直接拖动图中圆点进行手动校准。");
-                    } else {
-                        showDialog({ title: '识别失败', message: '未能识别到姿势，请确认人体完整入镜！' });
-                    }
+                    } else { showDialog({ title: '识别失败', message: '未能识别到姿势，请确认人体完整入镜！' }); }
                 } catch(err) { analyzingMask.classList.add('hidden'); console.warn(err); }
             }, 50);
         }
 
-        cameraInput.addEventListener('change', handleImageUpload); albumInput.addEventListener('change', handleImageUpload);
+        if (cameraInput) cameraInput.addEventListener('change', handleImageUpload); 
+        if (albumInput) albumInput.addEventListener('change', handleImageUpload);
 
         function extractPointsFromPose(pose, isLive) {
             const kp = pose.keypoints;
@@ -1274,10 +1251,7 @@
                 }
 
                 if (activePoints.length === 3) {
-                    if (activePoints[2].score < 0.25) {
-                        document.getElementById('live-status-text').innerHTML = `<span class="text-amber-500 font-semibold text-[12px] tracking-wider">⚠️ 受干扰，请保持...</span>`;
-                        return; 
-                    }
+                    if (activePoints[2].score < 0.25) { document.getElementById('live-status-text').innerHTML = `<span class="text-amber-500 font-semibold text-[12px] tracking-wider">⚠️ 受干扰，请保持...</span>`; return; }
                     const currentAngle = getAngle(activePoints[0], activePoints[1], activePoints[2]);
                     angleHistory.push(currentAngle); if (angleHistory.length > 6) angleHistory.shift();
                     let sorted = [...angleHistory].sort((a, b) => a - b); let valid = sorted.length >= 5 ? sorted.slice(1, -1) : sorted;
@@ -1339,7 +1313,6 @@
                 displayAngle.innerText = Math.max(0, currentFinalAngle).toFixed(1) + '°';
                 currentBoardTitle.innerText = `当前测量: ${tSide === 'L' ? '左侧' : '右侧'}`;
                 btnSaveText.innerText = tSide === 'L' ? '上传并准备右侧' : '上传并进入下一项';
-                
                 let ability = tType === 'slr' ? '反映该侧骨盆后下侧空间' : (tType === 'hip' ? '反映该侧骨盆后上侧空间' : '反映该侧肩胸前侧空间');
                 thresholdFeedback.innerText = `客观记录：${currentFinalAngle.toFixed(1)}° (${ability})`;
             }
@@ -1351,7 +1324,6 @@
         }
         function getKeypoint(kp, name) { return kp.find(k => k.name === name) || {x:0, y:0, score:0}; }
 
-        // --- Dragging ---
         function getEventCoords(e) {
             const rect = canvas.getBoundingClientRect(), scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
             let cx = 0, cy = 0; 
@@ -1366,7 +1338,6 @@
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
             const touchTargetCanvasRadius = Math.max(50 * scaleX, canvas.width * 0.08); 
-
             draggingPointIndex = activePoints.findIndex(p => Math.sqrt(Math.pow(p.x-x,2)+Math.pow(p.y-y,2)) <= touchTargetCanvasRadius);
             if (draggingPointIndex !== -1) { e.preventDefault(); renderCanvasAndResult(staticImageBuffer); }
         }
@@ -1417,7 +1388,7 @@
                     trBox.classList.add('border-gray-200');
                     trBox.querySelector('span:first-child').classList.replace('text-[#86868b]', 'text-[#1d1d1f]');
                     fText.classList.replace('text-gray-300', 'text-[#0071e3]'); 
-                    fText.innerText = `确诊: ${testRecords[t].final.toFixed(1)}°`;
+                    fText.innerText = `取值: ${testRecords[t].final.toFixed(1)}°`;
                 }
             });
         }
@@ -1433,23 +1404,18 @@
                 angle: currentFinalAngle.toFixed(1)
             });
 
-            updateTrackerUI();
-            saveStateLocally(); 
-            resetCanvasForNewUpload();
+            updateTrackerUI(); saveStateLocally(); resetCanvasForNewUpload();
 
             const nextTest = getNextMissingTest();
             if (nextTest) {
                 document.querySelector(`input[name="testType"][value="${nextTest.type}"]`).checked = true;
                 document.querySelector(`input[name="testSide"][value="${nextTest.side}"]`).checked = true;
-                updateSaveButtonText();
-                saveStateLocally();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                updateSaveButtonText(); saveStateLocally(); window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 generateFinalReport();
             }
         });
 
-        // --- 生成长图 ---
         document.getElementById('btn-download-report').addEventListener('click', async () => {
             const reportSection = document.getElementById('final-report-section');
             const downloadBtn = document.getElementById('btn-download-report');
@@ -1461,21 +1427,333 @@
             timeStamp.innerText = '生成时间：' + now.getFullYear() + '/' + (now.getMonth() + 1).toString().padStart(2, '0') + '/' + now.getDate().toString().padStart(2, '0') + ' ' + now.toLocaleTimeString('zh-CN', {hour12: false});
             clientStamp.innerText = '客户档案：' + (clientNameInput.value.trim() || '未命名客户');
 
-            downloadBtn.style.display = 'none';
-            restartBtn.style.display = 'none';
+            downloadBtn.style.display = 'none'; restartBtn.style.display = 'none';
             
             try {
                 speak("正在生成高清报告，请稍候...");
                 const canvas = await html2canvas(reportSection, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-                
                 canvas.toBlob(async (blob) => {
                     const filename = `AeroMove_Report_${now.getTime()}.jpg`;
                     const file = new File([blob], filename, { type: 'image/jpeg' });
-                    
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                         try { await navigator.share({ files: [file], title: '保存系统评估报告' }); } catch (err) {}
                     } else {
-        // --- 核心引擎：专业级体态与外观溯源分析 (v1.9.0 升级：3D动态视觉与紧张文案) ---
+                        const link = document.createElement('a'); link.download = filename; link.href = URL.createObjectURL(blob); link.click();
+                    }
+                }, 'image/jpeg', 0.95);
+            } catch (err) { showDialog({ title: '生成失败', message: '生成报告图片失败，请稍后重试。' }); } 
+            finally { downloadBtn.style.display = 'flex'; restartBtn.style.display = 'block'; }
+        });
+
+        document.getElementById('btn-restart-app').addEventListener('click', () => {
+            sessionStorage.removeItem('aeroMoveState_v221'); 
+
+            document.getElementById('final-report-section').classList.add('hidden');
+            document.getElementById('tracker-panel').classList.remove('hidden');
+            document.getElementById('interaction-area').classList.remove('hidden');
+            
+            testRecords = { slr: { L: null, R: null, final: null }, hip: { L: null, R: null, final: null }, shoulder: { L: null, R: null, final: null } };
+            circumferenceData = { weight: '', shoulder: '', chest: '', waist: '', hipUpper: '', hipLower: '', thighL: '', thighR: '', calfL: '', calfR: '' };
+            clientNameInput.value = '';
+            document.getElementById('display-angle').innerText = '0.0°';
+            document.getElementById('threshold-feedback').innerText = '';
+            
+            ['slr', 'hip', 'shoulder'].forEach(t => {
+                document.getElementById(`manual-${t}-l`).value = '';
+                document.getElementById(`manual-${t}-r`).value = '';
+                const trBox = document.getElementById(`tracker-${t}`);
+                const fText = document.getElementById(`score-${t}-final`);
+                
+                document.getElementById(`score-${t}-L`).innerText = '--';
+                document.getElementById(`score-${t}-R`).innerText = '--';
+                
+                if (trBox.classList.contains('bg-[#f5f5f7]')) {
+                    trBox.classList.replace('bg-[#f5f5f7]', 'bg-white'); 
+                    trBox.classList.remove('border-gray-200');
+                    trBox.querySelector('span:first-child').classList.replace('text-[#1d1d1f]', 'text-[#86868b]');
+                    fText.classList.replace('text-[#0071e3]', 'text-gray-300'); 
+                }
+                fText.innerText = `待测试`;
+            });
+
+            document.querySelector(`input[name="testType"][value="slr"]`).checked = true;
+            document.querySelector(`input[name="testSide"][value="L"]`).checked = true;
+            updateSaveButtonText(); resetCanvasForNewUpload(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // --- 全景报告生成及解析展示 ---
+        function showReportDetails(item) {
+            let html = `
+                <div class="mb-5 pb-5 border-b border-gray-100 flex flex-col gap-1.5">
+                    <div class="flex justify-between items-start">
+                        <span class="font-black text-[#1d1d1f] text-[18px] tracking-tight">${item.clientName || '未命名客户'}</span>
+                        <span class="inline-block ${item.type === 'full' ? 'bg-[#1d1d1f] text-white' : 'bg-gray-100 text-gray-500'} px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm">${item.type === 'full' ? '专业级评估' : '单项测试'}</span>
+                    </div>
+                    <span class="text-[12px] text-[#86868b] font-medium flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 测试时间：${item.date}</span>
+                </div>
+            `;
+
+            if (item.type === 'full') {
+                html += `
+                    <p class="text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center gap-1.5"><svg class="w-4 h-4 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>客观提取数据：</p>
+                    <div class="grid grid-cols-3 gap-2 text-center mb-6">
+                        <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">直腿抬高 (SLR)</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.slrL}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.slrR}°</div></div>
+                        <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">主动髋屈</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.hipL}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.hipR}°</div></div>
+                        <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">主动肩屈</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.shL}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.shR}°</div></div>
+                    </div>
+                `;
+
+                if (item.circumference) {
+                    html += `<p class="text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2-2m2 2l-2 2m-2-2l-2-2m2 2l-2 2m4-8a3 3 0 01-3 3H5a3 3 0 01-3-3V5a3 3 0 013-3h6a3 3 0 013 3v6z"></path></svg>历史围度数据：</p>`;
+                    html += `<div class="grid grid-cols-4 gap-2 text-center mb-6 bg-emerald-50 p-3 rounded-xl border border-emerald-100">`;
+                    const c = item.circumference;
+                    if(c.weight) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">体重</span><span class="text-[13px] font-bold">${c.weight}kg</span></div>`;
+                    if(c.shoulder) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">肩宽</span><span class="text-[13px] font-bold">${c.shoulder}cm</span></div>`;
+                    if(c.chest) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">胸围</span><span class="text-[13px] font-bold">${c.chest}cm</span></div>`;
+                    if(c.waist) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">腰围</span><span class="text-[13px] font-bold">${c.waist}cm</span></div>`;
+                    if(c.hip) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">综合臀围</span><span class="text-[13px] font-bold">${c.hip}cm</span></div>`;
+                    if(c.hipUpper) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">上臀围度</span><span class="text-[13px] font-bold">${c.hipUpper}cm</span></div>`;
+                    if(c.hipLower) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">下臀围度</span><span class="text-[13px] font-bold">${c.hipLower}cm</span></div>`;
+                    if(c.thighL) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">左大腿</span><span class="text-[13px] font-bold">${c.thighL}cm</span></div>`;
+                    if(c.thighR) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">右大腿</span><span class="text-[13px] font-bold">${c.thighR}cm</span></div>`;
+                    if(c.calfL) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">左小腿</span><span class="text-[13px] font-bold">${c.calfL}cm</span></div>`;
+                    if(c.calfR) html += `<div class="flex flex-col"><span class="text-[10px] text-[#86868b]">右小腿</span><span class="text-[13px] font-bold">${c.calfR}cm</span></div>`;
+                    html += `</div>`;
+                }
+
+                if(item.reportPelvic || item.reportSpine || item.reportAesthetic) {
+                    if (item.reportPelvic) {
+                        html += `<div class="bg-white border border-[#0071e3]/20 p-4 rounded-2xl mb-4 shadow-sm"><div class="text-[14px] font-bold text-[#1d1d1f] mb-3 pb-2 border-b border-gray-100 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-[#0071e3]/10 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg></div>骨盆 3D 空间与张力定位</div><div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3">${item.reportPelvic}</div></div>`;
+                    }
+                    if (item.reportSpine) {
+                        html += `<div class="bg-white border border-amber-100 p-4 rounded-2xl mb-4 shadow-sm"><div class="text-[14px] font-bold text-[#1d1d1f] mb-3 pb-2 border-b border-gray-100 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>腰椎危机与病理性疼痛溯源</div><div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3.5">${item.reportSpine}</div></div>`;
+                    }
+                    if (item.reportAesthetic) {
+                        html += `<div class="bg-[#fdf2f2] border border-rose-100/60 p-4 rounded-2xl mb-2 shadow-sm"><div class="text-[14px] font-bold text-[#e11d48] mb-3 pb-2 border-b border-rose-200/50 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>外观代偿与腿型重构分析</div><div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3.5">${item.reportAesthetic}</div></div>`;
+                    }
+                    if (item.reportTraining) {
+                        html += `<div class="bg-[#f0fdf4] border border-emerald-100/60 p-4 rounded-2xl mb-2 shadow-sm mt-3"><div class="text-[14px] font-black text-[#059669] mb-3 pb-2 border-b border-emerald-200/50 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg></div>专属力学重构训练方案</div><div class="text-[13px] text-[#3f6212] leading-relaxed flex flex-col gap-3.5">${item.reportTraining}</div></div>`;
+                    }
+                } else {
+                    const slrDiff = (parseFloat(item.slrL) - parseFloat(item.slrR)).toFixed(1);
+                    const hipDiff = (parseFloat(item.hipL) - parseFloat(item.hipR)).toFixed(1);
+                    const shDiff = (parseFloat(item.shL) - parseFloat(item.shR)).toFixed(1);
+
+                    html += `
+                        <p class="text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center gap-1.5"><svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>系统形态溯源详细结论：</p>
+                        <div class="bg-[#fdf2f2] border border-rose-100 p-4 rounded-2xl text-[13.5px] text-[#1d1d1f] leading-loose font-medium shadow-inner flex flex-col gap-3">
+                            <p class="font-bold text-[#e11d48] border-b border-rose-200/50 pb-2">${item.result}</p>
+                            <div>
+                                <p class="font-semibold text-[#1d1d1f] text-[12px] mb-2">📐 测试数据左右侧对比分析：</p>
+                                <ul class="list-disc pl-5 space-y-2 text-[12px] text-[#515154]">
+                                    <li><b>直腿抬高 (骨盆后下侧)：</b> 左侧 ${item.slrL}° / 右侧 ${item.slrR}° 
+                                        <br><span class="text-[#86868b]">${Math.abs(slrDiff) > 5 ? `(相差 ${Math.abs(slrDiff)}°，说明存在明显的骨盆扭转或单侧后侧受限)` : '(左右基本对称)'}</span>
+                                    </li>
+                                    <li><b>主动髋屈 (骨盆后上侧)：</b> 左侧 ${item.hipL}° / 右侧 ${item.hipR}° 
+                                        <br><span class="text-[#86868b]">${Math.abs(hipDiff) > 5 ? `(相差 ${Math.abs(hipDiff)}°，指示骨盆的一侧可能更向前方倾倒)` : '(左右基本对称)'}</span>
+                                    </li>
+                                    <li><b>主动肩屈 (胸廓前侧)：</b> 左侧 ${item.shL}° / 右侧 ${item.shR}° 
+                                        <br><span class="text-[#86868b]">${Math.abs(shDiff) > 5 ? `(相差 ${Math.abs(shDiff)}°，表明胸廓伴随骨盆发生了代偿性扭转)` : '(左右基本对称)'}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                }
+
+            } else {
+                html += `<div class="flex flex-col gap-4 mt-2"><div class="flex justify-between items-center bg-[#f5f5f7] p-5 rounded-2xl border border-gray-100 shadow-sm"><span class="text-[15px] font-bold text-[#86868b] tracking-wide">${item.name}</span><span class="text-[32px] font-mono font-black text-[#0071e3] tracking-tighter">${item.angle}°</span></div></div>`;
+            }
+
+            reportDetailContent.innerHTML = html;
+            historyModal.classList.add('hidden');
+            reportDetailModal.classList.remove('hidden');
+        }
+
+        function generateComparisonReport(records) {
+            const oldRecord = records[0];
+            const newRecord = records[records.length - 1];
+
+            const getDiffHtml = (oldV, newV, unit = '°') => {
+                if (!oldV || !newV) return `<span class="text-gray-400 font-bold">-</span>`;
+                const diff = (parseFloat(newV) - parseFloat(oldV)).toFixed(1);
+                if (diff > 0) return `<span class="text-emerald-500 font-bold flex items-center justify-center gap-0.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg> ${diff}${unit}</span>`;
+                if (diff < 0) return `<span class="text-rose-500 font-bold flex items-center justify-center gap-0.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg> ${Math.abs(diff)}${unit}</span>`;
+                return `<span class="text-gray-400 font-bold flex items-center justify-center">0.0${unit}</span>`;
+            };
+
+            let html = `
+                <div class="mb-4 text-center">
+                    <span class="font-black text-[#1d1d1f] text-[20px] tracking-tight block">${oldRecord.clientName} 的全景追踪档案</span>
+                    <span class="text-[11px] text-[#86868b] font-medium block mt-1 bg-white inline-block px-3 py-1 rounded-full shadow-sm border border-gray-100">追踪跨度: ${oldRecord.date.split(' ')[0]} ➔ ${newRecord.date.split(' ')[0]} (共${records.length}次评估)</span>
+                </div>
+
+                <div class="bg-white p-4 rounded-[20px] shadow-sm border border-gray-100 mb-4">
+                    <p class="text-[14px] font-bold text-[#1d1d1f] mb-3 flex items-center gap-1.5 border-b border-gray-50 pb-2"><svg class="w-4 h-4 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 关节活动度总结算</p>
+                    <div class="grid grid-cols-4 gap-2 text-[11px] font-bold text-[#86868b] border-b border-gray-50 pb-2 mb-2 text-center">
+                        <div class="text-left">测试项</div><div>初始档案</div><div>最新档案</div><div>总差值变化</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f5f5f7] rounded-lg mb-1">
+                        <div class="text-left pl-2">左侧 SLR</div><div class="font-mono">${oldRecord.slrL}°</div><div class="font-mono text-[#0071e3]">${newRecord.slrL}°</div><div>${getDiffHtml(oldRecord.slrL, newRecord.slrL)}</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f5f5f7] rounded-lg mb-3">
+                        <div class="text-left pl-2">右侧 SLR</div><div class="font-mono">${oldRecord.slrR}°</div><div class="font-mono text-[#0071e3]">${newRecord.slrR}°</div><div>${getDiffHtml(oldRecord.slrR, newRecord.slrR)}</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-blue-50/50 rounded-lg mb-1">
+                        <div class="text-left pl-2">左髋屈</div><div class="font-mono">${oldRecord.hipL}°</div><div class="font-mono text-[#0071e3]">${newRecord.hipL}°</div><div>${getDiffHtml(oldRecord.hipL, newRecord.hipL)}</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-blue-50/50 rounded-lg mb-3">
+                        <div class="text-left pl-2">右髋屈</div><div class="font-mono">${oldRecord.hipR}°</div><div class="font-mono text-[#0071e3]">${newRecord.hipR}°</div><div>${getDiffHtml(oldRecord.hipR, newRecord.hipR)}</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f5f5f7] rounded-lg mb-1">
+                        <div class="text-left pl-2">左肩屈</div><div class="font-mono">${oldRecord.shL}°</div><div class="font-mono text-[#0071e3]">${newRecord.shL}°</div><div>${getDiffHtml(oldRecord.shL, newRecord.shL)}</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f5f5f7] rounded-lg">
+                        <div class="text-left pl-2">右肩屈</div><div class="font-mono">${oldRecord.shR}°</div><div class="font-mono text-[#0071e3]">${newRecord.shR}°</div><div>${getDiffHtml(oldRecord.shR, newRecord.shR)}</div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-[20px] shadow-sm border border-blue-100/50 mb-4">
+                    <p class="text-[14px] font-bold text-[#0071e3] mb-3 flex items-center gap-1.5">📈 动态可视化：角度演变模型</p>
+                    <div class="relative w-full h-[220px]">
+                        <canvas id="angleTrendChart"></canvas>
+                    </div>
+                </div>
+            `;
+
+            const hasCircData = records.some(r => r.circumference);
+            if (hasCircData) {
+                html += `
+                    <div class="bg-white p-4 rounded-[20px] shadow-sm border border-emerald-100/60 mb-4">
+                        <p class="text-[14px] font-bold text-[#059669] mb-3 flex items-center gap-1.5 border-b border-emerald-50 pb-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2-2m2 2l-2 2m-2-2l-2-2m2 2l-2 2m4-8a3 3 0 01-3 3H5a3 3 0 01-3-3V5a3 3 0 013-3h6a3 3 0 013 3v6z"></path></svg> 身体围度与形态总结算</p>
+                        <div class="grid grid-cols-4 gap-2 text-[11px] font-bold text-[#059669] border-b border-emerald-50 pb-2 mb-2 text-center">
+                            <div class="text-left">围度项</div><div>初始档案</div><div>最新档案</div><div>总差值变化</div>
+                        </div>
+                `;
+                
+                const cMap = [
+                    { key: 'weight', label: '体重', unit: 'kg' },
+                    { key: 'shoulder', label: '肩宽', unit: 'cm' },
+                    { key: 'chest', label: '胸围', unit: 'cm' },
+                    { key: 'waist', label: '腰围', unit: 'cm' },
+                    { key: 'hipUpper', label: '上臀围', unit: 'cm' },
+                    { key: 'hipLower', label: '下臀围', unit: 'cm' },
+                    { key: 'hip', label: '综合臀围(旧)', unit: 'cm' }, 
+                    { key: 'thighL', label: '左大腿', unit: 'cm' },
+                    { key: 'thighR', label: '右大腿', unit: 'cm' },
+                    { key: 'calfL', label: '左小腿', unit: 'cm' },
+                    { key: 'calfR', label: '右小腿', unit: 'cm' }
+                ];
+                
+                let plotCircumferences = false;
+                cMap.forEach(item => {
+                    const oldV = oldRecord.circumference ? oldRecord.circumference[item.key] : null;
+                    const newV = newRecord.circumference ? newRecord.circumference[item.key] : null;
+                    if (oldV || newV) {
+                        plotCircumferences = true;
+                        const diffHtml = getDiffHtml(oldV, newV, item.unit);
+                        html += `
+                        <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f0fdf4]/50 rounded-lg mb-1">
+                            <div class="text-left pl-2">${item.label}</div><div class="font-mono">${oldV ? oldV+item.unit : '-'}</div><div class="font-mono text-[#059669]">${newV ? newV+item.unit : '-'}</div><div>${diffHtml}</div>
+                        </div>
+                        `;
+                    }
+                });
+                html += `</div>`;
+
+                if(plotCircumferences) {
+                    html += `
+                    <div class="bg-white p-4 rounded-[20px] shadow-sm border border-emerald-100/50 mb-4">
+                        <p class="text-[14px] font-bold text-[#059669] mb-3 flex items-center gap-1.5">📉 动态可视化：围度塑形轨迹</p>
+                        <div class="relative w-full h-[220px]">
+                            <canvas id="circTrendChart"></canvas>
+                        </div>
+                    </div>
+                    `;
+                }
+            }
+
+            html += `
+                <div class="bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-100/50 p-4 rounded-[20px]">
+                    <p class="text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 综合进展深度解读</p>
+                    <p class="text-[12px] text-gray-700 leading-relaxed">
+                        • <b class="font-black text-emerald-600">角度上升 (绿↗)：</b> 通常代表关节受限空间被成功打开，紧张死锁的肌群得到了离心释放，骨盆与胸廓重获自由。<br>
+                        • <b class="font-black text-rose-500">角度下降 (红↘)：</b> 若客户原本属于前侧严重拉长（如SLR > 90° 的无力表现），角度的回调说明张力锚点重建成功，是核心收紧的极佳现象！反之则提示训练计划可能需要调整干预。<br>
+                        • <b class="font-black">围度动态变化：</b> 请结合客户的目标（如增肌、减脂）以及左右曲线的对称性靠拢程度进行宏观判断。
+                    </p>
+                </div>
+            `;
+
+            comparisonContent.innerHTML = html;
+            historyModal.classList.add('hidden');
+            comparisonModal.classList.remove('hidden');
+
+            setTimeout(() => {
+                const labels = records.map(r => {
+                    const d = new Date(r.timestamp);
+                    return `${d.getMonth()+1}/${d.getDate()}`;
+                });
+
+                const ctxAngle = document.getElementById('angleTrendChart');
+                if (ctxAngle) {
+                    if (angleChartInstance) angleChartInstance.destroy();
+                    angleChartInstance = new Chart(ctxAngle, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                { label: '左SLR', data: records.map(r => r.slrL), borderColor: '#3b82f6', backgroundColor: '#3b82f6', tension: 0.3, pointRadius: 4 },
+                                { label: '右SLR', data: records.map(r => r.slrR), borderColor: '#60a5fa', backgroundColor: '#60a5fa', borderDash: [5, 5], tension: 0.3, pointRadius: 4 },
+                                { label: '左髋屈', data: records.map(r => r.hipL), borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.3, pointRadius: 4 },
+                                { label: '右髋屈', data: records.map(r => r.hipR), borderColor: '#34d399', backgroundColor: '#34d399', borderDash: [5, 5], tension: 0.3, pointRadius: 4 },
+                                { label: '左肩屈', data: records.map(r => r.shL), borderColor: '#f59e0b', backgroundColor: '#f59e0b', tension: 0.3, pointRadius: 4 },
+                                { label: '右肩屈', data: records.map(r => r.shR), borderColor: '#fbbf24', backgroundColor: '#fbbf24', borderDash: [5, 5], tension: 0.3, pointRadius: 4 }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }, tooltip: { bodyFont: { size: 11 } } },
+                            scales: { y: { suggestedMin: 30, suggestedMax: 180, grid: { color: '#f3f4f6' } }, x: { grid: { display: false } } }
+                        }
+                    });
+                }
+
+                const ctxCirc = document.getElementById('circTrendChart');
+                if (ctxCirc) {
+                    if (circChartInstance) circChartInstance.destroy();
+                    
+                    const weightData = records.map(r => r.circumference?.weight || null);
+                    const waistData = records.map(r => r.circumference?.waist || null);
+                    const hipUpperData = records.map(r => r.circumference?.hipUpper || r.circumference?.hip || null);
+                    const hipLowerData = records.map(r => r.circumference?.hipLower || null);
+
+                    circChartInstance = new Chart(ctxCirc, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                { label: '体重(kg)', data: weightData, borderColor: '#64748b', backgroundColor: '#64748b', tension: 0.3, pointStyle: 'rectRot', pointRadius: 5 },
+                                { label: '腰围(cm)', data: waistData, borderColor: '#0ea5e9', backgroundColor: '#0ea5e9', tension: 0.3 },
+                                { label: '上臀围(cm)', data: hipUpperData, borderColor: '#ec4899', backgroundColor: '#ec4899', tension: 0.3 },
+                                { label: '下臀围(cm)', data: hipLowerData, borderColor: '#e11d48', backgroundColor: '#e11d48', borderDash: [5,5], tension: 0.3 }
+                            ]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            spanGaps: true,
+                            interaction: { mode: 'index', intersect: false },
+                            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+                            scales: { y: { grid: { color: '#f3f4f6' } }, x: { grid: { display: false } } }
+                        }
+                    });
+                }
+            }, 100);
+        }
+
+        // ==========================
+        // 5. 最终报告生成逻辑
+        // ==========================
         function generateFinalReport() {
             document.getElementById('tracker-panel').classList.add('hidden');
             document.getElementById('interaction-area').classList.add('hidden');
@@ -1485,9 +1763,6 @@
             const hipL = testRecords.hip.L, hipR = testRecords.hip.R;
             const shL = testRecords.shoulder.L, shR = testRecords.shoulder.R;
 
-            // 1. 判断外层代偿：压缩类型 -> 紧张类型 (根据整体角度限制)
-            // 后侧紧张倾向: 直腿抬高<50°，髋屈曲>100°，肩屈曲<100°
-            // 前侧紧张倾向: 直腿抬高>50°，髋屈曲<100°，肩屈曲>100°
             let posteriorScore = 0;
             if (Math.min(slrL, slrR) <= 50) posteriorScore++;
             if (Math.min(hipL, hipR) >= 100) posteriorScore++;
@@ -1496,7 +1771,6 @@
             const isPosterior = posteriorScore >= 2;
             const tensionStatus = isPosterior ? "后侧紧张" : "前侧紧张";
 
-            // 2. 判断底层代偿：旋转类型 (根据左右角度差异)
             const diffHip = hipL - hipR;
             const diffSLR = slrL - slrR;
             const diffSh = shL - shR;
@@ -1522,7 +1796,6 @@
                     : "骨盆整体被前侧肌肉拉向前方，同时底层承受着从左向右的横向推力。";
                 trainingSequence = isPosterior ? "先练后侧紧张方案，再练横向方案" : "先练前侧紧张方案，再练横向方案";
             } else {
-                // 默认基线 Left AIC
                 diagnosis = "LeftAIC";
                 diagnosisName = "#1 基线 (Left AIC)";
                 comboDescription = isPosterior
@@ -1539,25 +1812,39 @@
 
             titleEl.innerHTML = `<span class="text-[14px] text-[#86868b] font-medium block mb-1">专业体态评估：组合 ${isPosterior ? '1/2/3' : '4/5/6'}</span>${tensionStatus} · ${diagnosisName}`;
 
-            // v1.9.0 核心新增：基于 CSS 3D Transforms 动态演算的 3D 骨盆素描透视图
-            let rotateX = isPosterior ? -10 : 30; // 后侧紧张（平移后倾）角度平缓，前侧紧张倾角大
+            const hasCirc = Object.values(circumferenceData).some(v => v !== '');
+            if (hasCirc) {
+                const circCard = document.getElementById('report-circumference-card');
+                const circContent = document.getElementById('report-circumference-content');
+                let circHtml = '';
+                const c = circumferenceData;
+                if(c.weight) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">体重</span><span class="text-[15px] font-bold">${c.weight}kg</span></div>`;
+                if(c.shoulder) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">肩宽</span><span class="text-[15px] font-bold">${c.shoulder}cm</span></div>`;
+                if(c.chest) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">胸围</span><span class="text-[15px] font-bold">${c.chest}cm</span></div>`;
+                if(c.waist) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">腰围</span><span class="text-[15px] font-bold">${c.waist}cm</span></div>`;
+                if(c.hipUpper) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">上臀围度</span><span class="text-[15px] font-bold">${c.hipUpper}cm</span></div>`;
+                if(c.hipLower) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">下臀围度</span><span class="text-[15px] font-bold">${c.hipLower}cm</span></div>`;
+                if(c.thighL) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">左大腿</span><span class="text-[15px] font-bold">${c.thighL}cm</span></div>`;
+                if(c.thighR) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">右大腿</span><span class="text-[15px] font-bold">${c.thighR}cm</span></div>`;
+                if(c.calfL) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">左小腿</span><span class="text-[15px] font-bold">${c.calfL}cm</span></div>`;
+                if(c.calfR) circHtml += `<div class="flex flex-col"><span class="text-[#86868b] mb-0.5 text-[10px]">右小腿</span><span class="text-[15px] font-bold">${c.calfR}cm</span></div>`;
+                
+                circContent.innerHTML = circHtml;
+                circCard.classList.remove('hidden');
+            }
+
+            let rotateX = isPosterior ? -10 : 30; 
             let rotateY = 0;
             let rotateZ = 0;
             let translateZLeft = 0;
             let translateZRight = 0;
 
             if (diagnosis === "LeftAIC") {
-                rotateY = -25; // 整体骨盆向右朝向
-                translateZLeft = 25; // 左侧靠前 (放大)
-                translateZRight = -15; // 右侧靠后 (缩小)
+                rotateY = -25; translateZLeft = 25; translateZRight = -15; 
             } else if (diagnosis === "Lateral") {
-                rotateZ = -20; // 明显的高低胯侧倾
-                rotateY = -15;
-                translateZLeft = 15;
+                rotateZ = -20; rotateY = -15; translateZLeft = 15;
             } else if (diagnosis === "Oblique") {
-                rotateY = -35; // 极度的对角线扭转
-                rotateZ = -25;
-                translateZLeft = 35;
+                rotateY = -35; rotateZ = -25; translateZLeft = 35;
             }
 
             const pelvic3DVisual = `
@@ -1566,29 +1853,21 @@
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         <span class="text-[10px] font-bold text-gray-300 tracking-widest uppercase">3D Pelvic Scanner</span>
                     </div>
-                    
                     <div class="w-[180px] h-[120px] flex items-center justify-center mt-3" style="perspective: 800px;">
                         <div class="relative w-[100px] h-[60px] transition-transform duration-1000 ease-out" style="transform-style: preserve-3d; transform: rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg);">
-                            <!-- 左侧髂骨 (蓝色线框) -->
                             <div class="absolute left-[-15px] w-[50px] h-[70px] border-[3px] border-[#0071e3] rounded-[40%] opacity-90 shadow-[0_0_15px_rgba(0,113,227,0.4)]" style="transform: translateZ(${translateZLeft}px) rotateY(-20deg);"></div>
-                            <!-- 右侧髂骨 (红色线框) -->
                             <div class="absolute right-[-15px] w-[50px] h-[70px] border-[3px] border-rose-500 rounded-[40%] opacity-90 shadow-[0_0_15px_rgba(225,29,72,0.4)]" style="transform: translateZ(${translateZRight}px) rotateY(20deg);"></div>
-                            <!-- 骶骨与腰椎底座 (中心) -->
                             <div class="absolute left-[30px] top-[10px] w-[40px] h-[40px] border-[2px] border-gray-400 border-dashed rounded-full opacity-60" style="transform: translateZ(0px);"></div>
-                            <!-- X/Y 轴辅助线 -->
                             <div class="absolute left-[50px] top-[-30px] w-[1px] h-[120px] bg-white/20"></div>
                             <div class="absolute top-[30px] left-[-30px] w-[160px] h-[1px] bg-white/20"></div>
                         </div>
                     </div>
-                    
                     <div class="text-center mt-4 z-10 w-full flex flex-col items-center">
                         <p class="text-[11px] text-gray-300 font-medium mb-1">系统生成的骨盆空间形变三维图</p>
-                        <div class="text-[10px] text-gray-500 max-w-[80%]"></div>
                     </div>
                 </div>
             `;
 
-            // 动态注入测试数据对比看板
             const dataSummary = `
                 <div class="bg-blue-50/40 border border-blue-100/60 p-4 rounded-xl mb-4">
                     <span class="text-[12px] font-bold text-[#0071e3] block mb-2 flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 测试数据左右侧精细对比：</span>
@@ -1618,7 +1897,7 @@
             `;
 
             spineAnalysis.innerHTML = `
-                <p><b class="text-highlight">⚡ 代偿性发力与僵硬受限：</b> 在当前的压缩与旋转叠加模式下，身体无法平均分配负荷。对角线和横向支撑肌群（如腰方肌、竖脊肌）由于长时间处于代偿发力位置，导致局部的酸痛、卡顿和僵硬感。</p>
+                <p><b class="text-highlight">⚡ 代偿性发力与僵硬受限：</b> 在当前的紧张与旋转叠加模式下，身体无法平均分配负荷。对角线和横向支撑肌群（如腰方肌、竖脊肌）由于长时间处于代偿发力位置，导致局部的酸痛、卡顿和僵硬感。</p>
                 <p><b class="text-highlight">💥 结构性压迫机制：</b> 失去自然呼吸气压平衡的胸腔与骨盆，将所有垂直和旋转剪切力压在局部腰椎间隙与骨盆关节上，限制了您流畅完成复合动作的能力。</p>
             `;
 
@@ -1627,14 +1906,12 @@
                     <p class="text-[14px] font-bold text-[#1d1d1f] mb-3 flex items-center gap-1.5"><span class="bg-[#1d1d1f] text-white px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider">核心底层逻辑</span> 假胯宽与大转子外突的 3D 物理真相</p>
                     <p class="text-[12px] text-[#515154] leading-relaxed mb-4 pb-4 border-b border-gray-200">
                         我们现在把话彻底说透。“假胯宽”（大转子外突）根本不是一个病因，它只是一个<b>“视觉背锅侠”</b>。从3D上帝视角来看，大转子之所以会在侧面突兀地顶出来，底层物理真相只有一个：大腿骨（股骨）在骨盆的髋臼里，被迫进入了<b>“代偿性内旋（Compensatory FAIR）”</b>或者失去了活动的冗余空间，硬生生卡在关节囊边缘被挤出来了。<br><br>
-                        但把股骨逼上绝路的原因，截然不同！根据 Bill Hartman 模型和 PRI 气压理论，假胯宽可以被精准拆解为外层压缩与底层旋转的不同组合。如果您不先评估就瞎练，一定是在给自己的身体服毒。根据您的数据，您的真实身体状态描绘如下：
+                        但把股骨逼上绝路的原因，截然不同！根据 Bill Hartman 模型和 PRI 气压理论，假胯宽可以被精准拆解为外层紧张与底层旋转的不同组合。如果您不先评估就瞎练，一定是在给自己的身体服毒。根据您的数据，您的真实身体状态描绘如下：
                     </p>
-
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-rose-50">
                         <p class="font-black text-[#1d1d1f] text-[15px] mb-2 flex items-center gap-1.5"><span class="text-rose-500">🚨</span> 您的专属测评结论：</p>
                         <p class="text-[13px] text-[#e11d48] font-bold mb-3">🌀 3D 核心灾难：${comboDescription}</p>
                         <p class="text-[12px] text-[#515154] mb-3">在您的 <b class="text-[#1d1d1f]">${tensionStatus} + ${diagnosisName}</b> 组合模式下，关节与软组织被迫长期在极端的力学角度下承重，直接诱发了下肢外观改变与活动受限。</p>
-                        
                         <div class="bg-rose-50/60 p-3 rounded-lg border border-rose-100">
                             <p class="text-[12px] font-bold text-rose-600 mb-1">🔑 破局方案执行顺序：</p>
                             <p class="text-[14px] font-black text-[#1d1d1f]">${trainingSequence}</p>
@@ -1642,10 +1919,8 @@
                     </div>
                 </div>
             `;
-
             aestheticAnalysis.innerHTML = fakeHipHtml;
 
-            // [v1.8.0 预留对应方案块] - 准备接收针对 6 大组合的具体解决方案
             let trainingHtml = `
                 <p class="font-bold mb-2">基于您的生物力学组合（${tensionStatus} + ${diagnosisName}），我们需要按照严格的先后顺序为您重构空间。请参考以下专属行动指南：</p>
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-emerald-100 border-dashed text-center">
@@ -1655,7 +1930,6 @@
                     <p class="text-[12px] text-[#86868b] mt-3">（教练：请在此输入针对此组合的具体训练动作与讲解）</p>
                 </div>
             `;
-
             trainingPlanAnalysis.innerHTML = trainingHtml;
             
             document.getElementById('final-report-section').classList.remove('hidden');
@@ -1672,7 +1946,6 @@
             });
 
             setTimeout(() => document.getElementById('final-report-section').scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
-            
             speak("评估完成。假胯宽只是视觉背锅侠，您的专属代偿组合与训练先后顺序已生成，请在最底部查看方案。");
         }
 
