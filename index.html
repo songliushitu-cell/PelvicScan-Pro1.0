@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PelvicScan Pro - 临床级体态评估系统</title>
+    <title>AeroMove Pro - 临床级体态评估系统</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 TensorFlow.js 和 MoveNet 高精度姿态识别模型 -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core@3.21.0/dist/tf-core.min.js"></script>
@@ -92,7 +92,7 @@
 
             <div class="relative z-10 mt-5">
                 <div class="flex justify-center items-center gap-2 mb-1">
-                    <h1 class="text-[28px] font-bold tracking-tight text-[#1d1d1f]">PelvicScan</h1>
+                    <h1 class="text-[28px] font-bold tracking-tight text-[#1d1d1f]">AeroMove</h1>
                     <span class="bg-[#1d1d1f] text-white text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">Pro</span>
                 </div>
                 <h2 class="text-[12px] font-medium text-[#86868b] tracking-widest mt-2">Designed by 宋教头</h2>
@@ -231,14 +231,15 @@
                         </div>
                     </div>
 
-                    <div id="drag-instruction" class="hidden flex flex-col gap-3 bg-[#f5f5f7] p-4 rounded-2xl border border-gray-100">
+                    <div id="drag-instruction" class="hidden flex flex-col gap-3 bg-blue-50 p-5 rounded-2xl border border-blue-200 shadow-md animate-[pulse_2s_ease-in-out_infinite]">
                         <div class="flex items-start justify-between gap-2">
-                            <p class="text-[12px] font-medium text-[#86868b] leading-relaxed">
-                                💡 若 AI 找点偏移，可直接按住图中 <span class="text-[#0071e3] font-bold">彩色圆点</span> 拖动微调。
+                            <p class="text-[13px] font-bold text-[#0071e3] leading-relaxed">
+                                💡 智能校准提示：<br>
+                                <span class="text-[#1d1d1f] font-medium mt-1 block text-[12px]">若水平基准线(红点)或关节识别偏离，请直接按住图中 <span class="font-bold text-[#0071e3]">彩色圆点</span> 拖动微调！</span>
                             </p>
-                            <button type="button" id="reset-btn" class="text-[12px] font-medium text-[#0071e3] hover:text-[#0077ed] shrink-0 bg-white px-3 py-1 rounded-full shadow-sm border border-gray-200">恢复原位</button>
+                            <button type="button" id="reset-btn" class="text-[12px] font-medium text-[#0071e3] hover:text-[#0077ed] shrink-0 bg-white px-3 py-1.5 rounded-full shadow-sm border border-blue-100">恢复原位</button>
                         </div>
-                        <div id="point-legend" class="grid grid-cols-1 gap-2 text-[11px] font-medium text-[#1d1d1f] bg-white p-3 rounded-xl mt-1 shadow-sm">
+                        <div id="point-legend" class="grid grid-cols-1 gap-2 text-[11px] font-medium text-[#1d1d1f] bg-white p-3 rounded-xl mt-1 shadow-sm border border-blue-50">
                         </div>
                     </div>
 
@@ -312,7 +313,7 @@
                         <span class="text-[10px] text-[#86868b] font-medium" id="report-time-stamp">生成时间：--</span>
                         <span class="text-[10px] text-gray-400 mt-0.5" id="report-client-name"></span>
                     </div>
-                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">PelvicScan Pro v1.0.7</span>
+                    <span class="text-[11px] font-bold tracking-widest text-[#1d1d1f]">AeroMove Pro v1.0.9</span>
                 </div>
 
                 <div class="flex flex-col gap-3 mt-6 z-10 w-full">
@@ -486,7 +487,7 @@
         let historyData = [];
         let unsubscribeHistory = null;
 
-        // --- 防浏览器缓存重刷新的状态保持系统 (Session Storage 更新为 v107) ---
+        // --- 防浏览器缓存重刷新的状态保持系统 (Session Storage 更新为 v109) ---
         function saveStateLocally() {
             const state = {
                 testRecords,
@@ -494,11 +495,11 @@
                 testType: document.querySelector('input[name="testType"]:checked')?.value || 'slr',
                 testSide: document.querySelector('input[name="testSide"]:checked')?.value || 'L'
             };
-            sessionStorage.setItem('pelvicScanState_v107', JSON.stringify(state));
+            sessionStorage.setItem('aeroMoveState_v109', JSON.stringify(state));
         }
 
         function restoreStateLocally() {
-            const saved = sessionStorage.getItem('pelvicScanState_v107');
+            const saved = sessionStorage.getItem('aeroMoveState_v109');
             if (saved) {
                 try {
                     const state = JSON.parse(saved);
@@ -521,12 +522,15 @@
         // 初始化 Firebase
         const initFirebase = async () => {
             try {
-                const firebaseConfig = typeof __firebase_config !== 'undefined' && __firebase_config ? JSON.parse(__firebase_config) : null;
-                if (!firebaseConfig) {
-                    cloudSyncIndicator.className = "w-2 h-2 rounded-full bg-gray-400";
-                    cloudStatusText.innerText = "测评中枢 (离线模式)";
-                    return;
-                }
+                // 已成功接入您的专属私有云端服务器 (AeroMove Pro)
+                const firebaseConfig = {
+                  apiKey: "AIzaSyDzWPkCw2eMs7rHKcBQfA3bkxThOkWUbLU",
+                  authDomain: "aeromove-pro.firebaseapp.com",
+                  projectId: "aeromove-pro",
+                  storageBucket: "aeromove-pro.firebasestorage.app",
+                  messagingSenderId: "297680347174",
+                  appId: "1:297680347174:web:65ecbb37bdf794485006e7"
+                };
 
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
@@ -536,11 +540,8 @@
                     let lastError;
                     for (let i = 0; i < 5; i++) {
                         try {
-                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                                await signInWithCustomToken(auth, __initial_auth_token);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
+                            // 强制使用纯匿名登录模式，保障外部独立数据库的握手成功
+                            await signInAnonymously(auth);
                             return; 
                         } catch (error) {
                             lastError = error;
@@ -865,7 +866,7 @@
             renderCanvasAndResult(staticImageBuffer); 
             setTimeout(() => resultBoard.scrollIntoView({ behavior: 'smooth', block: 'end' }), 100);
             
-            speak(`拍摄完整，角度是${liveMaxAngle.toFixed(1)}度。`);
+            speak(`拍摄完整，角度是${liveMaxAngle.toFixed(1)}度。若基准线不准，请手动拖动图中圆点微调。`);
         }
 
         btnLockFrame.addEventListener('click', triggerAutoLock);
@@ -915,7 +916,7 @@
                         dragInstruction.classList.remove('hidden'); resultBoard.classList.remove('hidden');
                         renderCanvasAndResult(imageSource); 
                         resultBoard.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                        speak("拍摄完整。");
+                        speak("拍摄完整。若AI识别的基准线或关节偏离，请直接拖动图中圆点进行手动校准。");
                     } else alert("未能识别到姿势，请确认人体完整入镜！");
                 } catch(err) { analyzingMask.classList.add('hidden'); console.warn(err); }
             }, 50);
@@ -1159,11 +1160,11 @@
                 const canvas = await html2canvas(reportSection, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
                 
                 canvas.toBlob(async (blob) => {
-                    const filename = `PelvicScan_Report_${now.getTime()}.jpg`;
+                    const filename = `AeroMove_Report_${now.getTime()}.jpg`;
                     const file = new File([blob], filename, { type: 'image/jpeg' });
                     
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: '保存骨盆评估报告' }); } catch (err) {}
+                        try { await navigator.share({ files: [file], title: '保存系统评估报告' }); } catch (err) {}
                     } else {
                         const link = document.createElement('a'); link.download = filename; link.href = URL.createObjectURL(blob); link.click();
                     }
@@ -1176,7 +1177,7 @@
         });
 
         document.getElementById('btn-restart-app').addEventListener('click', () => {
-            sessionStorage.removeItem('pelvicScanState_v107'); 
+            sessionStorage.removeItem('aeroMoveState_v109'); 
 
             document.getElementById('final-report-section').classList.add('hidden');
             document.getElementById('tracker-panel').classList.remove('hidden');
