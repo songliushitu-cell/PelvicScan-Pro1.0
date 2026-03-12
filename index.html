@@ -690,7 +690,7 @@
         </div>
     </div>
 
-    <!-- 手动输入弹窗 (代码原有的精简结构) -->
+    <!-- 手动输入弹窗 -->
     <div id="manual-modal" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4 fade-in">
         <div class="bg-white w-full max-w-[320px] rounded-[24px] shadow-2xl flex flex-col overflow-hidden">
             <div class="p-4 bg-[#f5f5f7] border-b border-gray-200 flex justify-between items-center">
@@ -702,8 +702,8 @@
                 <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">直腿 R</span><input type="number" id="manual-slr-r" class="border p-2 rounded w-full"></div>
                 <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">髋屈 L</span><input type="number" id="manual-hip-l" class="border p-2 rounded w-full"></div>
                 <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">髋屈 R</span><input type="number" id="manual-hip-r" class="border p-2 rounded w-full"></div>
-                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">肩屈 L</span><input type="number" id="manual-shoulder-l" class="border p-2 rounded w-full"></div>
-                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">肩屈 R</span><input type="number" id="manual-shoulder-r" class="border p-2 rounded w-full"></div>
+                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">肩屈 L</span><input type="number" id="manual-sh-l" class="border p-2 rounded w-full"></div>
+                <div class="flex gap-2 items-center"><span class="w-16 text-sm text-gray-600">肩屈 R</span><input type="number" id="manual-sh-r" class="border p-2 rounded w-full"></div>
                 <button id="btn-submit-manual" class="w-full mt-2 bg-[#1d1d1f] text-white p-3 rounded-xl font-bold">提交数据生成报告</button>
             </div>
         </div>
@@ -712,7 +712,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const staticImageBuffer = document.createElement('canvas');
 
@@ -1406,8 +1406,8 @@
             if (testRecords.slr.R !== null) document.getElementById('manual-slr-r').value = testRecords.slr.R.toFixed(1);
             if (testRecords.hip.L !== null) document.getElementById('manual-hip-l').value = testRecords.hip.L.toFixed(1);
             if (testRecords.hip.R !== null) document.getElementById('manual-hip-r').value = testRecords.hip.R.toFixed(1);
-            if (testRecords.shoulder.L !== null) document.getElementById('manual-shoulder-l').value = testRecords.shoulder.L.toFixed(1);
-            if (testRecords.shoulder.R !== null) document.getElementById('manual-shoulder-r').value = testRecords.shoulder.R.toFixed(1);
+            if (testRecords.shoulder.L !== null) document.getElementById('manual-sh-l').value = testRecords.shoulder.L.toFixed(1);
+            if (testRecords.shoulder.R !== null) document.getElementById('manual-sh-r').value = testRecords.shoulder.R.toFixed(1);
             manualModal.classList.remove('hidden');
         });
         
@@ -1418,8 +1418,8 @@
             const slrR = parseFloat(document.getElementById('manual-slr-r').value);
             const hipL = parseFloat(document.getElementById('manual-hip-l').value);
             const hipR = parseFloat(document.getElementById('manual-hip-r').value);
-            const shL = parseFloat(document.getElementById('manual-shoulder-l').value);
-            const shR = parseFloat(document.getElementById('manual-shoulder-r').value);
+            const shL = parseFloat(document.getElementById('manual-sh-l').value);
+            const shR = parseFloat(document.getElementById('manual-sh-r').value);
 
             if (isNaN(slrL) || isNaN(slrR) || isNaN(hipL) || isNaN(hipR) || isNaN(shL) || isNaN(shR)) {
                 showDialog({ title: '数据不完整', message: '⚠️ 请将所有的 6 个角度数据都填写完整后再生成报告！' });
@@ -1443,7 +1443,6 @@
             try {
                 await tf.setBackend('webgl'); await tf.ready();
                 window.detector = await window.poseDetection.createDetector(window.poseDetection.SupportedModels.MoveNet, { modelType: window.poseDetection.movenet.modelType.SINGLEPOSE_THUNDER });
-                detector = window.detector;
                 document.getElementById('ai-loading').classList.add('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
                 restoreStateLocally();
@@ -1842,8 +1841,8 @@
             document.getElementById('threshold-feedback').innerText = '';
             
             ['slr', 'hip', 'shoulder'].forEach(t => {
-                document.getElementById(`manual-${t === 'shoulder' ? 'shoulder' : t}-l`).value = '';
-                document.getElementById(`manual-${t === 'shoulder' ? 'shoulder' : t}-r`).value = '';
+                document.getElementById(`manual-${t === 'shoulder' ? 'sh' : t}-l`).value = '';
+                document.getElementById(`manual-${t === 'shoulder' ? 'sh' : t}-r`).value = '';
                 const trBox = document.getElementById(`tracker-${t}`);
                 const fText = document.getElementById(`score-${t}-final`);
                 
@@ -1864,7 +1863,6 @@
             updateSaveButtonText(); resetCanvasForNewUpload(); window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // --- 全景报告及历史详情 ---
         function showReportDetails(item) {
             let html = `
                 <div class="mb-5 pb-5 border-b border-gray-100 flex flex-col gap-1.5">
@@ -2146,10 +2144,9 @@
             const isHipIssue = Math.min(hipL, hipR) < 115 || Math.abs(hipL - hipR) > 10;
             const isSlrIssue = Math.min(slrL, slrR) < 75 || Math.abs(slrL - slrR) > 10;
 
-            const cBody = "#9ca3af"; // 灰色身体
-            const cHigh = "#ef4444"; // 红色标警
+            const cBody = "#9ca3af"; 
+            const cHigh = "#ef4444"; 
             
-            // 痛点与伤病筛查逻辑构建
             if (painData.locations.length > 0 || painData.history !== '') {
                 document.getElementById('report-pain-card').classList.remove('hidden');
                 let painReportHTML = '';
@@ -2157,12 +2154,11 @@
                 if (painData.locations.length > 0) {
                     painReportHTML += `<div><span class="font-black">当前主诉痛点：</span><span class="text-rose-600 font-bold">${painData.locations.join('、')}</span></div>`;
                     
-                    // 进行简易因果推导
                     let correlation = "力学推导：";
-                    if (painData.locations.includes('腰背') && (isHipIssue || isSlrIssue)) correlation += "骨盆后侧空间受限极易引起下背部代偿性紧绷，这与您的腰背不适高度吻合。";
-                    else if (painData.locations.includes('颈肩') && isShoulderIssue) correlation += "胸椎/肩带的力学受限，直接导致了颈肩区域肌肉长期处于拉长或死锁状态。";
-                    else if (painData.locations.includes('膝踝') && isSlrIssue) correlation += "大腿后侧腘绳肌的张力异常，通常会改变膝盖的力学轨迹，产生膝踝压迫。";
-                    else correlation += "主诉不适区域的张力需要结合后续动态动作进一步拆解。";
+                    if (painData.locations.includes('腰背') && (isHipIssue || isSlrIssue)) correlation += "骨盆空间受限引发腰椎代偿产生异常剪切力，这通常是腰背不适的力学根源。";
+                    else if (painData.locations.includes('颈肩') && isShoulderIssue) correlation += "胸廓受限或扭转导致肩带失去稳定底座，使颈肩肌群长期处于异常张力下。";
+                    else if (painData.locations.includes('膝踝') && isSlrIssue) correlation += "下肢后侧链张力失衡，直接影响膝踝关节在运动中的承重轨迹与稳定性。";
+                    else correlation += "需结合整体力学评估与动态筛查，进一步确认该痛点的深层张力来源。";
                     
                     painReportHTML += `<div class="mt-1 bg-white/60 p-2.5 rounded-xl border border-rose-100 shadow-sm">${correlation}</div>`;
                 }
@@ -2171,7 +2167,6 @@
                 document.getElementById('report-pain-card').classList.add('hidden');
             }
 
-            // 动态注入精美侧面轮廓 SVG (面向右侧)
             const svgContent = `
                 <svg viewBox="0 0 200 450" class="w-full h-full drop-shadow-md" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -2180,69 +2175,122 @@
                             <stop offset="100%" stop-color="#6b7280" />
                         </linearGradient>
                     </defs>
-                    
-                    <!-- 背景装饰环 -->
                     <circle cx="100" cy="225" r="140" fill="none" stroke="#e5e7eb" stroke-width="2" stroke-dasharray="10 10"/>
-                    
-                    <!-- 头部 (朝右) -->
                     <path d="M 100 30 C 120 30, 125 50, 120 70 C 115 85, 105 90, 100 90 C 85 90, 80 65, 80 50 C 80 35, 85 30, 100 30 Z" fill="${cBody}"/>
-                    
-                    <!-- 颈部 -->
                     <path d="M 100 85 Q 105 105 98 120" fill="none" stroke="${cBody}" stroke-width="18" stroke-linecap="round"/>
-                    
-                    <!-- 胸椎/肩带后侧 -->
                     <path d="M 98 110 Q 75 160 95 210" fill="none" stroke="${isShoulderIssue ? cHigh : cBody}" stroke-width="24" stroke-linecap="round"/>
                     ${isShoulderIssue ? '<circle cx="85" cy="155" r="14" fill="#ef4444" opacity="0.4" class="svg-pulse"/><circle cx="85" cy="155" r="5" fill="#ef4444"/>' : ''}
-
-                    <!-- 腰椎/骨盆上侧 -->
                     <path d="M 95 200 Q 115 240 100 270" fill="none" stroke="${isHipIssue ? cHigh : cBody}" stroke-width="24" stroke-linecap="round"/>
                     ${isHipIssue ? '<circle cx="106" cy="235" r="14" fill="#ef4444" opacity="0.4" class="svg-pulse"/><circle cx="106" cy="235" r="5" fill="#ef4444"/>' : ''}
-
-                    <!-- 骨盆与臀部底端 -->
                     <ellipse cx="94" cy="275" rx="20" ry="26" fill="${(isHipIssue || isSlrIssue) ? cHigh : cBody}" transform="rotate(-15 94 275)"/>
-
-                    <!-- 大腿后侧 (SLR相关链条) -->
                     <path d="M 94 285 Q 85 340 105 390" fill="none" stroke="${isSlrIssue ? cHigh : cBody}" stroke-width="20" stroke-linecap="round"/>
                     ${isSlrIssue ? '<circle cx="92" cy="330" r="14" fill="#ef4444" opacity="0.4" class="svg-pulse"/><circle cx="92" cy="330" r="5" fill="#ef4444"/>' : ''}
-
-                    <!-- 小腿 -->
                     <path d="M 105 380 Q 115 430 105 480" fill="none" stroke="${cBody}" stroke-width="16" stroke-linecap="round"/>
-
-                    <!-- 身体前侧轮廓虚线(胸腹参考线) -->
                     <path d="M 105 110 Q 135 150 120 210 Q 120 250 110 270" fill="none" stroke="#d1d5db" stroke-width="3" stroke-dasharray="4 4"/>
                 </svg>
             `;
             document.getElementById('posture-svg-container').innerHTML = svgContent;
 
-            // 动态注入图例说明
             let labelsHtml = '';
             if(!isShoulderIssue && !isHipIssue && !isSlrIssue) {
-                labelsHtml = '<div class="bg-emerald-50 text-emerald-600 px-3 py-2 rounded-xl text-center font-bold shadow-sm">✨ 测试通过！未发现明显力学受限点</div>';
+                labelsHtml = '<div class="bg-emerald-50 text-emerald-600 px-3 py-2 rounded-xl text-center font-bold shadow-sm">✨ 基础通过！核心力学结构保持相对中立。</div>';
             } else {
-                if(isShoulderIssue) labelsHtml += '<div class="flex items-start gap-2 bg-rose-50 p-2.5 rounded-xl border border-rose-100 shadow-sm"><span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-1 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span><span class="leading-relaxed"><b>胸椎/肩带区域受限：</b><br>肩屈不足提示胸廓前侧空间闭合，或发生躯干代偿。</span></div>';
-                if(isHipIssue) labelsHtml += '<div class="flex items-start gap-2 bg-rose-50 p-2.5 rounded-xl border border-rose-100 shadow-sm"><span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-1 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span><span class="leading-relaxed"><b>腰椎/骨盆上侧张力：</b><br>主动髋屈偏低，提示后上侧髂骨区域外旋/前倾张力过高。</span></div>';
-                if(isSlrIssue) labelsHtml += '<div class="flex items-start gap-2 bg-rose-50 p-2.5 rounded-xl border border-rose-100 shadow-sm"><span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-1 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span><span class="leading-relaxed"><b>骨盆下缘/腘绳肌锁死：</b><br>SLR受限说明坐骨结节下方空间闭合，重心可能过度靠后。</span></div>';
+                if(isShoulderIssue) labelsHtml += '<div class="flex items-start gap-2 bg-rose-50 p-2.5 rounded-xl border border-rose-100 shadow-sm"><span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-1 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span><span class="leading-relaxed"><b>胸廓/肩带受限：</b><br>胸椎灵活性不足或胸廓处于非中立位，影响上肢功能。</span></div>';
+                if(isHipIssue) labelsHtml += '<div class="flex items-start gap-2 bg-rose-50 p-2.5 rounded-xl border border-rose-100 shadow-sm"><span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-1 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span><span class="leading-relaxed"><b>骨盆后上侧张力：</b><br>髂骨发生相对旋转或倾斜，限制了髋关节屈曲空间。</span></div>';
+                if(isSlrIssue) labelsHtml += '<div class="flex items-start gap-2 bg-rose-50 p-2.5 rounded-xl border border-rose-100 shadow-sm"><span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-1 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span><span class="leading-relaxed"><b>下肢后侧链锁死：</b><br>坐骨结节空间闭合，腘绳肌离心控制力不足，骨盆受牵拉。</span></div>';
             }
             document.getElementById('posture-svg-labels').innerHTML = labelsHtml;
             // --- 结束 AI 逻辑区 ---
 
 
-            let pelvicReport = `基于您的数据评估，左侧直抬腿 ${slrL.toFixed(1)}°，右侧 ${slrR.toFixed(1)}°；主动髋屈左侧 ${hipL.toFixed(1)}°，右侧 ${hipR.toFixed(1)}°。这表明您的骨盆可能存在一定程度的前后倾或旋转。建议日常注意坐姿和站姿，避免长时间单侧受力。`;
-            let spineReport = `由于骨盆的代偿，您的腰椎可能承受着额外的压力。长期的姿势不良容易引发腰部酸痛或肌肉僵硬。建议加强核心肌群力量，维持脊柱的稳定。`;
-            let aestheticReport = `在外观上，骨盆与脊柱的微小改变可能会影响腿型和整体体态，如出现轻微的假胯宽或高低肩现象。通过针对性的力学重构，可以有效改善这些视觉上的代偿。`;
-            
-            // 升级：结构化的定制训练计划
-            let trainingReport = `
-                <div class="flex items-start gap-2"><span class="text-[#0071e3]">1.</span> <span><b>骨盆稳定与呼吸重构：</b> 每日 15 分钟 90/90 靠墙呼吸训练，建立核心气压支撑。</span></div>
-                <div class="flex items-start gap-2"><span class="text-[#0071e3]">2.</span> <span><b>受限侧拉伸释放：</b> 针对 ${slrL < slrR ? '左' : '右'}侧 屈髋肌群进行针对性离心拉伸。</span></div>
-                <div class="flex items-start gap-2"><span class="text-[#0071e3]">3.</span> <span><b>力学平衡强化：</b> 强化臀大肌及腘绳肌力量，重建腰盆骨复合体张力关系。</span></div>
-                <div class="flex items-start gap-2 text-white"><span class="text-emerald-400">★</span> <span><b>ST 工作室建议：</b> 每周进行 2-3 次线下系统干预训练，效果最佳。</span></div>
-            `;
+            // --- 重构：基于力学原理的专业形态诊断引擎 ---
+            let pelvicStatus = "骨盆中立位";
+            let spineStatus = "脊柱生理曲度正常";
+            let aestheticStatus = "体态框架对称均衡";
+            let trainingPlan = "";
 
-            document.getElementById('final-pelvic-orientation').innerText = pelvicReport;
-            document.getElementById('spine-analysis').innerText = spineReport;
-            document.getElementById('aesthetic-analysis').innerText = aestheticReport;
-            document.getElementById('training-plan-analysis').innerHTML = trainingReport;
+            const slrDiff = slrL - slrR;
+            const hipDiff = hipL - hipR;
+            const shDiff = shL - shR;
+            
+            const isLeftAIC = (slrL < slrR && hipL > hipR) || (slrL < 70 && slrR > 80); 
+            const isAnteriorTilt = (hipL < 110 && hipR < 110) || (slrL > 90 && slrR > 90);
+            const isPosteriorTilt = (slrL < 65 && slrR < 65) || (hipL > 125 && hipR > 125);
+            const isRotated = Math.abs(slrDiff) > 12 || Math.abs(hipDiff) > 12;
+
+            // 1. 骨盆诊断
+            if (isLeftAIC) {
+                pelvicStatus = `**Left AIC 模式 (左侧髂骨前倾外旋 / 右侧髂骨后倾内旋)**\n基于您的测试数据，左腿直抬腿明显低于右侧，且髋屈受限不对称。这提示您的骨盆系统处于一种向右旋转的偏置状态。您的重心可能习惯性地压在右腿，导致左侧骨盆向前、向下掉落，左侧腹股沟区域处于被拉长无力的状态，而右侧臀部则长期紧绷。`;
+            } else if (isAnteriorTilt) {
+                pelvicStatus = `**双侧骨盆前倾 (Anterior Pelvic Tilt)**\n主动髋屈双侧均受限或直腿抬高角度过大，提示您的骨盆整体向前下方倾倒。您的重心过度前移，屈髋肌群（如髂腰肌）和下背部竖脊肌处于长期短缩死锁状态，而腹部核心和臀部肌群则被拉长、难以发力。`;
+            } else if (isPosteriorTilt) {
+                pelvicStatus = `**双侧骨盆后倾 (Posterior Pelvic Tilt)**\n直腿抬高双侧严重受限，提示骨盆整体向后翻转。坐骨结节过度靠近膝盖后侧，导致腘绳肌（大腿后侧）处于极度紧张的短缩状态。这使得您在站立时重心容易靠后，缺乏向前的推进力。`;
+            } else if (isRotated) {
+                const limitedSide = slrL < slrR ? "左侧" : "右侧";
+                pelvicStatus = `**骨盆旋转/侧移失衡**\n左右两侧数据差异超过10°，提示骨盆存在明显的单侧旋转或高低骨盆现象。${limitedSide}的骨盆空间显著闭合，这通常与长期单侧承重、跷二郎腿或特定运动习惯有关，导致一侧腰方肌和臀中肌长期代偿发力。`;
+            } else {
+                pelvicStatus = `**骨盆中立位 (Neutral Pelvis)**\n您的左右侧直腿抬高和主动髋屈数据均在健康阈值内且相对对称。这表明您的骨盆前后倾与旋转幅度都在良好的容错空间内，拥有优秀的下肢力学传导基础。`;
+            }
+
+            // 2. 脊柱诊断
+            if (isLeftAIC || isRotated) {
+                spineStatus = `**胸腰联合段代偿性扭转**\n当骨盆发生不对称旋转时，为了让人体在走路时保持面部朝前，您的脊柱（特别是腰椎和下胸椎）必须发生相反方向的反向扭转。这种“拧毛巾”式的张力长期存在，极易导致单侧腰肌劳损、小关节突摩擦，是慢性单侧腰背痛的核心隐患。`;
+            } else if (isAnteriorTilt) {
+                spineStatus = `**腰椎曲度过大 (Hyperlordosis)**\n骨盆前倾直接导致腰椎前凸角度增加。腰椎后侧的小关节承受了过度的挤压应力，这使得您在久站、过头推举或深蹲时，下背部极易感到酸胀僵硬。`;
+            } else if (isPosteriorTilt) {
+                spineStatus = `**腰椎曲度变直 (Flat Back)**\n骨盆后倾拉平了原本应有的腰椎生理前凸。当脊柱失去避震的“弹簧”结构时，重力会直接垂直冲击椎间盘，增加椎间盘膨出或突出的风险，同时胸椎也容易为了代偿而变得更加僵直。`;
+            } else {
+                spineStatus = `**脊柱序列良好**\n骨盆的稳定为脊柱提供了坚实的底座。若肩屈角度同样对称且达标，说明您的胸廓未发生明显偏移，脊柱处于相对健康的受力环境中。`;
+            }
+
+            // 3. 外观代偿诊断
+            if (isLeftAIC || isRotated) {
+                aestheticStatus = `**不对称外观特征：**\n在体态上，这种力学模式极易表现为：\n- 明显的高低肩或身体侧弯。\n- 站立时发现一侧腿似乎更“长”或更受力。\n- 出现单侧的“假胯宽”（因股骨内旋程度不同导致大转子更凸出）。`;
+            } else if (isAnteriorTilt) {
+                aestheticStatus = `**前倾外观特征：**\n视觉上最典型的表现为“骨盆前倾伪塌腰”。即使体脂率较低，由于骨盆前翻，小腹也会显得向前凸出；同时，由于大腿前侧长期代偿发力，往往容易出现大腿前侧肌肉粗壮。`;
+            } else if (isPosteriorTilt) {
+                aestheticStatus = `**后倾外观特征：**\n视觉上常表现为“扁平臀”和含胸驼背（Sway Back）。由于臀肌被拉长且不参与发力，臀部很难练出饱满度；同时，为了平衡重心的后移，上半身往往会向前探出，形成颈部前倾。`;
+            } else {
+                aestheticStatus = `**视觉框架端正：**\n您的整体肌肉张力均衡，体态在重力线上下相对垂直，这是进行高效力量训练和塑形的最佳前提。`;
+            }
+
+            // 4. 训练方案
+            if (isLeftAIC || isRotated) {
+                const weakSide = slrL < slrR ? "左侧" : "右侧";
+                const tightSide = slrL < slrR ? "右侧" : "左侧";
+                trainingPlan = `
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">1.</span> <span><b>重新建立 ${weakSide} 支撑：</b> 针对 ${weakSide} 腘绳肌及内收肌进行等长/离心强化，找回踩地感。</span></div>
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">2.</span> <span><b>释放 ${tightSide} 压缩：</b> 对 ${tightSide} 的后表链（臀大肌深层、梨状肌）进行呼吸拉伸，打开受限空间。</span></div>
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">3.</span> <span><b>胸廓气压对抗：</b> 引入单侧负载练习（如单臂农夫行走），对抗脊柱旋转。</span></div>
+                `;
+            } else if (isAnteriorTilt) {
+                trainingPlan = `
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">1.</span> <span><b>呼吸重启（死虫子）：</b> 重点练习完全呼气，下放胸骨，体会腹外斜肌与骨盆的连接张力。</span></div>
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">2.</span> <span><b>后表链激活：</b> 增加臀大肌主导的髋伸训练（如臀桥），取代大腿前侧发力。</span></div>
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">3.</span> <span><b>前侧释放：</b> 针对髂腰肌、股直肌进行持续的静态伸展。</span></div>
+                `;
+            } else if (isPosteriorTilt) {
+                trainingPlan = `
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">1.</span> <span><b>后侧离心强化：</b> 大量引入罗马尼亚硬拉 (RDL) 变式，教导骨盆如何在拉长腘绳肌的情况下完成前倾。</span></div>
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">2.</span> <span><b>前表链支撑：</b> 强化髂腰肌的主动屈髋能力，恢复骨盆向前转动的灵活性。</span></div>
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">3.</span> <span><b>胸椎灵活性：</b> 加入 T-Spine 旋转训练，打破上下半身僵硬的联动。</span></div>
+                `;
+            } else {
+                trainingPlan = `
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">1.</span> <span><b>高阶核心抗扰动：</b> 您的基础非常好，可直接进行抗伸展、抗旋转的核心挑战。</span></div>
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">2.</span> <span><b>多平面力量发展：</b> 加入侧向弓箭步、旋转抛掷等多维度的动力链训练。</span></div>
+                    <div class="flex items-start gap-2"><span class="text-[#0071e3]">3.</span> <span><b>渐进超负荷：</b> 放心增加深蹲、硬拉等复合动作的负重，稳固力学根基。</span></div>
+                `;
+            }
+            trainingPlan += `<div class="flex items-start gap-2 text-white"><span class="text-emerald-400">★</span> <span><b>ST 工作室嘱托：</b> 请扫描右侧二维码，查看对应您体态类型的干预动作演示！</span></div>`;
+
+            // 解析 Markdown 粗体为 HTML
+            const formatReport = (text) => text.replace(/\*\*(.*?)\*\*/g, '<span class="text-[#1d1d1f] font-black">$1</span>').replace(/\n/g, '<br>');
+
+            document.getElementById('final-pelvic-orientation').innerHTML = formatReport(pelvicStatus);
+            document.getElementById('spine-analysis').innerHTML = formatReport(spineStatus);
+            document.getElementById('aesthetic-analysis').innerHTML = formatReport(aestheticStatus);
+            document.getElementById('training-plan-analysis').innerHTML = trainingPlan;
             
             const circContent = document.getElementById('report-circumference-content');
             if (Object.values(circumferenceData).some(v => v !== '')) {
@@ -2269,9 +2317,9 @@
                 hipL: hipL, hipR: hipR,
                 shL: shL, shR: shR,
                 result: 'ST私教工作室专业评估完成',
-                reportPelvic: pelvicReport,
-                reportSpine: spineReport,
-                reportAesthetic: aestheticReport,
+                reportPelvic: pelvicStatus,
+                reportSpine: spineStatus,
+                reportAesthetic: aestheticStatus,
                 reportTraining: '专属打卡计划已生成'
             });
             
