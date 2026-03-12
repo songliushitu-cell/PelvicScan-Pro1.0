@@ -309,14 +309,16 @@
                 
                 <div class="text-center mt-4 mb-2 relative z-10 w-full">
                     <span class="inline-flex items-center justify-center bg-[#1d1d1f] text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3 shadow-md">
-                        FORMA Assessment Report
+                        POSTURE REPORT GENERATED
                     </span>
-                    <div id="final-result-title" class="text-[24px] font-black tracking-tight text-[#1d1d1f] leading-snug">获取中...</div>
+                    <!-- 动态副标题与主标题 -->
+                    <div id="report-subtitle" class="text-[12px] text-gray-500 font-bold mt-2">系统评估：获取中...</div>
+                    <div id="report-maintitle" class="text-[26px] font-black tracking-tight text-[#1d1d1f] leading-snug mt-1">获取中...</div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full items-start relative z-10">
                     
-                    <!-- 新增：主观伤病风险简报 -->
+                    <!-- 主观伤病风险简报 (保留的新功能) -->
                     <div id="report-pain-card" class="hidden w-full bg-rose-50 border border-rose-100 p-5 rounded-[24px] shadow-sm md:col-span-2">
                         <div class="flex items-center gap-2 mb-3 pb-2 border-b border-rose-200/50">
                             <div class="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center">
@@ -324,12 +326,10 @@
                             </div>
                             <span class="text-[14px] font-bold text-rose-700">主观不适与伤病风险提示</span>
                         </div>
-                        <div id="final-pain-report" class="flex flex-col gap-2 text-[13px] text-rose-900 leading-relaxed font-medium">
-                            <!-- JS 动态注入 -->
-                        </div>
+                        <div id="final-pain-report" class="flex flex-col gap-2 text-[13px] text-rose-900 leading-relaxed font-medium"></div>
                     </div>
 
-                    <!-- AI 张力映射图模块 -->
+                    <!-- AI 张力映射图模块 (保留的新功能) -->
                     <div class="w-full bg-white p-6 rounded-[24px] border border-gray-100 apple-shadow flex flex-col items-center justify-center md:col-span-2">
                         <div class="text-[15px] font-bold text-[#1d1d1f] mb-4 flex items-center gap-2 w-full border-b border-gray-100 pb-3">
                             <div class="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center">
@@ -338,17 +338,45 @@
                             FORMA AI 张力映射图
                         </div>
                         <div class="flex flex-col sm:flex-row items-center w-full justify-around gap-6">
-                            <!-- SVG 容器 -->
-                            <div id="posture-svg-container" class="w-[180px] h-[300px] relative bg-[#f5f5f7] rounded-3xl border border-gray-200 shadow-inner flex items-center justify-center p-4">
-                                <!-- JS 动态注入 SVG -->
-                            </div>
-                            <!-- 动态图例说明 -->
-                            <div id="posture-svg-labels" class="flex flex-col gap-3 text-[13px] text-[#515154] max-w-[280px]">
-                                <!-- JS 动态注入说明 -->
-                            </div>
+                            <div id="posture-svg-container" class="w-[180px] h-[300px] relative bg-[#f5f5f7] rounded-3xl border border-gray-200 shadow-inner flex items-center justify-center p-4"></div>
+                            <div id="posture-svg-labels" class="flex flex-col gap-3 text-[13px] text-[#515154] max-w-[280px]"></div>
                         </div>
                     </div>
 
+                    <!-- 恢复旧版：骨盆与测试数据模块 (左列) -->
+                    <div class="w-full bg-[#f8fafc] p-6 rounded-[24px] shadow-sm border border-blue-100 h-full">
+                        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-blue-200/50">
+                            <span class="text-[16px]">❄️</span>
+                            <span class="text-[15px] font-bold text-blue-600 tracking-wide">骨盆 3D 空间与张力定位</span>
+                        </div>
+                        <div id="final-pelvic-orientation" class="flex flex-col gap-3 text-[13px] text-[#515154] leading-relaxed">
+                            <!-- JS 动态注入专属测试数据框和文本 -->
+                        </div>
+                    </div>
+
+                    <!-- 恢复旧版：脊柱模块 (右列) -->
+                    <div class="w-full bg-[#fefce8] border border-yellow-100 p-6 rounded-[24px] shadow-sm h-full">
+                        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-yellow-200/50">
+                            <span class="text-[16px]">⚠️</span>
+                            <span class="text-[15px] font-bold text-yellow-700 tracking-wide">腰椎危机与病理性疼痛溯源</span>
+                        </div>
+                        <div id="spine-analysis" class="flex flex-col gap-4 text-[13px] text-[#515154] leading-relaxed">
+                            <!-- JS 动态注入 -->
+                        </div>
+                    </div>
+
+                    <!-- 恢复旧版：外观代偿与 PRI 模型模块 (横跨两列) -->
+                    <div class="w-full bg-[#fff1f2] p-6 rounded-[24px] border border-rose-100 shadow-sm md:col-span-2">
+                        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-rose-200/50">
+                            <span class="text-[16px]">🎯</span>
+                            <span class="text-[15px] font-bold text-pink-600 tracking-wide">外观代偿与腿型重构分析</span>
+                        </div>
+                        <div id="aesthetic-analysis" class="flex flex-col gap-3 text-[13px] text-[#515154] leading-relaxed">
+                            <!-- JS 动态注入临床声明及 PRI 黑框 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 身体围度 (保留) -->
                     <div id="report-circumference-card" class="hidden w-full bg-[#f0fdf4]/50 border border-emerald-100/60 p-5 rounded-[24px] apple-shadow md:col-span-2">
                         <div class="flex items-center gap-2 mb-4 pb-3 border-b border-emerald-100">
                             <div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
@@ -356,44 +384,10 @@
                             </div>
                             <span class="text-[14px] font-bold text-[#059669]">身体围度与形态基准数据</span>
                         </div>
-                        <div id="report-circumference-content" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[13px] font-medium text-[#1d1d1f]">
-                        </div>
+                        <div id="report-circumference-content" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[13px] font-medium text-[#1d1d1f]"></div>
                     </div>
 
-                    <div class="w-full apple-glass p-5 rounded-[24px] shadow-sm border border-[#0071e3]/10 h-full">
-                        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200/50">
-                            <div class="w-6 h-6 rounded-full bg-[#0071e3]/10 flex items-center justify-center">
-                                <svg class="w-3.5 h-3.5 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>
-                            </div>
-                            <span class="text-[14px] font-bold text-[#1d1d1f]">骨盆 3D 空间与张力定位</span>
-                        </div>
-                        <div id="final-pelvic-orientation" class="flex flex-col gap-3 text-[13px] text-[#515154] leading-relaxed">
-                        </div>
-                    </div>
-
-                    <div class="w-full bg-white border border-gray-100 p-6 rounded-[24px] apple-shadow h-full">
-                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-                            <div class="w-7 h-7 rounded-full bg-amber-50 flex items-center justify-center">
-                                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            </div>
-                            <span class="text-[15px] font-bold text-[#1d1d1f]">腰椎危机与病理性疼痛溯源</span>
-                        </div>
-                        <div id="spine-analysis" class="flex flex-col gap-3.5 text-[13px] text-[#515154] leading-relaxed">
-                        </div>
-                    </div>
-
-                    <div class="w-full bg-[#fdf2f2] p-6 rounded-[24px] border border-rose-100/50 apple-shadow md:col-span-2">
-                        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-rose-200/50">
-                            <div class="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center">
-                                <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </div>
-                            <span class="text-[15px] font-bold text-[#e11d48]">外观代偿与腿型重构分析</span>
-                        </div>
-                        <div id="aesthetic-analysis" class="flex flex-col gap-3.5 text-[13px] text-[#515154] leading-relaxed">
-                        </div>
-                    </div>
-                    
-                    <!-- 升级：训练计划及打卡模块 -->
+                    <!-- 专属训练与二维码 (保留) -->
                     <div class="w-full bg-[#1d1d1f] p-6 rounded-[24px] shadow-lg md:col-span-2 mt-1 relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-40 h-40 bg-[#0071e3] opacity-20 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="flex items-center gap-3 mb-5 pb-4 border-b border-gray-700 relative z-10">
@@ -402,24 +396,16 @@
                             </div>
                             <span class="text-[16px] font-black text-white tracking-wide">专属处方与每日打卡 (Home Program)</span>
                         </div>
-                        
                         <div class="flex flex-col sm:flex-row items-center gap-6 relative z-10">
-                            <div id="training-plan-analysis" class="flex-1 flex flex-col gap-4 text-[13.5px] text-gray-300 leading-relaxed font-medium">
-                                <!-- JS 动态注入具体训练文字 -->
-                            </div>
-                            
+                            <div id="training-plan-analysis" class="flex-1 flex flex-col gap-4 text-[13.5px] text-gray-300 leading-relaxed font-medium"></div>
                             <div class="flex flex-col items-center bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur w-full sm:w-auto shrink-0">
                                 <div class="bg-white p-2 rounded-xl shadow-lg mb-3">
-                                    <!-- 高清 SVG 二维码占位图 -->
                                     <svg class="w-24 h-24 text-[#1d1d1f]" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                                         <rect width="100" height="100" fill="white"/>
-                                        <!-- 三个定位角 -->
                                         <path d="M10,10 h25 v25 h-25 z M15,15 h15 v15 h-15 z M20,20 h5 v5 h-5 z" fill="currentColor"/>
                                         <path d="M65,10 h25 v25 h-25 z M70,15 h15 v15 h-15 z M75,20 h5 v5 h-5 z" fill="currentColor"/>
                                         <path d="M10,65 h25 v25 h-25 z M15,70 h15 v15 h-15 z M20,75 h5 v5 h-5 z" fill="currentColor"/>
-                                        <!-- 伪造的中间数据点 -->
                                         <path d="M45,10 h10 v5 h-10 z M50,20 h5 v15 h-5 z M40,30 h20 v5 h-20 z M10,45 h20 v5 h-20 z M40,45 h15 v5 h-15 z M65,45 h25 v5 h-25 z M20,55 h10 v10 h-10 z M45,55 h30 v5 h-30 z M40,65 h10 v25 h-10 z M60,65 h20 v10 h-20 z M75,80 h15 v10 h-15 z M55,80 h10 v10 h-10 z" fill="currentColor"/>
-                                        <!-- 中间的小Logo占位 -->
                                         <circle cx="50" cy="50" r="10" fill="white"/>
                                         <text x="50" y="54" font-size="10" font-weight="bold" fill="#0071e3" text-anchor="middle">ST</text>
                                     </svg>
@@ -437,7 +423,6 @@
                         <span class="text-[10px] text-[#86868b] font-medium" id="report-time-stamp">生成时间：--</span>
                         <span class="text-[10px] text-gray-400 mt-0.5" id="report-client-name"></span>
                     </div>
-                    <!-- 升级：工作室专属水印标识 -->
                     <div class="flex flex-col items-end">
                         <span class="text-[15px] font-black tracking-tighter text-[#1d1d1f]">ST私教工作室</span>
                         <span class="text-[9px] font-bold tracking-widest text-[#0071e3] uppercase mt-0.5 bg-blue-50 px-1.5 py-0.5 rounded">Powered by FORMA</span>
@@ -478,16 +463,13 @@
                 </h2>
                 <button type="button" id="btn-close-history" class="text-[#86868b] hover:text-[#1d1d1f] p-1 bg-white rounded-full shadow-sm border border-gray-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            
             <div class="px-5 py-4 bg-white border-b border-gray-100 shadow-sm z-10 relative">
                 <div class="relative flex items-center">
                     <svg class="w-5 h-5 absolute left-3 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     <input type="text" id="search-history-input" placeholder="输入客户姓名搜索档案..." class="w-full bg-[#f5f5f7] border border-blue-100/50 rounded-[14px] pl-10 pr-4 py-3 text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#0071e3]/30 focus:border-[#0071e3] transition-all placeholder-gray-400">
                 </div>
             </div>
-            
             <div id="history-list" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar bg-gray-50/50"></div>
-            
             <div class="p-4 bg-white border-t border-gray-100 flex flex-col gap-2">
                 <button type="button" id="btn-compare-selected" class="w-full py-3.5 text-[14px] font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl transition-all shadow-md hidden animate-[pulse_2s_ease-in-out_infinite]">
                     📈 生成选定档案的【全景对比报告】
@@ -690,7 +672,7 @@
         </div>
     </div>
 
-    <!-- 手动输入弹窗 -->
+    <!-- 手动输入弹窗 (修复报错的 ID) -->
     <div id="manual-modal" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4 fade-in">
         <div class="bg-white w-full max-w-[320px] rounded-[24px] shadow-2xl flex flex-col overflow-hidden">
             <div class="p-4 bg-[#f5f5f7] border-b border-gray-200 flex justify-between items-center">
@@ -1480,7 +1462,6 @@
                 canvas.width = videoElement.videoWidth; canvas.height = videoElement.videoHeight;
                 isLiveTracking = true; canvasContainer.classList.remove('hidden'); liveOverlay.classList.remove('hidden');
                 
-                // --- 新增滚动定位：在手机竖屏时，自动把摄像头画面顶到屏幕可见范围内 ---
                 setTimeout(() => {
                     canvasContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 100);
@@ -1600,19 +1581,46 @@
             const tType = document.querySelector('input[name="testType"]:checked').value;
             const offset = canvas.height * 0.04; 
 
+            // --- 核心修复：彻底抛弃“对侧腿”，改用“躯干延长线”作为绝对水平基准 ---
+            // 计算躯干向量 (从肩膀指向髋部)，这根虚拟线在人体平躺时，完美平行于床面且不受手机倾斜影响！
+            const vectorX = hip.x - shoulder.x;
+            const vectorY = hip.y - shoulder.y;
+            const len = Math.sqrt(vectorX * vectorX + vectorY * vectorY) || 1;
+            const normX = vectorX / len;
+            const normY = vectorY / len;
+            
+            // 生成床面基准点 (顺着躯干方向向脚部延伸出的一个稳定锚点)
+            const bedPoint = { 
+                x: hip.x + normX * (canvas.width * 0.4), 
+                y: hip.y + normY * (canvas.width * 0.4), 
+                score: 1 
+            };
+
             if (tType === 'slr') {
-                const isLeftHigher = lAnkle.y < rAnkle.y; const testAnkle = (isLeftHigher && lAnkle.score > 0.1) ? lAnkle : rAnkle; const restAnkle = testAnkle === lAnkle ? rAnkle : lAnkle;
+                // 找出画面中位置更高（y值更小）的脚踝作为测试抬起的腿，忽略另一条腿
+                const isLeftHigher = lAnkle.y < rAnkle.y; 
+                const testAnkle = (isLeftHigher && lAnkle.score > 0.1) ? lAnkle : rAnkle;
                 const buttock = { x: hip.x, y: hip.y + offset, score: hip.score };
-                let bed = restAnkle.score > 0.2 ? { ...restAnkle } : { x: buttock.x + (hip.x > shoulder.x ? 1 : -1) * (canvas.width * 0.3), y: buttock.y, score: 1 };
-                activePoints = [bed, buttock, { ...testAnkle }];
+                
+                // 锚点绑定：躯干延长线上的床面点 -> 髋关节中枢 -> 抬起的脚踝
+                activePoints = [bedPoint, buttock, { ...testAnkle }];
             } else if (tType === 'hip') {
-                const isLeftHigher = lKnee.y < rKnee.y; const testKnee = (isLeftHigher && lKnee.score > 0.1) ? lKnee : rKnee; const restAnkle = testKnee === lKnee ? rAnkle : lAnkle; const restKnee = testKnee === lKnee ? rKnee : lKnee;
+                // 找出位置更高的膝盖作为测试腿
+                const isLeftHigher = lKnee.y < rKnee.y; 
+                const testKnee = (isLeftHigher && lKnee.score > 0.1) ? lKnee : rKnee; 
                 const buttock = { x: hip.x, y: hip.y + offset, score: hip.score };
-                let bed = restAnkle.score > 0.2 ? { ...restAnkle } : (restKnee.score > 0.2 ? { ...restKnee } : { x: buttock.x + (hip.x > shoulder.x ? 1 : -1) * (canvas.width * 0.3), y: buttock.y, score: 1 });
-                activePoints = [bed, buttock, { ...testKnee }];
+                
+                // 锚点绑定：躯干延长线上的床面点 -> 髋关节中枢 -> 抬起的膝盖
+                activePoints = [bedPoint, buttock, { ...testKnee }];
             } else {
-                const isLeftHigher = lElbow.y < rElbow.y; const testElbow = (isLeftHigher && lElbow.score > 0.1) ? lElbow : rElbow;
-                activePoints = [ { x: hip.x, y: hip.y + offset, score: hip.score }, { x: shoulder.x, y: shoulder.y + offset, score: shoulder.score }, { ...testElbow } ];
+                // 肩屈：以 骨盆 -> 肩膀 的躯干中轴线为基准，计算手臂抬起的相对角度
+                const isLeftHigher = lElbow.y < rElbow.y; 
+                const testElbow = (isLeftHigher && lElbow.score > 0.1) ? lElbow : rElbow;
+                activePoints = [ 
+                    { x: hip.x, y: hip.y + offset, score: hip.score }, 
+                    { x: shoulder.x, y: shoulder.y + offset, score: shoulder.score }, 
+                    { ...testElbow } 
+                ];
             }
 
             if (!isLive) activePoints.forEach((p, i) => { if (p.x === 0 && p.y === 0) { p.x = canvas.width * (0.3 + i * 0.2); p.y = canvas.height * 0.5; } });
@@ -1863,6 +1871,7 @@
             updateSaveButtonText(); resetCanvasForNewUpload(); window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
+        // --- 全景报告及历史详情 ---
         function showReportDetails(item) {
             let html = `
                 <div class="mb-5 pb-5 border-b border-gray-100 flex flex-col gap-1.5">
@@ -1906,42 +1915,17 @@
 
                 if(item.reportPelvic || item.reportSpine || item.reportAesthetic) {
                     if (item.reportPelvic) {
-                        html += `<div class="bg-white border border-[#0071e3]/20 p-4 rounded-2xl mb-4 shadow-sm"><div class="text-[14px] font-bold text-[#1d1d1f] mb-3 pb-2 border-b border-gray-100 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-[#0071e3]/10 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg></div>骨盆 3D 空间与张力定位</div><div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3">${item.reportPelvic}</div></div>`;
+                        html += `<div class="bg-[#f8fafc] border border-blue-100 p-4 rounded-2xl mb-4 shadow-sm"><div class="text-[14px] font-bold text-blue-600 mb-3 pb-2 border-b border-blue-200/50 flex items-center gap-2"><span class="text-[16px]">❄️</span>骨盆 3D 空间与张力定位</div><div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3">${item.reportPelvic}</div></div>`;
                     }
                     if (item.reportSpine) {
-                        html += `<div class="bg-white border border-amber-100 p-4 rounded-2xl mb-4 shadow-sm"><div class="text-[14px] font-bold text-[#1d1d1f] mb-3 pb-2 border-b border-gray-100 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>腰椎危机与病理性疼痛溯源</div><div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3.5">${item.reportSpine}</div></div>`;
+                        html += `<div class="bg-[#fefce8] border border-yellow-100 p-4 rounded-2xl mb-4 shadow-sm"><div class="text-[14px] font-bold text-yellow-700 mb-3 pb-2 border-b border-yellow-200/50 flex items-center gap-2"><span class="text-[16px]">⚠️</span>腰椎危机与病理性疼痛溯源</div><div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3.5">${item.reportSpine}</div></div>`;
                     }
                     if (item.reportAesthetic) {
-                        html += `<div class="bg-[#fdf2f2] border border-rose-100/60 p-4 rounded-2xl mb-2 shadow-sm"><div class="text-[14px] font-bold text-[#e11d48] mb-3 pb-2 border-b border-rose-200/50 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>外观代偿与腿型重构分析</div><div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3.5">${item.reportAesthetic}</div></div>`;
+                        html += `<div class="bg-[#fff1f2] border border-rose-100 p-4 rounded-2xl mb-2 shadow-sm"><div class="text-[14px] font-bold text-pink-600 mb-3 pb-2 border-b border-rose-200/50 flex items-center gap-2"><span class="text-[16px]">🎯</span>外观代偿与腿型重构分析</div><div class="text-[13px] text-[#515154] leading-relaxed flex flex-col gap-3.5">${item.reportAesthetic}</div></div>`;
                     }
                     if (item.reportTraining) {
-                        html += `<div class="bg-[#f0fdf4] border border-emerald-100/60 p-4 rounded-2xl mb-2 shadow-sm mt-3"><div class="text-[14px] font-black text-[#059669] mb-3 pb-2 border-b border-emerald-200/50 flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center"><svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg></div>专属力学重构训练方案</div><div class="text-[13px] text-[#3f6212] leading-relaxed flex flex-col gap-3.5">${item.reportTraining}</div></div>`;
+                        html += `<div class="bg-[#1d1d1f] p-6 rounded-[24px] shadow-lg mt-3"><div class="text-[14px] font-black text-white mb-3 pb-2 border-b border-gray-700 flex items-center gap-2">专属处方与每日打卡</div><div class="text-[13px] text-gray-300 leading-relaxed flex flex-col gap-3.5">${item.reportTraining}</div></div>`;
                     }
-                } else {
-                    const slrDiff = (parseFloat(item.slrL) - parseFloat(item.slrR)).toFixed(1);
-                    const hipDiff = (parseFloat(item.hipL) - parseFloat(item.hipR)).toFixed(1);
-                    const shDiff = (parseFloat(item.shL) - parseFloat(item.shR)).toFixed(1);
-
-                    html += `
-                        <p class="text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center gap-1.5"><svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>系统形态溯源详细结论：</p>
-                        <div class="bg-[#fdf2f2] border border-rose-100 p-4 rounded-2xl text-[13.5px] text-[#1d1d1f] leading-loose font-medium shadow-inner flex flex-col gap-3">
-                            <p class="font-bold text-[#e11d48] border-b border-rose-200/50 pb-2">${item.result}</p>
-                            <div>
-                                <p class="font-semibold text-[#1d1d1f] text-[12px] mb-2">📐 测试数据左右侧对比分析：</p>
-                                <ul class="list-disc pl-5 space-y-2 text-[12px] text-[#515154]">
-                                    <li><b>直腿抬高 (骨盆后下侧)：</b> 左侧 ${item.slrL}° / 右侧 ${item.slrR}° 
-                                        <br><span class="text-[#86868b]">${Math.abs(slrDiff) > 5 ? `(相差 ${Math.abs(slrDiff)}°，说明存在明显的骨盆扭转或单侧后侧受限)` : '(左右基本对称)'}</span>
-                                    </li>
-                                    <li><b>主动髋屈 (骨盆后上侧)：</b> 左侧 ${item.hipL}° / 右侧 ${item.hipR}° 
-                                        <br><span class="text-[#86868b]">${Math.abs(hipDiff) > 5 ? `(相差 ${Math.abs(hipDiff)}°，指示骨盆的一侧可能更向前方倾倒)` : '(左右基本对称)'}</span>
-                                    </li>
-                                    <li><b>主动肩屈 (胸廓前侧)：</b> 左侧 ${item.shL}° / 右侧 ${item.shR}° 
-                                        <br><span class="text-[#86868b]">${Math.abs(shDiff) > 5 ? `(相差 ${Math.abs(shDiff)}°，表明胸廓伴随骨盆发生了代偿性扭转)` : '(左右基本对称)'}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    `;
                 }
             } else if (item.type === 'photos') {
                 html += `<p class="text-[13px] font-bold text-pink-600 mb-3 flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg> 本次体态特写留影：</p>`;
@@ -1954,178 +1938,12 @@
                 html += `</div>`;
             } else {
                 let painTag = item.painData ? `<span class="ml-2 text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded">有主诉</span>` : '';
-                contentHTML += `<div class="flex justify-between items-start mb-3"><div class="flex flex-col">${nameTag}<span class="text-[10px] font-semibold text-[#86868b] mt-0.5">${item.date}${painTag}</span></div><span class="text-[9px] font-black text-white bg-[#0071e3] px-2 py-1 rounded-full shadow-sm shrink-0">专业评估</span></div><div class="text-[13px] font-bold text-[#1d1d1f] mb-3 leading-relaxed bg-blue-50/50 p-2 rounded-lg border border-blue-100/50 line-clamp-2">${item.result}</div><div class="grid grid-cols-3 gap-1.5 text-center"><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">SLR直抬腿</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.slrL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.slrR}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动髋屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.hipL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.hipR}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动肩屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.shL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.shR}°</span></div></div>`;
+                html += `<div class="flex flex-col gap-4 mt-2"><div class="flex justify-between items-center bg-[#f5f5f7] p-5 rounded-2xl border border-gray-100 shadow-sm"><span class="text-[15px] font-bold text-[#86868b] tracking-wide">${item.name}</span><span class="text-[32px] font-mono font-black text-[#0071e3] tracking-tighter">${item.angle}°</span></div></div>`;
             }
 
             reportDetailContent.innerHTML = html;
             historyModal.classList.add('hidden');
             reportDetailModal.classList.remove('hidden');
-        }
-
-        function generateComparisonReport(records) {
-            const oldRecord = records[0];
-            const newRecord = records[records.length - 1];
-
-            const getDiffHtml = (oldV, newV, unit = '°') => {
-                if (!oldV || !newV) return `<span class="text-gray-400 font-bold">-</span>`;
-                const diff = (parseFloat(newV) - parseFloat(oldV)).toFixed(1);
-                if (diff > 0) return `<span class="text-emerald-500 font-bold flex items-center justify-center gap-0.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg> ${diff}${unit}</span>`;
-                if (diff < 0) return `<span class="text-rose-500 font-bold flex items-center justify-center gap-0.5"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg> ${Math.abs(diff)}${unit}</span>`;
-                return `<span class="text-gray-400 font-bold flex items-center justify-center">0.0${unit}</span>`;
-            };
-
-            let html = `
-                <div class="mb-4 text-center">
-                    <span class="font-black text-[#1d1d1f] text-[20px] tracking-tight block">${oldRecord.clientName} 的全景追踪档案</span>
-                    <span class="text-[11px] text-[#86868b] font-medium block mt-1 bg-white inline-block px-3 py-1 rounded-full shadow-sm border border-gray-100">追踪跨度: ${oldRecord.date.split(' ')[0]} ➔ ${newRecord.date.split(' ')[0]} (共${records.length}次评估)</span>
-                </div>
-
-                <div class="bg-white p-4 rounded-[20px] shadow-sm border border-gray-100 mb-4">
-                    <p class="text-[14px] font-bold text-[#1d1d1f] mb-3 flex items-center gap-1.5 border-b border-gray-50 pb-2"><svg class="w-4 h-4 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> 关节活动度总结算</p>
-                    <div class="grid grid-cols-4 gap-2 text-[11px] font-bold text-[#86868b] border-b border-gray-50 pb-2 mb-2 text-center">
-                        <div class="text-left">测试项</div><div>初始档案</div><div>最新档案</div><div>总差值变化</div>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f5f5f7] rounded-lg mb-1">
-                        <div class="text-left pl-2">左侧 SLR</div><div class="font-mono">${oldRecord.slrL}°</div><div class="font-mono text-[#0071e3]">${newRecord.slrL}°</div><div>${getDiffHtml(oldRecord.slrL, newRecord.slrL)}</div>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f5f5f7] rounded-lg mb-3">
-                        <div class="text-left pl-2">右侧 SLR</div><div class="font-mono">${oldRecord.slrR}°</div><div class="font-mono text-[#0071e3]">${newRecord.slrR}°</div><div>${getDiffHtml(oldRecord.slrR, newRecord.slrR)}</div>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-blue-50/50 rounded-lg mb-1">
-                        <div class="text-left pl-2">左髋屈</div><div class="font-mono">${oldRecord.hipL}°</div><div class="font-mono text-[#0071e3]">${newRecord.hipL}°</div><div>${getDiffHtml(oldRecord.hipL, newRecord.hipL)}</div>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-blue-50/50 rounded-lg mb-3">
-                        <div class="text-left pl-2">右髋屈</div><div class="font-mono">${oldRecord.hipR}°</div><div class="font-mono text-[#0071e3]">${newRecord.hipR}°</div><div>${getDiffHtml(oldRecord.hipR, newRecord.hipR)}</div>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f5f5f7] rounded-lg mb-1">
-                        <div class="text-left pl-2">左肩屈</div><div class="font-mono">${oldRecord.shL}°</div><div class="font-mono text-[#0071e3]">${newRecord.shL}°</div><div>${getDiffHtml(oldRecord.shL, newRecord.shL)}</div>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f5f5f7] rounded-lg">
-                        <div class="text-left pl-2">右肩屈</div><div class="font-mono">${oldRecord.shR}°</div><div class="font-mono text-[#0071e3]">${newRecord.shR}°</div><div>${getDiffHtml(oldRecord.shR, newRecord.shR)}</div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 rounded-[20px] shadow-sm border border-blue-100/50 mb-4">
-                    <p class="text-[14px] font-bold text-[#0071e3] mb-3 flex items-center gap-1.5">📈 动态可视化：角度演变模型</p>
-                    <div class="relative w-full h-[220px]">
-                        <canvas id="angleTrendChart"></canvas>
-                    </div>
-                </div>
-            `;
-
-            const hasCircData = records.some(r => r.circumference);
-            if (hasCircData) {
-                html += `
-                    <div class="bg-white p-4 rounded-[20px] shadow-sm border border-emerald-100/60 mb-4">
-                        <p class="text-[14px] font-bold text-[#059669] mb-3 flex items-center gap-1.5 border-b border-emerald-50 pb-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2-2m2 2l-2 2m-2-2l-2-2m2 2l-2 2m4-8a3 3 0 01-3 3H5a3 3 0 01-3-3V5a3 3 0 013-3h6a3 3 0 013 3v6z"></path></svg> 身体围度与形态总结算</p>
-                        <div class="grid grid-cols-4 gap-2 text-[11px] font-bold text-[#059669] border-b border-emerald-50 pb-2 mb-2 text-center">
-                            <div class="text-left">围度项</div><div>初始档案</div><div>最新档案</div><div>总差值变化</div>
-                        </div>
-                `;
-                
-                const cMap = [
-                    { key: 'weight', label: '体重', unit: 'kg' },
-                    { key: 'shoulder', label: '肩宽', unit: 'cm' },
-                    { key: 'chest', label: '胸围', unit: 'cm' },
-                    { key: 'waist', label: '腰围', unit: 'cm' },
-                    { key: 'hipUpper', label: '上臀围', unit: 'cm' },
-                    { key: 'hipLower', label: '下臀围', unit: 'cm' },
-                    { key: 'hip', label: '综合臀围(旧)', unit: 'cm' }, 
-                    { key: 'thighL', label: '左大腿', unit: 'cm' },
-                    { key: 'thighR', label: '右大腿', unit: 'cm' },
-                    { key: 'calfL', label: '左小腿', unit: 'cm' },
-                    { key: 'calfR', label: '右小腿', unit: 'cm' }
-                ];
-                
-                let plotCircumferences = false;
-                cMap.forEach(item => {
-                    const oldV = oldRecord.circumference ? oldRecord.circumference[item.key] : null;
-                    const newV = newRecord.circumference ? newRecord.circumference[item.key] : null;
-                    if (oldV || newV) {
-                        plotCircumferences = true;
-                        const diffHtml = getDiffHtml(oldV, newV, item.unit);
-                        html += `
-                        <div class="grid grid-cols-4 gap-2 text-[13px] font-medium text-[#1d1d1f] items-center text-center py-1.5 bg-[#f0fdf4]/50 rounded-lg mb-1">
-                            <div class="text-left pl-2">${item.label}</div><div class="font-mono">${oldV ? oldV+item.unit : '-'}</div><div class="font-mono text-[#059669]">${newV ? newV+item.unit : '-'}</div><div>${diffHtml}</div>
-                        </div>
-                        `;
-                    }
-                });
-                html += `</div>`;
-
-                if(plotCircumferences) {
-                    html += `
-                    <div class="bg-white p-4 rounded-[20px] shadow-sm border border-emerald-100/50 mb-4">
-                        <p class="text-[14px] font-bold text-[#059669] mb-3 flex items-center gap-1.5">📉 动态可视化：围度塑形轨迹</p>
-                        <div class="relative w-full h-[220px]">
-                            <canvas id="circTrendChart"></canvas>
-                        </div>
-                    </div>
-                    `;
-                }
-            }
-
-            html += `
-                <div class="bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-100/50 p-4 rounded-[20px]">
-                    <p class="text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 综合进展深度解读</p>
-                    <p class="text-[12px] text-gray-700 leading-relaxed">
-                        • <b class="font-black text-emerald-600">角度上升 (绿↗)：</b> 通常代表关节受限空间被成功打开，紧张死锁的肌群得到了离心释放，骨盆与胸廓重获自由。<br>
-                        • <b class="font-black text-rose-500">角度下降 (红↘)：</b> 若客户原本属于前侧严重拉长（如SLR > 90° 的无力表现），角度的回调说明张力锚点重建成功，是核心收紧的极佳现象！反之则提示训练计划可能需要调整干预。<br>
-                        • <b class="font-black">围度动态变化：</b> 请结合客户的目标（如增肌、减脂）以及左右曲线的对称性靠拢程度进行宏观判断。
-                    </p>
-                </div>
-            `;
-            
-            comparisonContent.innerHTML = html;
-            historyModal.classList.add('hidden');
-            comparisonModal.classList.remove('hidden');
-            
-            const ctxAngle = document.getElementById('angleTrendChart').getContext('2d');
-            const labels = records.map((r, i) => `第${i+1}次`);
-            const dataSlrL = records.map(r => r.slrL || 0);
-            const dataSlrR = records.map(r => r.slrR || 0);
-            const dataHipL = records.map(r => r.hipL || 0);
-            const dataHipR = records.map(r => r.hipR || 0);
-            const dataShL = records.map(r => r.shL || 0);
-            const dataShR = records.map(r => r.shR || 0);
-
-            if(angleChartInstance) angleChartInstance.destroy();
-            angleChartInstance = new Chart(ctxAngle, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: '左SLR', data: dataSlrL, borderColor: '#3b82f6', tension: 0.4 },
-                        { label: '右SLR', data: dataSlrR, borderColor: '#60a5fa', tension: 0.4, borderDash: [5, 5] },
-                        { label: '左髋屈', data: dataHipL, borderColor: '#10b981', tension: 0.4 },
-                        { label: '右髋屈', data: dataHipR, borderColor: '#34d399', tension: 0.4, borderDash: [5, 5] },
-                        { label: '左肩屈', data: dataShL, borderColor: '#f59e0b', tension: 0.4 },
-                        { label: '右肩屈', data: dataShR, borderColor: '#fbbf24', tension: 0.4, borderDash: [5, 5] }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
-            });
-
-            if (document.getElementById('circTrendChart')) {
-                const ctxCirc = document.getElementById('circTrendChart').getContext('2d');
-                const circRecords = records.filter(r => r.circumference);
-                const circLabels = circRecords.map((r, i) => `第${i+1}次`);
-                const dataWeight = circRecords.map(r => r.circumference.weight || 0);
-                const dataWaist = circRecords.map(r => r.circumference.waist || 0);
-                
-                if(circChartInstance) circChartInstance.destroy();
-                circChartInstance = new Chart(ctxCirc, {
-                    type: 'line',
-                    data: {
-                        labels: circLabels,
-                        datasets: [
-                            { label: '体重 (kg)', data: dataWeight, borderColor: '#8b5cf6', tension: 0.4 },
-                            { label: '腰围 (cm)', data: dataWaist, borderColor: '#ec4899', tension: 0.4 }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
-                });
-            }
         }
 
         async function generateFinalReport() {
@@ -2140,9 +1958,43 @@
             const shR = testRecords.shoulder.R;
             
             // --- AI 逻辑判断区（用于标红 SVG 图形及痛点整合） ---
-            const isShoulderIssue = Math.min(shL, shR) < 155 || Math.abs(shL - shR) > 10;
-            const isHipIssue = Math.min(hipL, hipR) < 115 || Math.abs(hipL - hipR) > 10;
-            const isSlrIssue = Math.min(slrL, slrR) < 75 || Math.abs(slrL - slrR) > 10;
+            let slrDiff = slrL - slrR;
+            let hipDiff = hipL - hipR;
+            let shDiff = shL - shR;
+            let maxSlr = Math.max(slrL, slrR), minSlr = Math.min(slrL, slrR);
+            let maxHip = Math.max(hipL, hipR), minHip = Math.min(hipL, hipR);
+            let maxSh = Math.max(shL, shR), minSh = Math.min(shL, shR);
+
+            const isShoulderIssue = minSh < 155 || Math.abs(shDiff) > 10;
+            const isHipIssue = minHip < 115 || Math.abs(hipDiff) > 10;
+            const isSlrIssue = minSlr < 75 || Math.abs(slrDiff) > 10;
+
+            const isLeftAIC = (slrL < slrR && hipL > hipR) || (slrL < 70 && slrR > 80); 
+            const isAnteriorTilt = (hipL < 110 && hipR < 110) || (slrL > 90 && slrR > 90);
+            const isPosteriorTilt = (slrL < 65 && slrR < 65) || (hipL > 125 && hipR > 125);
+            const isRotated = Math.abs(slrDiff) > 12 || Math.abs(hipDiff) > 12;
+
+            // 动态主标题和副标题
+            let mainTitle, subTitle;
+            if (isLeftAIC) {
+                mainTitle = "Left AIC 偏置模式 (Left Anterior Interior Chain)";
+                subTitle = "系统评估：左侧前内侧链锁死 (Left AIC)";
+            } else if (isAnteriorTilt) {
+                mainTitle = "双侧骨盆前倾 (Bilateral Anterior Tilt)";
+                subTitle = "系统评估：前侧张力锁定 (Anterior Comp.)";
+            } else if (isPosteriorTilt) {
+                mainTitle = "双侧后侧死锁 (Bilateral Posterior)";
+                subTitle = "系统评估：后侧死锁压缩 (Posterior Comp.)";
+            } else if (isRotated) {
+                mainTitle = "骨盆旋转/侧移失衡 (Pelvic Rotation)";
+                subTitle = "系统评估：不对称张力分布 (Asymmetrical Tension)";
+            } else {
+                mainTitle = "力学中立位 (Neutral Posture)";
+                subTitle = "系统评估：基础框架稳定 (Neutral)";
+            }
+            
+            document.getElementById('report-subtitle').innerText = subTitle;
+            document.getElementById('report-maintitle').innerText = mainTitle;
 
             const cBody = "#9ca3af"; 
             const cHigh = "#ef4444"; 
@@ -2203,55 +2055,128 @@
             // --- 结束 AI 逻辑区 ---
 
 
-            // --- 重构：基于力学原理的专业形态诊断引擎 ---
-            let pelvicStatus = "骨盆中立位";
-            let spineStatus = "脊柱生理曲度正常";
-            let aestheticStatus = "体态框架对称均衡";
+            // --- 重构：完美复刻截图的专业诊断引擎 ---
+            let pelvicReport = `
+                <div class="bg-white/60 p-4 rounded-xl mb-4 shadow-sm border border-blue-50">
+                    <div class="text-[#0071e3] font-bold text-[12px] mb-3 flex items-center gap-1.5">📊 您的专属测试数据提取：</div>
+                    <div class="grid grid-cols-3 gap-2 text-center divide-x divide-gray-200">
+                        <div><div class="text-[9px] text-gray-400 mb-1">直腿抬高 SLR</div><div class="font-mono font-bold text-[13px]">L ${slrL}° <span class="mx-1 text-gray-300">|</span> R ${slrR}°</div></div>
+                        <div><div class="text-[9px] text-gray-400 mb-1">主动髋屈</div><div class="font-mono font-bold text-[13px]">L ${hipL}° <span class="mx-1 text-gray-300">|</span> R ${hipR}°</div></div>
+                        <div><div class="text-[9px] text-gray-400 mb-1">主动肩屈</div><div class="font-mono font-bold text-[13px]">L ${shL}° <span class="mx-1 text-gray-300">|</span> R ${shR}°</div></div>
+                    </div>
+                </div>
+            `;
+            let spineStatus = "";
+            let aestheticStatus = "";
             let trainingPlan = "";
 
-            const slrDiff = slrL - slrR;
-            const hipDiff = hipL - hipR;
-            const shDiff = shL - shR;
-            
-            const isLeftAIC = (slrL < slrR && hipL > hipR) || (slrL < 70 && slrR > 80); 
-            const isAnteriorTilt = (hipL < 110 && hipR < 110) || (slrL > 90 && slrR > 90);
-            const isPosteriorTilt = (slrL < 65 && slrR < 65) || (hipL > 125 && hipR > 125);
-            const isRotated = Math.abs(slrDiff) > 12 || Math.abs(hipDiff) > 12;
-
-            // 1. 骨盆诊断
+            // 1. 骨盆与脊柱深度解析 (结合截图风格)
             if (isLeftAIC) {
-                pelvicStatus = `**Left AIC 模式 (左侧髂骨前倾外旋 / 右侧髂骨后倾内旋)**\n基于您的测试数据，左腿直抬腿明显低于右侧，且髋屈受限不对称。这提示您的骨盆系统处于一种向右旋转的偏置状态。您的重心可能习惯性地压在右腿，导致左侧骨盆向前、向下掉落，左侧腹股沟区域处于被拉长无力的状态，而右侧臀部则长期紧绷。`;
-            } else if (isAnteriorTilt) {
-                pelvicStatus = `**双侧骨盆前倾 (Anterior Pelvic Tilt)**\n主动髋屈双侧均受限或直腿抬高角度过大，提示您的骨盆整体向前下方倾倒。您的重心过度前移，屈髋肌群（如髂腰肌）和下背部竖脊肌处于长期短缩死锁状态，而腹部核心和臀部肌群则被拉长、难以发力。`;
+                pelvicReport += `
+                    <p><b>【数据解析】：</b>您的左侧直抬腿(${slrL}°)明显受限，且髋屈出现不对称。这在力学上说明，您的骨盆系统处于一种向右侧旋转的偏置状态。</p>
+                    <p><b>⚙️ 为什么是 Left AIC 模式?</b> 您的重心可能习惯性地压在右腿，导致左侧骨盆向前、向下掉落。左侧腹股沟区域处于被拉长无力的状态，而右侧臀部则长期紧绷。</p>
+                    <p><b>⚖️ 步态与体态特征：</b> 站立或行走时，身体难以真正将重心转移到左侧，导致左脚缺乏推地感，右侧腰方肌和臀中肌长期处于代偿性发力过度的状态。</p>
+                `;
+                spineStatus = `
+                    <p><b>⚡ 胸腰联合段代偿性扭转：</b> 当骨盆发生不对称旋转时，为了让人体在走路时保持面部朝前，您的脊柱（特别是腰椎和下胸椎）必须发生相反方向的反向扭转。</p>
+                    <p><b>💥 剪切力异常：</b> 这种“拧毛巾”式的张力长期存在，极易导致单侧腰肌劳损、小关节突摩擦，是慢性单侧腰背痛的核心隐患。</p>
+                `;
+                aestheticStatus = `
+                    <div class="bg-rose-50 text-rose-600 p-3 rounded-xl text-[12px] font-bold mb-4 flex items-start gap-2"><span>⚠️</span><p>临床声明： 并非每位处于此力学模式的会员都会立刻表现出明显的形变，但如果您正受此困扰，以下是引发该视觉形变的必然物理根源：</p></div>
+                    <div class="space-y-3 text-[13px] text-gray-700 mb-5">
+                        <p><b>📐 不对称身姿：</b> 这种力学模式极易表现为明显的高低肩或身体侧弯。</p>
+                        <p><b>📏 长短腿错觉：</b> 站立时发现一侧腿似乎更“长”或更受力，裤腿一高一低。</p>
+                        <p><b>👖 单侧假胯宽：</b> 出现单侧的“假胯宽”（因骨盆偏转，导致一侧股骨过度内旋，大转子更为凸出）。</p>
+                    </div>
+                    <div class="bg-[#1d1d1f] rounded-2xl p-5 text-gray-300 text-[12px] leading-relaxed shadow-lg">
+                        <div class="flex items-center gap-2 mb-3"><span class="bg-gray-700 text-white px-2 py-0.5 rounded text-[10px] font-bold tracking-widest">PRI & HARTMAN 模型</span><span class="text-white font-bold text-[14px]">体态代偿的 3D 物理真相</span></div>
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/10 mt-4">
+                            <p class="text-rose-400 font-bold text-[14px] mb-2">🚨 第一类：不对称旋转型 (Left AIC / 假长短腿)</p>
+                            <ul class="space-y-2">
+                                <li><b>🌪️ 3D 力学灾难：</b>您的右侧膈肌更厚、肝脏在右侧，导致人类天生容易将重心压在右腿。骨盆整体向右旋转。</li>
+                                <li><b>📏 您的专属评估：</b>您的数据证实了这种右侧沉降，左侧骨盆无法有效后倾闭合。</li>
+                            </ul>
+                            <div class="mt-3 text-emerald-400 font-bold border-t border-white/10 pt-3">💊 终极解药：必须通过 90/90 呼吸训练，激活左侧腘绳肌，找回左脚后跟的踩地感，强行将骨盆“拉”回中立位。</div>
+                        </div>
+                    </div>
+                `;
             } else if (isPosteriorTilt) {
-                pelvicStatus = `**双侧骨盆后倾 (Posterior Pelvic Tilt)**\n直腿抬高双侧严重受限，提示骨盆整体向后翻转。坐骨结节过度靠近膝盖后侧，导致腘绳肌（大腿后侧）处于极度紧张的短缩状态。这使得您在站立时重心容易靠后，缺乏向前的推进力。`;
-            } else if (isRotated) {
-                const limitedSide = slrL < slrR ? "左侧" : "右侧";
-                pelvicStatus = `**骨盆旋转/侧移失衡**\n左右两侧数据差异超过10°，提示骨盆存在明显的单侧旋转或高低骨盆现象。${limitedSide}的骨盆空间显著闭合，这通常与长期单侧承重、跷二郎腿或特定运动习惯有关，导致一侧腰方肌和臀中肌长期代偿发力。`;
-            } else {
-                pelvicStatus = `**骨盆中立位 (Neutral Pelvis)**\n您的左右侧直腿抬高和主动髋屈数据均在健康阈值内且相对对称。这表明您的骨盆前后倾与旋转幅度都在良好的容错空间内，拥有优秀的下肢力学传导基础。`;
-            }
-
-            // 2. 脊柱诊断
-            if (isLeftAIC || isRotated) {
-                spineStatus = `**胸腰联合段代偿性扭转**\n当骨盆发生不对称旋转时，为了让人体在走路时保持面部朝前，您的脊柱（特别是腰椎和下胸椎）必须发生相反方向的反向扭转。这种“拧毛巾”式的张力长期存在，极易导致单侧腰肌劳损、小关节突摩擦，是慢性单侧腰背痛的核心隐患。`;
+                pelvicReport += `
+                    <p><b>【数据解析】：</b>您的双侧直腿抬高 (SLR) 均小于70°或存在严重受限。这在力学上说明，您的身体为了防止重心过度前移而摔倒，下臀部和深层外旋肌群必须紧急刹车一样处于<b>『向心死锁』</b>状态。</p>
+                    <p><b>⚙️ 为什么是 双侧后侧死锁 (Bilateral Posterior)?</b> 数据显示您的左右两侧基本对称，但整体存在严重的后侧死锁。骨盆像被平移推向了前方 (Swayback)，腰椎曲度往往变平或消失，后下侧骨盆空间被彻底压扁。</p>
+                    <p><b>⚖️ 步态与体态特征：</b> 站立时骨盆严重前移，为了防止身体前倾摔倒，下臀部和深层外旋肌群像紧急刹车一样常年紧绷。重心偏向脚后跟，表现为平背和臀部干瘪。</p>
+                `;
+                spineStatus = `
+                    <p><b>⚡ 下腰部僵硬与骶髂关节压迫：</b> 骨盆整体前移导致腰椎下段和骶髂关节承受了极大的垂直压迫力。由于缺乏缓冲空间，久站或走路时间过长后，腰骶部会出现酸痛和极度的僵硬感。</p>
+                    <p><b>💥 椎间盘压力异常：</b> 这种姿态使得椎间盘后侧受力极大，容易引发腰椎间盘的退行性病变和慢性的钝痛感。</p>
+                `;
+                aestheticStatus = `
+                    <div class="bg-rose-50 text-rose-600 p-3 rounded-xl text-[12px] font-bold mb-4 flex items-start gap-2"><span>⚠️</span><p>临床声明： 并非每位处于此力学模式的会员都会立刻表现出明显的“假胯宽”或“臀凹陷”（这取决于个人的代偿习惯和基因分布）。但如果您正受此困扰，以下是引发该视觉形变的必然物理根源：</p></div>
+                    <div class="space-y-3 text-[13px] text-gray-700 mb-5">
+                        <p><b>👖 双侧假胯宽：</b> 骨盆整体向外翻开（外旋偏好），但脚又要朝前走，所以股骨在髋臼里产生“相对内旋”假象，导致大转子被卡在外面，形成视觉上的双侧假胯宽。</p>
+                        <p><b>🍑 臀部严重干瘪下垂：</b> 骨盆的这种姿态让臀大肌失去正常的收缩发力空间，变成单纯的“刹车”肌肉，导致臀部肌肉缺乏饱满度，出现下垂和扁平。</p>
+                        <p><b>🦴 腿型预测（膝盖超伸）：</b> 为了代偿骨盆的前移，双腿膝盖往往会极度向后锁死（膝盖超伸），小腿后侧肌肉被迫代偿发力，导致小腿肚子粗壮。</p>
+                    </div>
+                    <div class="bg-[#1d1d1f] rounded-2xl p-5 text-gray-300 text-[12px] leading-relaxed shadow-lg">
+                        <div class="flex items-center gap-2 mb-3"><span class="bg-gray-700 text-white px-2 py-0.5 rounded text-[10px] font-bold tracking-widest">PRI & HARTMAN 模型</span><span class="text-white font-bold text-[14px]">假胯宽与臀凹陷的 3D 物理真相</span></div>
+                        <p class="mb-3">我们现在把话彻底说透。“假胯宽”（大转子外突）根本不是一个病因，它只是一个“视觉背锅侠”。从3D上帝视角来看，大转子之所以会在侧面突兀地顶出来，底层物理真相只有一个：大腿骨（股骨）在骨盆的髋臼里，被迫进入了“代偿性内旋”或者失去了活动的冗余空间，硬生生卡在关节囊边缘被挤出来了。</p>
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/10 mt-4">
+                            <p class="text-rose-400 font-bold text-[14px] mb-2">🚨 第二类：后侧死锁压缩型 (Posterior Compression / 骨盆平移 Swayback)</p>
+                            <p class="mb-2">原理：通常出现在窄肋骨角（Narrow ISA）和严重扁平臀人群中。</p>
+                            <ul class="space-y-2">
+                                <li><b>🌪️ 3D 力学灾难：</b>骨盆并没有真正前倾，而是整个底盘像被推土机平移推向了前方 (Anterior Orientation)。腰椎曲度往往是消失的 (平背)。</li>
+                                <li><b>🍑 后侧发生了什么：</b>为了防止身体继续往前平移摔倒，下臀部和深层外旋肌群必须像紧急刹车一样向心死锁 (Concentric Orientation)。后下侧骨盆空间被彻底压扁，变成一堵石墙。</li>
+                                <li><b>📏 您的专属评估：</b>您的直腿抬高 (SLR) 极差，仅为 ${minSlr}° (≤ 70度)，后侧死锁，像焊死了一样。</li>
+                            </ul>
+                            <div class="mt-3 text-emerald-400 font-bold border-t border-white/10 pt-3">💊 终极解药：撑开后侧气缸。绝对不能练外旋（会夹得更死）。必须把重心往后拉，让死锁的下臀部离心退让 (Eccentric Yielding)。建议：脚跟垫高的深蹲，配合深吸气，把空气打入后背和下臀部。</div>
+                        </div>
+                    </div>
+                `;
             } else if (isAnteriorTilt) {
-                spineStatus = `**腰椎曲度过大 (Hyperlordosis)**\n骨盆前倾直接导致腰椎前凸角度增加。腰椎后侧的小关节承受了过度的挤压应力，这使得您在久站、过头推举或深蹲时，下背部极易感到酸胀僵硬。`;
-            } else if (isPosteriorTilt) {
-                spineStatus = `**腰椎曲度变直 (Flat Back)**\n骨盆后倾拉平了原本应有的腰椎生理前凸。当脊柱失去避震的“弹簧”结构时，重力会直接垂直冲击椎间盘，增加椎间盘膨出或突出的风险，同时胸椎也容易为了代偿而变得更加僵直。`;
+                pelvicReport += `
+                    <p><b>【数据解析】：</b>您的双侧主动髋屈受限或直腿抬高角度过大。这在力学上说明，您的骨盆整体处于向前下方倾倒的锁定状态。</p>
+                    <p><b>⚙️ 为什么是 双侧骨盆前倾 (Anterior Pelvic Tilt)?</b> 您的重心过度前移，屈髋肌群（如髂腰肌）和下背部竖脊肌处于长期短缩死锁状态，而腹部核心和臀部肌群则被拉长、难以发力。后上侧骨盆空间闭合。</p>
+                    <p><b>⚖️ 步态与体态特征：</b> 骨盆前翻导致身体在行进时严重依赖前侧链，大腿前侧（股四头肌）代偿发力严重，极易疲劳。</p>
+                `;
+                spineStatus = `
+                    <p><b>⚡ 腰椎曲度过大 (Hyperlordosis)：</b> 骨盆前倾直接导致腰椎前凸角度增加。腰椎后侧的小关节承受了过度的挤压应力。</p>
+                    <p><b>💥 后伸受限与痛感：</b> 这使得您在久站、过头推举或深蹲时，下背部缺乏缓冲，极易感到酸胀僵硬。</p>
+                `;
+                aestheticStatus = `
+                    <div class="bg-rose-50 text-rose-600 p-3 rounded-xl text-[12px] font-bold mb-4 flex items-start gap-2"><span>⚠️</span><p>临床声明： 并非每位处于此力学模式的会员都会立刻表现出明显的形变，但如果您正受此困扰，以下是引发该视觉形变的必然物理根源：</p></div>
+                    <div class="space-y-3 text-[13px] text-gray-700 mb-5">
+                        <p><b>🤰 伪塌腰与小腹外凸：</b> 视觉上最典型的表现。即使体脂率较低，由于骨盆前翻，内脏器官失去承托，小腹也会显得向前凸出。</p>
+                        <p><b>🦵 大腿前侧粗壮：</b> 由于大腿前侧长期代偿发力，往往容易出现大腿前侧肌肉过度发达的现象。</p>
+                    </div>
+                    <div class="bg-[#1d1d1f] rounded-2xl p-5 text-gray-300 text-[12px] leading-relaxed shadow-lg">
+                        <div class="flex items-center gap-2 mb-3"><span class="bg-gray-700 text-white px-2 py-0.5 rounded text-[10px] font-bold tracking-widest">PRI & HARTMAN 模型</span><span class="text-white font-bold text-[14px]">体态代偿的 3D 物理真相</span></div>
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/10 mt-4">
+                            <p class="text-rose-400 font-bold text-[14px] mb-2">🚨 第三类：前侧过度伸展型 (Anterior Pelvic Tilt)</p>
+                            <ul class="space-y-2">
+                                <li><b>🌪️ 3D 力学灾难：</b>您的骨盆真实地向前翻转，导致背部竖脊肌群呈现短缩的“向心死锁”。</li>
+                                <li><b>📏 您的专属评估：</b>您的主动髋屈受限 (≤ 110度)，说明骨盆后上侧空间闭合，前侧张力过大。</li>
+                            </ul>
+                            <div class="mt-3 text-emerald-400 font-bold border-t border-white/10 pt-3">💊 终极解药：核心重启。必须通过“死虫子”或后倾发力训练，重新建立腹外斜肌与骨盆的连接张力，拉长下背部。</div>
+                        </div>
+                    </div>
+                `;
             } else {
-                spineStatus = `**脊柱序列良好**\n骨盆的稳定为脊柱提供了坚实的底座。若肩屈角度同样对称且达标，说明您的胸廓未发生明显偏移，脊柱处于相对健康的受力环境中。`;
-            }
-
-            // 3. 外观代偿诊断
-            if (isLeftAIC || isRotated) {
-                aestheticStatus = `**不对称外观特征：**\n在体态上，这种力学模式极易表现为：\n- 明显的高低肩或身体侧弯。\n- 站立时发现一侧腿似乎更“长”或更受力。\n- 出现单侧的“假胯宽”（因股骨内旋程度不同导致大转子更凸出）。`;
-            } else if (isAnteriorTilt) {
-                aestheticStatus = `**前倾外观特征：**\n视觉上最典型的表现为“骨盆前倾伪塌腰”。即使体脂率较低，由于骨盆前翻，小腹也会显得向前凸出；同时，由于大腿前侧长期代偿发力，往往容易出现大腿前侧肌肉粗壮。`;
-            } else if (isPosteriorTilt) {
-                aestheticStatus = `**后倾外观特征：**\n视觉上常表现为“扁平臀”和含胸驼背（Sway Back）。由于臀肌被拉长且不参与发力，臀部很难练出饱满度；同时，为了平衡重心的后移，上半身往往会向前探出，形成颈部前倾。`;
-            } else {
-                aestheticStatus = `**视觉框架端正：**\n您的整体肌肉张力均衡，体态在重力线上下相对垂直，这是进行高效力量训练和塑形的最佳前提。`;
+                pelvicReport += `
+                    <p><b>【数据解析】：</b>您的双侧直腿抬高和主动髋屈数据均在健康阈值内且相对对称。</p>
+                    <p><b>⚙️ 骨盆中立位 (Neutral Pelvis)：</b> 这表明您的骨盆前后倾与旋转幅度都在良好的容错空间内。</p>
+                    <p><b>⚖️ 步态与体态特征：</b> 张力分布均衡，拥有优秀的下肢力学传导基础。</p>
+                `;
+                spineStatus = `
+                    <p><b>⚡ 脊柱序列良好：</b> 骨盆的稳定为脊柱提供了坚实的底座。若肩屈角度同样对称且达标，说明您的胸廓未发生明显偏移。</p>
+                    <p><b>🛡️ 低受损风险：</b> 脊柱处于相对健康的受力环境中，非常适合进行负重训练。</p>
+                `;
+                aestheticStatus = `
+                    <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl text-[12px] font-bold mb-4 flex items-start gap-2"><span>✨</span><p>视觉框架端正：您的整体肌肉张力均衡，体态在重力线上下相对垂直，这是进行高效力量训练和塑形的最佳前提。</p></div>
+                    <div class="bg-[#1d1d1f] rounded-2xl p-5 text-gray-300 text-[12px] leading-relaxed shadow-lg">
+                        <div class="flex items-center gap-2 mb-3"><span class="bg-gray-700 text-white px-2 py-0.5 rounded text-[10px] font-bold tracking-widest">FORMA 模型</span><span class="text-white font-bold text-[14px]">健康力学评估结论</span></div>
+                        <p>您的各项关节活动度均表现优异。请继续保持良好的运动习惯，逐步增加力量训练的负荷，以进一步强化您的肌肉韧带系统。</p>
+                    </div>
+                `;
             }
 
             // 4. 训练方案
@@ -2282,14 +2207,10 @@
                     <div class="flex items-start gap-2"><span class="text-[#0071e3]">3.</span> <span><b>渐进超负荷：</b> 放心增加深蹲、硬拉等复合动作的负重，稳固力学根基。</span></div>
                 `;
             }
-            trainingPlan += `<div class="flex items-start gap-2 text-white"><span class="text-emerald-400">★</span> <span><b>ST 工作室嘱托：</b> 请扫描右侧二维码，查看对应您体态类型的干预动作演示！</span></div>`;
 
-            // 解析 Markdown 粗体为 HTML
-            const formatReport = (text) => text.replace(/\*\*(.*?)\*\*/g, '<span class="text-[#1d1d1f] font-black">$1</span>').replace(/\n/g, '<br>');
-
-            document.getElementById('final-pelvic-orientation').innerHTML = formatReport(pelvicStatus);
-            document.getElementById('spine-analysis').innerHTML = formatReport(spineStatus);
-            document.getElementById('aesthetic-analysis').innerHTML = formatReport(aestheticStatus);
+            document.getElementById('final-pelvic-orientation').innerHTML = pelvicReport;
+            document.getElementById('spine-analysis').innerHTML = spineStatus;
+            document.getElementById('aesthetic-analysis').innerHTML = aestheticStatus;
             document.getElementById('training-plan-analysis').innerHTML = trainingPlan;
             
             const circContent = document.getElementById('report-circumference-content');
@@ -2308,7 +2229,6 @@
             }
 
             document.getElementById('final-report-section').classList.remove('hidden');
-            document.getElementById('final-result-title').innerText = `${clientNameInput.value.trim() || '未命名'} 的综合体态报告`;
             
             await saveToCloud({
                 type: 'full',
@@ -2317,9 +2237,9 @@
                 hipL: hipL, hipR: hipR,
                 shL: shL, shR: shR,
                 result: 'ST私教工作室专业评估完成',
-                reportPelvic: pelvicStatus,
-                reportSpine: spineStatus,
-                reportAesthetic: aestheticStatus,
+                reportPelvic: "见详细报告",
+                reportSpine: "见详细报告",
+                reportAesthetic: "见详细报告",
                 reportTraining: '专属打卡计划已生成'
             });
             
