@@ -318,7 +318,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 w-full items-start relative z-10">
                     
-                    <!-- 主观伤病风险简报 (保留的新功能) -->
+                    <!-- 主观伤病风险简报 -->
                     <div id="report-pain-card" class="hidden w-full bg-rose-50 border border-rose-100 p-5 rounded-[24px] shadow-sm md:col-span-2">
                         <div class="flex items-center gap-2 mb-3 pb-2 border-b border-rose-200/50">
                             <div class="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center">
@@ -329,7 +329,7 @@
                         <div id="final-pain-report" class="flex flex-col gap-2 text-[13px] text-rose-900 leading-relaxed font-medium"></div>
                     </div>
 
-                    <!-- AI 张力映射图模块 (保留的新功能) -->
+                    <!-- AI 张力映射图模块 -->
                     <div class="w-full bg-white p-6 rounded-[24px] border border-gray-100 apple-shadow flex flex-col items-center justify-center md:col-span-2">
                         <div class="text-[15px] font-bold text-[#1d1d1f] mb-4 flex items-center gap-2 w-full border-b border-gray-100 pb-3">
                             <div class="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center">
@@ -343,18 +343,18 @@
                         </div>
                     </div>
 
-                    <!-- 恢复旧版：骨盆与测试数据模块 (左列) -->
+                    <!-- 骨盆与测试数据模块 (左列) -->
                     <div class="w-full bg-[#f8fafc] p-6 rounded-[24px] shadow-sm border border-blue-100 h-full">
                         <div class="flex items-center gap-2 mb-4 pb-2 border-b border-blue-200/50">
                             <span class="text-[16px]">❄️</span>
                             <span class="text-[15px] font-bold text-blue-600 tracking-wide">骨盆 3D 空间与张力定位</span>
                         </div>
                         <div id="final-pelvic-orientation" class="flex flex-col gap-3 text-[13px] text-[#515154] leading-relaxed">
-                            <!-- JS 动态注入专属测试数据框和文本 -->
+                            <!-- JS 动态注入 -->
                         </div>
                     </div>
 
-                    <!-- 恢复旧版：脊柱模块 (右列) -->
+                    <!-- 脊柱模块 (右列) -->
                     <div class="w-full bg-[#fefce8] border border-yellow-100 p-6 rounded-[24px] shadow-sm h-full">
                         <div class="flex items-center gap-2 mb-4 pb-2 border-b border-yellow-200/50">
                             <span class="text-[16px]">⚠️</span>
@@ -365,18 +365,18 @@
                         </div>
                     </div>
 
-                    <!-- 恢复旧版：外观代偿与 PRI 模型模块 (横跨两列) -->
+                    <!-- 外观代偿与 PRI 模型模块 -->
                     <div class="w-full bg-[#fff1f2] p-6 rounded-[24px] border border-rose-100 shadow-sm md:col-span-2">
                         <div class="flex items-center gap-2 mb-4 pb-2 border-b border-rose-200/50">
                             <span class="text-[16px]">🎯</span>
                             <span class="text-[15px] font-bold text-pink-600 tracking-wide">外观代偿与腿型重构分析</span>
                         </div>
                         <div id="aesthetic-analysis" class="flex flex-col gap-3 text-[13px] text-[#515154] leading-relaxed">
-                            <!-- JS 动态注入临床声明及 PRI 黑框 -->
+                            <!-- JS 动态注入 -->
                         </div>
                     </div>
                     
-                    <!-- 身体围度 (保留) -->
+                    <!-- 身体围度 -->
                     <div id="report-circumference-card" class="hidden w-full bg-[#f0fdf4]/50 border border-emerald-100/60 p-5 rounded-[24px] apple-shadow md:col-span-2">
                         <div class="flex items-center gap-2 mb-4 pb-3 border-b border-emerald-100">
                             <div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
@@ -387,7 +387,7 @@
                         <div id="report-circumference-content" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[13px] font-medium text-[#1d1d1f]"></div>
                     </div>
 
-                    <!-- 专属训练与二维码 (保留) -->
+                    <!-- 专属训练与二维码 -->
                     <div class="w-full bg-[#1d1d1f] p-6 rounded-[24px] shadow-lg md:col-span-2 mt-1 relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-40 h-40 bg-[#0071e3] opacity-20 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="flex items-center gap-3 mb-5 pb-4 border-b border-gray-700 relative z-10">
@@ -1126,6 +1126,65 @@
             historyModal.classList.add('hidden');
             photoCompareModal.classList.remove('hidden');
         }
+
+        // --- 修补的核心：全景对比报告生成逻辑 ---
+        function generateComparisonReport(records) {
+            if (records.length < 2) return;
+            const labels = records.map(r => r.date.split(' ')[0]);
+
+            let html = `
+                <div class="px-6 py-5 bg-white border-b border-gray-100 flex justify-center items-center sticky top-0 z-10 shadow-sm">
+                    <div class="flex flex-col items-center">
+                        <span class="font-black text-[#1d1d1f] text-[18px] tracking-tight">${records[0].clientName} 全景追踪报告</span>
+                        <span class="text-[11px] text-[#86868b] mt-1">跨度: ${labels[0]} ➔ ${labels[labels.length-1]}</span>
+                    </div>
+                </div>
+                <div class="p-5 flex flex-col gap-5">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-[13px] font-bold text-[#0071e3] mb-2 text-center">直腿抬高 (SLR) 趋势</p>
+                        <div class="h-40 relative"><canvas id="chart-slr"></canvas></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-[13px] font-bold text-emerald-500 mb-2 text-center">主动髋屈趋势</p>
+                        <div class="h-40 relative"><canvas id="chart-hip"></canvas></div>
+                    </div>
+                </div>
+            `;
+            comparisonContent.innerHTML = html;
+            historyModal.classList.add('hidden');
+            comparisonModal.classList.remove('hidden');
+
+            setTimeout(() => {
+                const commonOptions = { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }, 
+                    scales: { y: { suggestedMin: 0, suggestedMax: 180 } } 
+                };
+
+                if(angleChartInstance) angleChartInstance.destroy();
+                if(circChartInstance) circChartInstance.destroy();
+
+                angleChartInstance = new Chart(document.getElementById('chart-slr').getContext('2d'), {
+                    type: 'line',
+                    data: { labels: labels, datasets: [
+                        { label: '左侧 (L)', data: records.map(r => r.slrL), borderColor: '#0071e3', tension: 0.3, pointBackgroundColor: '#0071e3' },
+                        { label: '右侧 (R)', data: records.map(r => r.slrR), borderColor: '#38bdf8', tension: 0.3, borderDash: [5, 5] }
+                    ]},
+                    options: commonOptions
+                });
+
+                circChartInstance = new Chart(document.getElementById('chart-hip').getContext('2d'), {
+                    type: 'line',
+                    data: { labels: labels, datasets: [
+                        { label: '左侧 (L)', data: records.map(r => r.hipL), borderColor: '#10b981', tension: 0.3, pointBackgroundColor: '#10b981' },
+                        { label: '右侧 (R)', data: records.map(r => r.hipR), borderColor: '#34d399', tension: 0.3, borderDash: [5, 5] }
+                    ]},
+                    options: commonOptions
+                });
+            }, 100);
+        }
+        // --- 结束修补 ---
 
 
         searchHistoryInput.addEventListener('input', (e) => {
