@@ -329,20 +329,6 @@
                         <div id="final-pain-report" class="flex flex-col gap-2 text-[13px] text-rose-900 leading-relaxed font-medium"></div>
                     </div>
 
-                    <!-- AI 张力映射图模块 -->
-                    <div class="w-full bg-white p-6 rounded-[24px] border border-gray-100 apple-shadow flex flex-col items-center justify-center md:col-span-2">
-                        <div class="text-[15px] font-bold text-[#1d1d1f] mb-4 flex items-center gap-2 w-full border-b border-gray-100 pb-3">
-                            <div class="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center">
-                                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
-                            </div>
-                            FORMA AI 张力映射图
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-center w-full justify-around gap-6">
-                            <div id="posture-svg-container" class="w-[180px] h-[300px] relative bg-[#f5f5f7] rounded-3xl border border-gray-200 shadow-inner flex items-center justify-center p-4"></div>
-                            <div id="posture-svg-labels" class="flex flex-col gap-3 text-[13px] text-[#515154] max-w-[280px]"></div>
-                        </div>
-                    </div>
-
                     <!-- 骨盆与测试数据模块 (左列) -->
                     <div class="w-full bg-[#f8fafc] p-6 rounded-[24px] shadow-sm border border-blue-100 h-full">
                         <div class="flex items-center gap-2 mb-4 pb-2 border-b border-blue-200/50">
@@ -1217,7 +1203,7 @@
                 let contentHTML = `<div class="flex-1 min-w-0 pr-1">`;
                 
                 if (item.type === 'single') {
-                    contentHTML += `<div class="flex justify-between items-center mb-3"><div class="flex flex-col">${nameTag}<span class="text-[10px] font-semibold text-[#86868b] mt-0.5">${item.date}</span></div><span class="text-[9px] font-bold text-[#86868b] bg-[#f5f5f7] px-2 py-0.5 rounded-full shrink-0">单侧打卡</span></div><div class="flex justify-between items-center text-[13px]"><span class="font-bold text-[#1d1d1f] truncate">${item.name}</span><div class="flex items-center gap-2"><span class="font-mono font-bold text-[#0071e3] text-[16px]">${item.angle}°</span></div></div>`;
+                    contentHTML += `<div class="flex justify-between items-center mb-3"><div class="flex flex-col">${nameTag}<span class="text-[10px] font-semibold text-[#86868b] mt-0.5">${item.date}</span></div><span class="text-[9px] font-bold text-[#86868b] bg-[#f5f5f7] px-2 py-0.5 rounded-full shrink-0">单侧打卡</span></div><div class="flex justify-between items-center text-[13px]"><span class="font-bold text-[#1d1d1f] truncate">${item.name}</span><div class="flex items-center gap-2"><span class="font-mono font-bold text-[#0071e3] text-[16px]">${item.angle.toFixed(1)}°</span></div></div>`;
                 } else if (item.type === 'photos') {
                     contentHTML += `
                         <div class="flex justify-between items-start mb-3">
@@ -1234,7 +1220,7 @@
                     `;
                 } else {
                     let painTag = item.painData ? `<span class="ml-2 text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded">有主诉</span>` : '';
-                    contentHTML += `<div class="flex justify-between items-start mb-3"><div class="flex flex-col">${nameTag}<span class="text-[10px] font-semibold text-[#86868b] mt-0.5">${item.date}${painTag}</span></div><span class="text-[9px] font-black text-white bg-[#0071e3] px-2 py-1 rounded-full shadow-sm shrink-0">专业评估</span></div><div class="text-[13px] font-bold text-[#1d1d1f] mb-3 leading-relaxed bg-blue-50/50 p-2 rounded-lg border border-blue-100/50 line-clamp-2">${item.result}</div><div class="grid grid-cols-3 gap-1.5 text-center"><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">SLR直抬腿</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.slrL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.slrR}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动髋屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.hipL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.hipR}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动肩屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.shL}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.shR}°</span></div></div>`;
+                    contentHTML += `<div class="flex justify-between items-start mb-3"><div class="flex flex-col">${nameTag}<span class="text-[10px] font-semibold text-[#86868b] mt-0.5">${item.date}${painTag}</span></div><span class="text-[9px] font-black text-white bg-[#0071e3] px-2 py-1 rounded-full shadow-sm shrink-0">专业评估</span></div><div class="text-[13px] font-bold text-[#1d1d1f] mb-3 leading-relaxed bg-blue-50/50 p-2 rounded-lg border border-blue-100/50 line-clamp-2">${item.result}</div><div class="grid grid-cols-3 gap-1.5 text-center"><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">SLR直抬腿</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.slrL.toFixed(1)}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.slrR.toFixed(1)}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动髋屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.hipL.toFixed(1)}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.hipR.toFixed(1)}°</span></div><div class="flex flex-col bg-[#f5f5f7] rounded-xl py-1.5"><span class="text-[#86868b] mb-0.5 text-[9px] font-bold tracking-wider">主动肩屈</span><span class="font-mono font-black text-[#1d1d1f] text-[12px]">${item.shL.toFixed(1)}°<span class="text-gray-300 font-normal mx-0.5">|</span>${item.shR.toFixed(1)}°</span></div></div>`;
                 }
                 contentHTML += `</div>`;
 
@@ -2015,7 +2001,7 @@
                 html += `
                     <p class="text-[13px] font-bold text-[#1d1d1f] mb-2 flex items-center gap-1.5"><svg class="w-4 h-4 text-[#0071e3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>客观提取数据：</p>
                     <div class="grid grid-cols-3 gap-2 text-center mb-6">
-                        <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">直腿抬高 (SLR)</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.slrL}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.slrR}°</div></div>
+                        <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">直腿抬高 (SLR)</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.slrL.toFixed(1)}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.slrR.toFixed(1)}°</div></div>
                         <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">主动髋屈</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.hipL}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.hipR}°</div></div>
                         <div class="bg-[#f5f5f7] border border-gray-200/60 p-2.5 rounded-xl shadow-sm"><div class="text-[10px] text-[#86868b] font-bold mb-1 tracking-widest">主动肩屈</div><div class="text-[15px] font-mono font-black text-[#1d1d1f]">L ${item.shL}° <span class="text-gray-300 font-normal mx-0.5">|</span> R ${item.shR}°</div></div>
                     </div>
@@ -2145,39 +2131,6 @@
                 document.getElementById('report-pain-card').classList.add('hidden');
             }
 
-            const svgContent = `
-                <svg viewBox="0 0 200 450" class="w-full h-full drop-shadow-md" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="${cBody}" />
-                            <stop offset="100%" stop-color="#6b7280" />
-                        </linearGradient>
-                    </defs>
-                    <circle cx="100" cy="225" r="140" fill="none" stroke="#e5e7eb" stroke-width="2" stroke-dasharray="10 10"/>
-                    <path d="M 100 30 C 120 30, 125 50, 120 70 C 115 85, 105 90, 100 90 C 85 90, 80 65, 80 50 C 80 35, 85 30, 100 30 Z" fill="${cBody}"/>
-                    <path d="M 100 85 Q 105 105 98 120" fill="none" stroke="${cBody}" stroke-width="18" stroke-linecap="round"/>
-                    <path d="M 98 110 Q 75 160 95 210" fill="none" stroke="${isShoulderIssue ? cHigh : cBody}" stroke-width="24" stroke-linecap="round"/>
-                    ${isShoulderIssue ? '<circle cx="85" cy="155" r="14" fill="#ef4444" opacity="0.4" class="svg-pulse"/><circle cx="85" cy="155" r="5" fill="#ef4444"/>' : ''}
-                    <path d="M 95 200 Q 115 240 100 270" fill="none" stroke="${isHipIssue ? cHigh : cBody}" stroke-width="24" stroke-linecap="round"/>
-                    ${isHipIssue ? '<circle cx="106" cy="235" r="14" fill="#ef4444" opacity="0.4" class="svg-pulse"/><circle cx="106" cy="235" r="5" fill="#ef4444"/>' : ''}
-                    <ellipse cx="94" cy="275" rx="20" ry="26" fill="${(isHipIssue || isSlrIssue) ? cHigh : cBody}" transform="rotate(-15 94 275)"/>
-                    <path d="M 94 285 Q 85 340 105 390" fill="none" stroke="${isSlrIssue ? cHigh : cBody}" stroke-width="20" stroke-linecap="round"/>
-                    ${isSlrIssue ? '<circle cx="92" cy="330" r="14" fill="#ef4444" opacity="0.4" class="svg-pulse"/><circle cx="92" cy="330" r="5" fill="#ef4444"/>' : ''}
-                    <path d="M 105 380 Q 115 430 105 480" fill="none" stroke="${cBody}" stroke-width="16" stroke-linecap="round"/>
-                    <path d="M 105 110 Q 135 150 120 210 Q 120 250 110 270" fill="none" stroke="#d1d5db" stroke-width="3" stroke-dasharray="4 4"/>
-                </svg>
-            `;
-            document.getElementById('posture-svg-container').innerHTML = svgContent;
-
-            let labelsHtml = '';
-            if(!isShoulderIssue && !isHipIssue && !isSlrIssue) {
-                labelsHtml = '<div class="bg-emerald-50 text-emerald-600 px-3 py-2 rounded-xl text-center font-bold shadow-sm">✨ 基础通过！核心力学结构保持相对中立。</div>';
-            } else {
-                if(isShoulderIssue) labelsHtml += '<div class="flex items-start gap-2 bg-rose-50 p-2.5 rounded-xl border border-rose-100 shadow-sm"><span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-1 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span><span class="leading-relaxed"><b>胸廓/肩带受限：</b><br>胸椎灵活性不足或胸廓处于非中立位，影响上肢功能。</span></div>';
-                if(isHipIssue) labelsHtml += '<div class="flex items-start gap-2 bg-rose-50 p-2.5 rounded-xl border border-rose-100 shadow-sm"><span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-1 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span><span class="leading-relaxed"><b>骨盆后上侧张力：</b><br>髂骨发生相对旋转或倾斜，限制了髋关节屈曲空间。</span></div>';
-                if(isSlrIssue) labelsHtml += '<div class="flex items-start gap-2 bg-rose-50 p-2.5 rounded-xl border border-rose-100 shadow-sm"><span class="w-3 h-3 rounded-full bg-rose-500 shrink-0 mt-1 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span><span class="leading-relaxed"><b>下肢后侧链锁死：</b><br>坐骨结节空间闭合，腘绳肌离心控制力不足，骨盆受牵拉。</span></div>';
-            }
-            document.getElementById('posture-svg-labels').innerHTML = labelsHtml;
             // --- 结束 AI 逻辑区 ---
 
 
@@ -2186,9 +2139,9 @@
                 <div class="bg-white/60 p-4 rounded-xl mb-4 shadow-sm border border-blue-50">
                     <div class="text-[#0071e3] font-bold text-[12px] mb-3 flex items-center gap-1.5">📊 您的专属测试数据提取：</div>
                     <div class="grid grid-cols-3 gap-2 text-center divide-x divide-gray-200">
-                        <div><div class="text-[9px] text-gray-400 mb-1">直腿抬高 SLR</div><div class="font-mono font-bold text-[13px]">L ${slrL}° <span class="mx-1 text-gray-300">|</span> R ${slrR}°</div></div>
-                        <div><div class="text-[9px] text-gray-400 mb-1">主动髋屈</div><div class="font-mono font-bold text-[13px]">L ${hipL}° <span class="mx-1 text-gray-300">|</span> R ${hipR}°</div></div>
-                        <div><div class="text-[9px] text-gray-400 mb-1">主动肩屈</div><div class="font-mono font-bold text-[13px]">L ${shL}° <span class="mx-1 text-gray-300">|</span> R ${shR}°</div></div>
+                        <div><div class="text-[9px] text-gray-400 mb-1">直腿抬高 SLR</div><div class="font-mono font-bold text-[13px]">L ${slrL.toFixed(1)}° <span class="mx-1 text-gray-300">|</span> R ${slrR.toFixed(1)}°</div></div>
+                        <div><div class="text-[9px] text-gray-400 mb-1">主动髋屈</div><div class="font-mono font-bold text-[13px]">L ${hipL.toFixed(1)}° <span class="mx-1 text-gray-300">|</span> R ${hipR.toFixed(1)}°</div></div>
+                        <div><div class="text-[9px] text-gray-400 mb-1">主动肩屈</div><div class="font-mono font-bold text-[13px]">L ${shL.toFixed(1)}° <span class="mx-1 text-gray-300">|</span> R ${shR.toFixed(1)}°</div></div>
                     </div>
                 </div>
             `;
@@ -2199,7 +2152,7 @@
             // 1. 骨盆与脊柱深度解析 (结合截图风格)
             if (isLeftAIC) {
                 pelvicReport += `
-                    <p><b>【数据解析】：</b>您的左侧直抬腿(${slrL}°)明显受限，且髋屈出现不对称。这在力学上说明，您的骨盆系统处于一种向右侧旋转的偏置状态。</p>
+                    <p><b>【数据解析】：</b>您的左侧直抬腿(${slrL.toFixed(1)}°)明显受限，且髋屈出现不对称。这在力学上说明，您的骨盆系统处于一种向右侧旋转的偏置状态。</p>
                     <p><b>⚙️ 为什么是 Left AIC 模式?</b> 您的重心可能习惯性地压在右腿，导致左侧骨盆向前、向下掉落。左侧腹股沟区域处于被拉长无力的状态，而右侧臀部则长期紧绷。</p>
                     <p><b>⚖️ 步态与体态特征：</b> 站立或行走时，身体难以真正将重心转移到左侧，导致左脚缺乏推地感，右侧腰方肌和臀中肌长期处于代偿性发力过度的状态。</p>
                 `;
@@ -2252,7 +2205,7 @@
                             <ul class="space-y-2">
                                 <li><b>🌪️ 3D 力学灾难：</b>骨盆并没有真正前倾，而是整个底盘像被推土机平移推向了前方 (Anterior Orientation)。腰椎曲度往往是消失的 (平背)。</li>
                                 <li><b>🍑 后侧发生了什么：</b>为了防止身体继续往前平移摔倒，下臀部和深层外旋肌群必须像紧急刹车一样向心死锁 (Concentric Orientation)。后下侧骨盆空间被彻底压扁，变成一堵石墙。</li>
-                                <li><b>📏 您的专属评估：</b>您的直腿抬高 (SLR) 极差，仅为 ${minSlr}° (≤ 70度)，后侧死锁，像焊死了一样。</li>
+                                <li><b>📏 您的专属评估：</b>您的直腿抬高 (SLR) 极差，仅为 ${minSlr.toFixed(1)}° (≤ 70度)，后侧死锁，像焊死了一样。</li>
                             </ul>
                             <div class="mt-3 text-emerald-400 font-bold border-t border-white/10 pt-3">💊 终极解药：撑开后侧气缸。绝对不能练外旋（会夹得更死）。必须把重心往后拉，让死锁的下臀部离心退让 (Eccentric Yielding)。建议：脚跟垫高的深蹲，配合深吸气，把空气打入后背和下臀部。</div>
                         </div>
