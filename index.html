@@ -125,32 +125,7 @@
 
         <div id="main-content" class="px-5 md:px-8 flex flex-col gap-6 hidden">
             
-            <!-- 顶部记分板 -->
-            <div class="bg-[#f5f5f7] p-2 rounded-[20px] flex justify-between gap-2 apple-inner-shadow w-full" id="tracker-panel">
-                <div id="tracker-slr" class="flex-1 flex flex-col items-center justify-center py-3 bg-white rounded-2xl shadow-sm transition-all border border-transparent">
-                    <span class="text-[11px] font-semibold text-[#86868b] mb-1">直腿抬高</span>
-                    <div class="flex text-[10px] text-gray-400 mb-1 font-mono gap-1.5">
-                        <span>L:<span id="score-slr-L">--</span></span> <span>R:<span id="score-slr-R">--</span></span>
-                    </div>
-                    <span class="text-[12px] font-bold text-gray-300" id="score-slr-final">待测试</span>
-                </div>
-                <div id="tracker-hip" class="flex-1 flex flex-col items-center justify-center py-3 bg-white rounded-2xl shadow-sm transition-all border border-transparent">
-                    <span class="text-[11px] font-semibold text-[#86868b] mb-1">主动髋屈</span>
-                    <div class="flex text-[10px] text-gray-400 mb-1 font-mono gap-1.5">
-                        <span>L:<span id="score-hip-L">--</span></span> <span>R:<span id="score-hip-R">--</span></span>
-                    </div>
-                    <span class="text-[12px] font-bold text-gray-300" id="score-hip-final">待测试</span>
-                </div>
-                <div id="tracker-shoulder" class="flex-1 flex flex-col items-center justify-center py-3 bg-white rounded-2xl shadow-sm transition-all border border-transparent">
-                    <span class="text-[11px] font-semibold text-[#86868b] mb-1">主动肩屈</span>
-                    <div class="flex text-[10px] text-gray-400 mb-1 font-mono gap-1.5">
-                        <span>L:<span id="score-shoulder-L">--</span></span> <span>R:<span id="score-shoulder-R">--</span></span>
-                    </div>
-                    <span class="text-[12px] font-bold text-gray-300" id="score-shoulder-final">待测试</span>
-                </div>
-            </div>
-
-            <!-- 分屏互动区 -->
+            <!-- 分屏互动区：优先展示操作区和画面 -->
             <div id="interaction-area" class="flex flex-col md:flex-row gap-6 md:gap-8 w-full md:items-start">
                 
                 <!-- 左列：表单与操作 -->
@@ -301,6 +276,31 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- 顶部记分板：放在操作区之后，更贴近日常使用流程 -->
+            <div class="bg-[#f5f5f7] p-2 rounded-[20px] flex justify-between gap-2 apple-inner-shadow w-full mt-1" id="tracker-panel">
+                <div id="tracker-slr" class="flex-1 flex flex-col items-center justify-center py-3 bg-white rounded-2xl shadow-sm transition-all border border-transparent">
+                    <span class="text-[11px] font-semibold text-[#86868b] mb-1">直腿抬高</span>
+                    <div class="flex text-[10px] text-gray-400 mb-1 font-mono gap-1.5">
+                        <span>L:<span id="score-slr-L">--</span></span> <span>R:<span id="score-slr-R">--</span></span>
+                    </div>
+                    <span class="text-[12px] font-bold text-gray-300" id="score-slr-final">待测试</span>
+                </div>
+                <div id="tracker-hip" class="flex-1 flex flex-col items-center justifyCenter py-3 bg-white rounded-2xl shadow-sm transition-all border border-transparent">
+                    <span class="text-[11px] font-semibold text-[#86868b] mb-1">主动髋屈</span>
+                    <div class="flex text-[10px] text-gray-400 mb-1 font-mono gap-1.5">
+                        <span>L:<span id="score-hip-L">--</span></span> <span>R:<span id="score-hip-R">--</span></span>
+                    </div>
+                    <span class="text-[12px] font-bold text-gray-300" id="score-hip-final">待测试</span>
+                </div>
+                <div id="tracker-shoulder" class="flex-1 flex flex-col items-center justify-center py-3 bg-white rounded-2xl shadow-sm transition-all border border-transparent">
+                    <span class="text-[11px] font-semibold text-[#86868b] mb-1">主动肩屈</span>
+                    <div class="flex text-[10px] text-gray-400 mb-1 font-mono gap-1.5">
+                        <span>L:<span id="score-shoulder-L">--</span></span> <span>R:<span id="score-shoulder-R">--</span></span>
+                    </div>
+                    <span class="text-[12px] font-bold text-gray-300" id="score-shoulder-final">待测试</span>
                 </div>
             </div>
 
@@ -1483,11 +1483,20 @@
         async function initAI() {
             try {
                 await tf.setBackend('webgl'); await tf.ready();
-                window.detector = await window.poseDetection.createDetector(window.poseDetection.SupportedModels.MoveNet, { modelType: window.poseDetection.movenet.modelType.SINGLEPOSE_THUNDER });
+                // 关键修复：保持 window.detector 与本地 detector 同步，否则后续识别会一直提示“未就绪”
+                detector = await window.poseDetection.createDetector(
+                    window.poseDetection.SupportedModels.MoveNet,
+                    { modelType: window.poseDetection.movenet.modelType.SINGLEPOSE_THUNDER }
+                );
+                window.detector = detector;
                 document.getElementById('ai-loading').classList.add('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
                 restoreStateLocally();
-            } catch (error) { document.getElementById('ai-loading').innerHTML = `<p class="text-rose-500 font-bold">AI 模型加载失败，请刷新重试。</p>`; }
+            } catch (error) {
+                const msg = (error && (error.message || error.toString())) ? (error.message || error.toString()) : '未知错误';
+                document.getElementById('ai-loading').innerHTML =
+                    `<p class="text-rose-500 font-bold">AI 模型加载失败，请刷新重试。</p><p class="text-[12px] text-rose-400 mt-2 break-all">${msg}</p>`;
+            }
         }
         initAI();
 
@@ -1580,47 +1589,91 @@
         btnLockFrame.addEventListener('click', triggerAutoLock);
 
         function handleImageUpload(e) {
-            const file = e.target.files[0]; if (!file) return;
-            if(!clientNameInput.value.trim()) {
-                clientNameInput.focus(); clientNameInput.classList.add('ring-2', 'ring-rose-400');
+            const file = e.target.files[0]; 
+            if (!file) return;
+
+            if (!clientNameInput.value.trim()) {
+                clientNameInput.focus(); 
+                clientNameInput.classList.add('ring-2', 'ring-rose-400');
                 setTimeout(() => clientNameInput.classList.remove('ring-2', 'ring-rose-400'), 1500);
-                speak("请先输入客户姓名"); e.target.value = ''; return; 
+                speak("请先输入客户姓名"); 
+                e.target.value = ''; 
+                return; 
             }
-            saveStateLocally(); resetCanvasForNewUpload(); lastCaptureMethod = 'static';
+
+            saveStateLocally(); 
+            resetCanvasForNewUpload(); 
+            lastCaptureMethod = 'static';
+
             const reader = new FileReader();
             reader.onload = function(event) {
                 const tempImg = new Image();
                 tempImg.onload = function() {
-                    const MAX_DIM = 1200; let scale = 1;
-                    if (tempImg.width > MAX_DIM || tempImg.height > MAX_DIM) scale = Math.min(MAX_DIM / tempImg.width, MAX_DIM / tempImg.height);
-                    canvas.width = Math.round(tempImg.width * scale); canvas.height = Math.round(tempImg.height * scale);
-                    staticImageBuffer.width = canvas.width; staticImageBuffer.height = canvas.height;
-                    staticImageBuffer.getContext('2d').drawImage(tempImg, 0, 0, canvas.width, canvas.height);
-                    runAIEstimation(staticImageBuffer);
-                }
+                    const MAX_DIM = 1200; 
+                    let scale = 1;
+                    if (tempImg.width > MAX_DIM || tempImg.height > MAX_DIM) {
+                        scale = Math.min(MAX_DIM / tempImg.width, MAX_DIM / tempImg.height);
+                    }
+
+                    const targetW = Math.round(tempImg.width * scale);
+                    const targetH = Math.round(tempImg.height * scale);
+
+                    // 统一更新主画布和静态缓冲画布
+                    canvas.width = targetW; 
+                    canvas.height = targetH;
+                    staticImageBuffer.width = targetW; 
+                    staticImageBuffer.height = targetH;
+
+                    const bufCtx = staticImageBuffer.getContext('2d');
+                    bufCtx.clearRect(0, 0, targetW, targetH);
+                    bufCtx.drawImage(tempImg, 0, 0, targetW, targetH);
+
+                    // 直接对当前画布执行一次姿态识别，彻底简化静态照片管线
+                    runAIEstimation();
+                };
                 tempImg.src = event.target.result;
-            }
-            reader.readAsDataURL(file); e.target.value = ''; 
+            };
+            reader.readAsDataURL(file); 
+            e.target.value = ''; 
         }
 
-        function runAIEstimation(imageSource) {
-            canvasContainer.classList.remove('hidden'); analyzingMask.classList.remove('hidden'); 
-            ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(imageSource, 0, 0, canvas.width, canvas.height);
+        function runAIEstimation() {
+            // 将静态缓冲中的照片绘制到主画布上，保证始终有清晰图像
+            canvasContainer.classList.remove('hidden');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(staticImageBuffer, 0, 0, canvas.width, canvas.height);
 
+            analyzingMask.classList.remove('hidden'); 
+
+            if (!detector) {
+                analyzingMask.classList.add('hidden');
+                showDialog({ title: 'AI 尚未就绪', message: '姿态识别模型尚未加载完成，请稍等几秒后重试，或刷新页面。' });
+                return;
+            }
+
+            // 根本性简化：对当前画布做一次标准 MoveNet 推理，不再做多方向/多次旋转
             setTimeout(async () => {
                 try {
-                    const poses = await detector.estimatePoses(imageSource);
+                    const poses = await detector.estimatePoses(canvas);
                     analyzingMask.classList.add('hidden');
-                    if (poses.length > 0) {
+
+                    if (poses && poses.length > 0) {
                         extractPointsFromPose(poses[0], false); 
                         originalAiPoints = activePoints.map(p => ({...p}));
                         updateLegend(document.querySelector('input[name="testType"]:checked').value);
-                        dragInstruction.classList.remove('hidden'); resultBoard.classList.remove('hidden');
-                        renderCanvasAndResult(imageSource); 
+                        dragInstruction.classList.remove('hidden');
+                        resultBoard.classList.remove('hidden');
+                        renderCanvasAndResult(staticImageBuffer); 
                         resultBoard.scrollIntoView({ behavior: 'smooth', block: 'end' });
                         speak("拍摄完整。若AI识别的基准线或关节偏离，请直接拖动图中圆点进行手动校准。");
-                    } else { showDialog({ title: '识别失败', message: '未能识别到姿势，请确认人体完整入镜！' }); }
-                } catch(err) { analyzingMask.classList.add('hidden'); console.warn(err); }
+                    } else {
+                        showDialog({ title: '识别失败', message: '未能识别到姿势，请确认人体完整入镜，并尽量拍摄全身或完整上肢区域！' });
+                    }
+                } catch (err) {
+                    analyzingMask.classList.add('hidden');
+                    console.warn(err);
+                    showDialog({ title: '识别异常', message: '姿态识别过程中出现异常，请稍后重试或更换一张清晰的照片。' });
+                }
             }, 50);
         }
 
@@ -1673,8 +1726,12 @@
                 activePoints = [bedPoint, buttock, { ...testKnee }];
             } else {
                 // 肩屈：以 骨盆 -> 肩膀 的躯干中轴线为基准，计算手臂抬起的相对角度
-                const isLeftHigher = lElbow.y < rElbow.y; 
-                const testElbow = (isLeftHigher && lElbow.score > 0.1) ? lElbow : rElbow;
+                // 修正：严格按照用户在「测试侧」中选择的 L / R 来锁定测量手臂，避免图库中双臂抬起时被 AI 误判侧别
+                const testSide = document.querySelector('input[name="testSide"]:checked').value;
+                const rawElbow = testSide === 'L' ? lElbow : rElbow;
+                const fallbackElbow = lElbow.score >= rElbow.score ? lElbow : rElbow;
+                const testElbow = rawElbow.score > 0.1 ? rawElbow : fallbackElbow;
+
                 activePoints = [ 
                     { x: hip.x, y: hip.y + offset, score: hip.score }, 
                     { x: shoulder.x, y: shoulder.y + offset, score: shoulder.score }, 
@@ -1682,7 +1739,15 @@
                 ];
             }
 
-            if (!isLive) activePoints.forEach((p, i) => { if (p.x === 0 && p.y === 0) { p.x = canvas.width * (0.3 + i * 0.2); p.y = canvas.height * 0.5; } });
+            // 修复核心：如果不是动态捕捉且 AI 置信度过低（照片模糊/不全），强制将圆点居中，方便教练直接进行手动拖动校准！
+            if (!isLive) {
+                activePoints.forEach((p, i) => { 
+                    if (p.score < 0.15 || (p.x === 0 && p.y === 0)) { 
+                        p.x = canvas.width * (0.3 + i * 0.2); 
+                        p.y = canvas.height * 0.5; 
+                    } 
+                });
+            }
 
             if (isLive) {
                 const isTorsoVisible = shoulder.score > 0.35 && hip.score > 0.35; const isLimbVisible = activePoints[2].score > 0.30;
@@ -1705,7 +1770,9 @@
 
                     if (smoothedAngle > 25) {
                         if (smoothedAngle > liveMaxAngle) {
-                            liveMaxAngle = smoothedAngle; saveFrameToBuffer(); holdStartTime = Date.now(); isHolding = true;
+                            liveMaxAngle = smoothedAngle; 
+                            liveMaxPoints = activePoints.map(p => ({...p})); // 修复核心：实装动态极值点阵捕捉，解决最高点锁定后数据清零的问题
+                            saveFrameToBuffer(); holdStartTime = Date.now(); isHolding = true;
                             document.getElementById('live-status-text').innerHTML = `<span class="text-[#0071e3] font-semibold text-[12px] animate-pulse">正在发力上抬...</span>`;
                         } else if (liveMaxAngle - smoothedAngle <= 5) {
                             if (!isHolding) { isHolding = true; holdStartTime = Date.now(); }
